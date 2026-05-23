@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negruta - The Internet's Favorite Feline</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #f4f4f4;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #000;
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 3px solid #d4af37; /* Gold accent */
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, #d4af37 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: sparkle 4s linear infinite;
+            opacity: 0.3;
+        }
+
+        /* Added more intense sparkles */
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            box-shadow: 
+                20vw 30vh 2px #fff, 
+                70vw 10vh 1px #d4af37, 
+                40vw 80vh 2px #fff, 
+                90vw 60vh 1px #d4af37,
+                10vw 90vh 2px #fff;
+            animation: glitter 3s ease-in-out infinite alternate;
+            opacity: 0.5;
+        }
+
+        @keyframes sparkle {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); opacity: 0.5; }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        @keyframes glitter {
+            from { opacity: 0.3; transform: scale(1); }
+            to { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3.5rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #d4af37;
+        }
+
+        header p {
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+        }
+
+        .description h2 {
+            color: #d4af37;
+        }
+
+        .description p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .floating-cats {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-cats span {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 10s linear infinite;
+            opacity: 0.6;
+        }
+
+        .floating-cats span:nth-child(1) { left: 5%; top: 10%; animation-duration: 15s; }
+        .floating-cats span:nth-child(2) { left: 85%; top: 20%; animation-duration: 18s; }
+        .floating-cats span:nth-child(3) { left: 20%; top: 70%; animation-duration: 12s; }
+        .floating-cats span:nth-child(4) { left: 75%; top: 80%; animation-duration: 20s; }
+        .floating-cats span:nth-child(5) { left: 50%; top: 40%; animation-duration: 14s; }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(10deg); }
+            50% { transform: translateY(0) rotate(-10deg); }
+            75% { transform: translateY(20px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        .orange-cat {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(255, 165, 0, 0.1); /* Subtle orange tint */
+            border-radius: 15px;
+            border: 2px dashed #ff8c00;
+        }
+
+        .orange-cat h3 {
+            color: #ff8c00;
+        }
+
+        .orange-cat p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            color: #ff8c00;
+        }
+
+        .orange-cat .image-container img {
+            max-width: 400px;
+            border-radius: 15px;
+            border: 2px solid #ff8c00;
+        }
+
+        .about {
+            background-color: #2a2a2a;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 3rem;
+        }
+
+        .about h3 {
+            color: #d4af37;
+            border-bottom: 1px solid #d4af37;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: rgba(212, 175, 55, 0.1);
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #d4af37;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Negruta</h1>
+        <p>The most popular feline on the web</p>
+    </header>
+
+    <main>
+        <div class="floating-cats">
+            <span>🐱</span>
+            <span>🐈</span>
+            <span>🐾</span>
+            <span>🐈‍⬛</span>
+            <span>😻</span>
+        </div>
+        <section class="hero">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1511532514522-a14584b0ad3b" alt="The legendary Negruta">
+            </div>
+            <div class="description">
+                <h2>Meet the Legend</h2>
+                <p>Negruta is not just a cat; she's an icon. Known for her captivating presence and internet-dominating charm, Negruta has captured hearts worldwide.</p>
+            </div>
+        </section>
+
+        <section class="about">
+            <h3>Why we love Negruta</h3>
+            <ul style="list-style-type: none; padding: 0;">
+                <li>Unmatched elegance</li>
+                <li>Internet royalty</li>
+                <li>Spreading joy one meow at a time</li>
+            </ul>
+        </section>
+
+        <section class="orange-cat">
+            <h3>A Special Friend</h3>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1598584207036-d6e2008cdaac?q=80&w=2070&auto=format&fit=crop" alt="The OrangeCat">
+            </div>
+            <p>Negruta loves the OrangeCat!</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Negruta Fan Club</p>
+    </footer>
+</body>
+</html>
+
+
+
+
+
