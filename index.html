@@ -95,7 +95,15 @@
                 const panel = document.querySelector('.side-panel');
                 if (container && container.contains(e.target)) {
                     if (!anchored && !panel.contains(e.target)) {
-                        const newTop = e.clientY - 20; 
+                        let newTop = e.clientY - 20; 
+                        
+                        const panelHeight = panel.offsetHeight;
+                        const viewportHeight = window.innerHeight;
+                        
+                        if (newTop + panelHeight > viewportHeight) {
+                            newTop = viewportHeight - panelHeight;
+                        }
+
                         trigger.style.top = `${newTop}px`;
                         panel.style.top = `${newTop}px`;
                         anchored = true;
