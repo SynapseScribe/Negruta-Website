@@ -59,7 +59,7 @@
             </ul>
         </section>
 
-        <section class="top-cat-news">
+        <section class="top-cat-news" id="top-cat-news">
             <h3>Top 5 Trending Cat News</h3>
             <ul>
                 <li><a href="https://www.goodnewsnetwork.org/searching-for-cat-litter-leads-woman-to-fateful-encounter-with-stranger-who-adopted-her-beloved-persian/" target="_blank">Search for Cat Litter Led Woman to Fateful Encounter With Stranger Who Adopted Her Beloved Persian</a></li>
@@ -71,10 +71,41 @@
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Negruta Fan Club</p>
-    </footer>
-</body>
+        <footer>
+            <p>&copy; 2026 Negruta Fan Club</p>
+        </footer>
+
+        <div class="side-panel-container">
+            <div class="side-panel-trigger">🐾</div>
+            <aside class="side-panel">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#top-cat-news">Top News</a></li>
+                    <li><a href="#">Cat Breeds</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </aside>
+        </div>
+
+        <script>
+            let anchored = false;
+            document.addEventListener('mousemove', (e) => {
+                const container = document.querySelector('.side-panel-container');
+                const trigger = document.querySelector('.side-panel-trigger');
+                const panel = document.querySelector('.side-panel');
+                if (container && container.contains(e.target)) {
+                    if (!anchored && !panel.contains(e.target)) {
+                        const newTop = e.clientY - 20; 
+                        trigger.style.top = `${newTop}px`;
+                        panel.style.top = `${newTop}px`;
+                        anchored = true;
+                    }
+                } else {
+                    anchored = false;
+                }
+            });
+        </script>
+    </body>
 </html>
 
 

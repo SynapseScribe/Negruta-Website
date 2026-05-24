@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -226,4 +230,193 @@ body {
             padding: 2rem 0;
             font-size: 0.9rem;
             opacity: 0.6;
+        }
+
+        /* Side Panel Styles */
+        .side-panel-container {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 60px; /* Increased width for easier hovering */
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .side-panel-trigger {
+            width: 35px;
+            height: 35px;
+            background-color: #d4af37;
+            color: #000;
+            text-align: center;
+            line-height: 35px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px 0 0 5px;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
+            margin-right: 5px;
+            position: absolute; /* Allow JS to control top */
+        }
+
+        .side-panel {
+            position: absolute;
+            right: 40px; /* Anchored to the left of the trigger/container edge */
+            width: 200px;
+            background-color: #1a1a1a;
+            border: 2px solid #d4af37;
+            border-right: none;
+            padding: 15px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            top: 0; /* Allow JS to control top */
+        }
+
+        .side-panel-container:hover .side-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .side-panel h3 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        .side-panel ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .side-panel li {
+            border-left: 2px solid #d4af37;
+            margin-bottom: 10px;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .side-panel a {
+            color: #f4f4f4;
+            text-decoration: none;
+            display: block;
+            padding: 5px 10px;
+        }
+
+        .side-panel a:hover {
+            color: #d4af37;
+        }
+
+
+        .side-panel-trigger {
+            width: 35px;
+            height: 35px;
+            background-color: #d4af37;
+            color: #000;
+            text-align: center;
+            line-height: 35px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px 0 0 5px;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
+            margin-right: 5px;
+            position: absolute; /* Allow JS to control top */
+        }
+
+        .side-panel {
+            position: absolute;
+            right: 40px; /* Anchored to the left of the trigger/container edge */
+            width: 200px;
+            background-color: #1a1a1a;
+            border: 2px solid #d4af37;
+            border-right: none;
+            padding: 15px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            top: 0; /* Allow JS to control top */
+        }
+
+        .side-panel-container:hover .side-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .side-panel h3 {
+            color: #d4af3.7;
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        /* ... (rest of the file) */
+
+
+        .side-panel-trigger {
+            width: 35px;
+            height: 35px;
+            background-color: #d4af37;
+            color: #000;
+            text-align: center;
+            line-height: 35px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px 0 0 5px;
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
+            margin-top: 20px; /* Positioned at the top */
+            margin-right: 5px;
+        }
+
+        .side-panel {
+            position: absolute;
+            right: 40px; /* Anchored to the left of the invisible strip */
+            top: 0;
+            width: 200px;
+            background-color: #1a1a1a;
+            border: 2px solid #d4af37;
+            border-right: none;
+            padding: 15px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .side-panel-container:hover .side-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .side-panel h3 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        .side-panel ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .side-panel li {
+            border-left: 2px solid #d4af37;
+            margin-bottom: 10px;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .side-panel a {
+            color: #f4f4f4;
+            text-decoration: none;
+            display: block;
+            padding: 5px 10px;
+        }
+
+        .side-panel a:hover {
+            color: #d4af37;
         }
