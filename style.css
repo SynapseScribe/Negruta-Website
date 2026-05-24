@@ -425,14 +425,14 @@ body {
         .side-panel-trigger {
             width: 35px;
             height: 35px;
-            background-color: #d4af37;
-            color: #000;
+            background-color: transparent;
+            color: #fff;
             text-align: center;
             line-height: 35px;
             font-size: 1.2rem;
             cursor: pointer;
             border-radius: 5px 0 0 5px;
-            box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
+            box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.3);
             margin-top: 20px; /* Positioned at the top */
             margin-right: 5px;
         }
