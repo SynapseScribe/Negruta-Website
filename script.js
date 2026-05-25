@@ -22,6 +22,24 @@ if (container && trigger && panel) {
   });
 }
 
+const translateBtn = document.getElementById("translateBtn");
+const translatorInput = document.getElementById("translatorInput");
+const translationResult = document.getElementById("translationResult");
+
+if (translateBtn && translatorInput && translationResult) {
+  translateBtn.addEventListener("click", () => {
+    const text = translatorInput.value;
+    if (!text) {
+      translationResult.textContent = "Please enter some text first!";
+      return;
+    }
+    const meowText = text
+      .replace(/[aeiou]/gi, "meow ")
+      .replace(/[^a-zA-Z ]/g, "") + " ...meow?";
+    translationResult.textContent = meowText;
+  });
+}
+
 if (contactForm) {
   contactForm.addEventListener("submit", (e) => {
     e.preventDefault();
