@@ -27,7 +27,7 @@ const translatorInput = document.getElementById("translatorInput");
 const translationResult = document.getElementById("translationResult");
 
 if (translateBtn && translatorInput && translationResult) {
-  translateBtn.addEventListener("click", () => {
+  const performTranslation = () => {
     const text = translatorInput.value;
     if (!text) {
       translationResult.textContent = "Please enter some text first!";
@@ -37,6 +37,14 @@ if (translateBtn && translatorInput && translationResult) {
       .replace(/[aeiou]/gi, "meow ")
       .replace(/[^a-zA-Z ]/g, "") + " ...meow?";
     translationResult.textContent = meowText;
+  };
+
+  translateBtn.addEventListener("click", performTranslation);
+
+  translatorInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      performTranslation();
+    }
   });
 }
 
