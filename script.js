@@ -53,10 +53,14 @@ const catFacts = [
   "Cats use their whiskers to navigate in the dark.",
 ];
 
-floatingCats.forEach((cat) => {
-  cat.addEventListener("click", () => {
-    const fact = catFacts[Math.floor(Math.random() * catFacts.length)];
-    alert(`Cat Fact: ${fact}`);
+const floatingCats = document.querySelectorAll(".floating-cats span");
+
+if (floatingCats.length > 0) {
+  floatingCats.forEach((cat) => {
+    cat.addEventListener("click", () => {
+      const fact = catFacts[Math.floor(Math.random() * catFacts.length)];
+      alert(`Cat Fact: ${fact}`);
+    });
+    cat.style.cursor = "pointer";
   });
-  cat.style.cursor = "pointer";
-});
+}
