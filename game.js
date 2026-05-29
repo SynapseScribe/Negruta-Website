@@ -11,6 +11,9 @@ let catY = 150;
 let velocityY = 0;
 const gravity = 0.6;
 const jumpStrength = -10;
+const INITIAL_SPEED = 3;
+const MAX_SPEED = 8;
+const SPEED_INCREMENT = 0.5;
 let obstacles = [];
 let collectibles = [];
 let frameCount = 0;
@@ -54,6 +57,8 @@ function spawnCollectible() {
 function update() {
     if (!gameRunning) return;
 
+    const currentSpeed = Math.min(MAX_SPEED, INITIAL_SPEED + Math.floor(score / 10) * SPEED_INCREMENT);
+
     // Gravity
     velocityY += gravity;
     catY += velocityY;
@@ -66,7 +71,7 @@ function update() {
 
     // Obstacle movement
     for (let i = obstacles.length - 1; i >= 0; i--) {
-        obstacles[i].x -= 5;
+        obstacles[i].x -= currentSpeed;
 
         // Collision detection
         if (
@@ -88,7 +93,7 @@ function update() {
 
     // Collectibles movement and collision
     for (let i = collectibles.length - 1; i >= 0; i--) {
-        collectibles[i].x -= 5;
+        collectibles[i].x -= currentSpeed;
 
         if (
             40 < collectibles[i].x + collectibles[i].width &&
