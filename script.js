@@ -117,6 +117,9 @@ const floatingCats = document.querySelectorAll(".floating-cats span");
 
 if (floatingCats.length > 0) {
   floatingCats.forEach((cat) => {
+    cat.style.left = `${Math.random() * 95}%`;
+    cat.style.top = `${Math.random() * 95}vh`;
+
     cat.addEventListener("click", () => {
       const fact = catFacts[Math.floor(Math.random() * catFacts.length)];
       alert(`Cat Fact: ${fact}`);

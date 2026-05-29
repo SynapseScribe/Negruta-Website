@@ -14,6 +14,7 @@ const jumpStrength = -10;
 const INITIAL_SPEED = 3;
 const MAX_SPEED = 8;
 const SPEED_INCREMENT = 0.5;
+const OBSTACLE_TYPES = ["🌲", "🏠", "🏀", "🚗", "🌵", "📦", "🧱"];
 let obstacles = [];
 let collectibles = [];
 let frameCount = 0;
@@ -32,11 +33,13 @@ function resetGame() {
 
 function spawnObstacle() {
     const size = Math.floor(Math.random() * 31) + 20; // Size between 20 and 50
+    const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
     obstacles.push({
         x: canvas.width,
         y: canvas.height - size,
         width: 30,
-        height: size
+        height: size,
+        type: type
     });
 
     const minGap = 80;
@@ -133,9 +136,9 @@ function draw() {
     ctx.fillText("🐈‍⬛", 20, catY + 25);
 
     // Draw Obstacles
-    ctx.fillStyle = "#000";
     obstacles.forEach(obs => {
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        ctx.font = `${obs.height}px Arial`;
+        ctx.fillText(obs.type, obs.x, obs.y + obs.height);
     });
 
     // Draw Collectibles (Fish Emoji)
