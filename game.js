@@ -131,9 +131,13 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Cat (Black Cat Emoji)
+    // Draw Cat (Black Cat Emoji) - Flipped Horizontally
+    ctx.save();
+    ctx.translate(50, catY + 25);
+    ctx.scale(-1, 1);
     ctx.font = "30px Arial";
-    ctx.fillText("🐈‍⬛", 20, catY + 25);
+    ctx.fillText("🐈‍⬛", 0, 0);
+    ctx.restore();
 
     // Draw Obstacles
     obstacles.forEach(obs => {
@@ -171,7 +175,7 @@ function displayScores() {
     scoreList.innerHTML = scores.map(s => `<li>${s.name}: ${s.score} (${s.date})</li>`).join('');
 }
 
-startBtn.addEventListener('click', () => {
+function startGame() {
     if (nameInput.value.trim() === "") {
         alert("Please enter your name first!");
         return;
@@ -182,6 +186,14 @@ startBtn.addEventListener('click', () => {
     nameInput.disabled = true;
     resetGame();
     update();
+}
+
+startBtn.addEventListener('click', startGame);
+
+nameInput.addEventListener('keydown', (e) => {
+    if (e.code === 'Enter') {
+        startGame();
+    }
 });
 
 window.addEventListener('keydown', (e) => {
