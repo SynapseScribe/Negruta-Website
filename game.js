@@ -14,6 +14,7 @@ const jumpStrength = -10;
 let obstacles = [];
 let collectibles = [];
 let frameCount = 0;
+let nextObstacleFrame = 100;
 
 function resetGame() {
     score = 0;
@@ -22,17 +23,22 @@ function resetGame() {
     obstacles = [];
     collectibles = [];
     frameCount = 0;
+    nextObstacleFrame = 100;
     scoreElement.innerText = "Score: 0";
 }
 
 function spawnObstacle() {
-    const size = 30;
+    const size = Math.floor(Math.random() * 31) + 20; // Size between 20 and 50
     obstacles.push({
         x: canvas.width,
         y: canvas.height - size,
-        width: size,
+        width: 30,
         height: size
     });
+
+    const minGap = 80;
+    const maxGap = 160;
+    nextObstacleFrame = frameCount + Math.floor(Math.random() * (maxGap - minGap + 1)) + minGap;
 }
 
 function spawnCollectible() {
@@ -103,7 +109,7 @@ function update() {
 
     // Spawn obstacles
     frameCount++;
-    if (frameCount % 100 === 0) {
+    if (frameCount >= nextObstacleFrame) {
         spawnObstacle();
     }
     if (frameCount % 150 === 0) {
