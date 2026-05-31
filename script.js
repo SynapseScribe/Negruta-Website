@@ -128,13 +128,18 @@ const catFacts = [
 const floatingCats = document.querySelectorAll(".floating-cats span");
 
 if (floatingCats.length > 0) {
+  const shuffledFacts = [...catFacts].sort(() => Math.random() - 0.5);
+  let factIndex = 0;
+
   floatingCats.forEach((cat) => {
     cat.style.left = `${Math.random() * 95}%`;
     cat.style.top = `${Math.random() * 95}vh`;
 
+    const myFact = shuffledFacts[factIndex % shuffledFacts.length];
+    factIndex++;
+
     cat.addEventListener("click", () => {
-      const fact = catFacts[Math.floor(Math.random() * catFacts.length)];
-      alert(`Cat Fact: ${fact}`);
+      alert(`Cat Fact: ${myFact}`);
     });
     cat.style.cursor = "pointer";
   });
