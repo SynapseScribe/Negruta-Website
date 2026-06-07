@@ -38,7 +38,7 @@ function resetGame() {
 }
 
 function spawnObstacle() {
-    const size = Math.floor(Math.random() * 128) + 25; // Size between 25 and 153 (up to ~3x current max)
+    const size = Math.floor(Math.random() * 103) + 50; // Size between 50 and 153 (up to ~3x current max)
     const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
     obstacles.push({
         x: canvas.width,
