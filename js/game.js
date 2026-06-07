@@ -91,10 +91,10 @@ function update() {
         obstacles[i].x -= currentSpeed;
 
         if (
-            catLeft <= obstacles[i].x + obstacles[i].width - 16 &&
-            catRight >= obstacles[i].x + 16 &&
-            catTop <= obstacles[i].y + obstacles[i].height - 16 &&
-            catBottom >= obstacles[i].y + 16
+            catLeft <= obstacles[i].x + obstacles[i].width - 40 &&
+            catRight >= obstacles[i].x + 40 &&
+            catTop <= obstacles[i].y + obstacles[i].height - 40 &&
+            catBottom >= obstacles[i].y + 40
         ) {
             gameOver();
         }
