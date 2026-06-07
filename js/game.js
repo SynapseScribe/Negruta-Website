@@ -90,19 +90,19 @@ function update() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
         obstacles[i].x -= currentSpeed;
 
-        const obsTop = obstacles[i].y + 40;           // Hitbox starts 40px below draw position
-        const obsBottom = obstacles[i].y + obstacles[i].height - 60;  // Bottom after both hitbox offsets
+        const obsTop = obstacles[i].y + obstacles[i].height;  // Top of hitbox at draw baseline
+        const obsBottom = obstacles[i].y + obstacles[i].height + 60;   // Bottom with collision padding
         const obsLeft = obstacles[i].x + 40;
         const obsRight = obstacles[i].x + obstacles[i].width - 40;
 
         // Auto-jump when cat bottom touches obstacle top (within horizontal range)
-        if (catTop <= obsBottom && catBottom >= obsTop && catLeft <= obsRight && catRight >= obsLeft) {
+        if (catTop < obsBottom && catBottom >= obsTop && catLeft <= obsRight && catRight >= obsLeft) {
             velocityY = jumpStrength;
             jumpCount++;
         }
 
-        // Collision with side/bottom of obstacle (only if NOT hitting top)
-        if (catTop <= obsBottom && catBottom > obsTop && catLeft <= obsRight && catRight >= obsLeft) {
+        // Collision with side/bottom of obstacle triggers game over (not hitting top edge)
+        if (catBottom > obsTop && catTop < obsBottom - 50 && catLeft <= obsRight && catRight >= obsLeft) {
             gameOver();
         }
         if (obstacles[i].x + obstacles[i].width < 0) {
