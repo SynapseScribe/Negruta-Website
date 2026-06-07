@@ -13,7 +13,7 @@
 
 # EDITING #
 3.1 To check line endings in PowerShell: `(Get-Content -Raw "filename") -match "`r"`
-3.2 Before editing, convert line endings to Unix style: `(Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename`. Or use dos2unix (already installed - as windows version)
+3.2 Before editing, make sure the line endings are unix style (LF). If not, convert line endings to Unix style: `(Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename`. Or use dos2unix (already installed - as windows version)
 3.3 Prefer `write` tool over `edit` for reliability.
 3.4 If `oldString` is not found, re-read the file and try a more precise substring.
 3.5 Use small, unique substrings for `oldString` to avoid whitespace/line ending mismatches.
