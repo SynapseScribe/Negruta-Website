@@ -23,6 +23,8 @@ let obstacles = [];
 let collectibles = [];
 let frameCount = 0;
 let nextObstacleFrame = 100;
+let jumpCount = 0;
+const maxJumpsBeforeReset = 3;
 
 function resetGame() {
     score = 0;
@@ -80,6 +82,7 @@ function update() {
     if (catBottom > canvas.height) {
         catY = canvas.height - CAT_SIZE;
         velocityY = 0;
+        jumpCount = 0;
     }
 
     // Obstacle movement
@@ -213,14 +216,17 @@ nameInput.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keydown', (e) => {
+    if (jumpCount >= maxJumpsBeforeReset) return;
     if (e.code === 'Space' && gameRunning) {
         velocityY = jumpStrength;
+        jumpCount++;
     }
 });
 
 canvas.addEventListener('mousedown', () => {
-    if (gameRunning) {
+    if (gameRunning && jumpCount < maxJumpsBeforeReset) {
         velocityY = jumpStrength;
+        jumpCount++;
     }
 });
 
