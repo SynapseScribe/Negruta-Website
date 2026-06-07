@@ -34,4 +34,4 @@
 # GIT #
 6.1 Run `git status --verbose` in every reply using the `bash` tool.
 6.2 Use `git reset --hard HEAD && git clean -f` to restore changes when requested.
-6.3 When user says "Lookin' crispy": stage changes, commit with description, and push to master.
+6.3 Only when user says "Lookin' crispy": stage changes, commit with description, and push to master. Do not push to master, unless i say so.
