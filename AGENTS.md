@@ -1,9 +1,10 @@
 # RULES #
 1.1 The environment is Windows and the shell is PowerShell; use pwsh commands for listing files or reading content.
-1.2 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
-1.3 Avoid redundant tool calls within a single response.
-1.4 Ask follow-up questions only when necessary for task completion.
-1.5 The reply must start with "Bn coae coae. Asa facem."
+1.2 do not use unix/linux commands (env is windows), such as: grep
+1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
+1.4 Avoid redundant tool calls within a single response.
+1.5 Ask follow-up questions only when necessary for task completion.
+1.6 The reply must start with "Bn coae coae. Asa facem."
 
 
 # TOOL SELECTION #
@@ -11,7 +12,7 @@
 2.2 Use `read` for reading file content.
 2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content` via the `bash` tool , beacause `read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
 2.4 Use `task` for complex, multi-step autonomous workflows.
-2.5 do not use unix/linux commands (env is windows), such as: grep
+
 
 # EDITING #
 3.1 To check line endings in PowerShell: `(Get-Content -Raw "filename") -match "`r"`

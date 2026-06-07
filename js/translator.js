@@ -44,7 +44,12 @@ if (translateBtn && translatorInput && translationResult) {
       .replace(/[^a-zA-Z ]/g, "") + " ...meow?";
     translationResult.textContent = meowText;
 
-    const randomSound = meowSounds[Math.floor(Math.random() * meowSounds.length)];
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+    }
+    const soundIndex = Math.abs(hash) % meowSounds.length;
+    const randomSound = meowSounds[soundIndex];
     const audio = new Audio(randomSound);
     audio.play().catch(e => console.log("Audio play failed:", e));
   };
