@@ -33,25 +33,35 @@ if (translateBtn && translatorInput && translationResult) {
     "meow_sounds/dragon-studio-cat-meow-401729.mp3",
   ];
 
+  const hashStr = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash) % meowSounds.length;
+  };
+
   const performTranslation = () => {
-    const text = translatorInput.value;
+    const text = translatorInput.value.trim();
     if (!text) {
       translationResult.textContent = "Please enter some text first!";
       return;
     }
-    const meowText = text
-      .replace(/[aeiou]/gi, "meow ")
-      .replace(/[^a-zA-Z ]/g, "") + " ...meow?";
-    translationResult.textContent = meowText;
 
-    let hash = 0;
-    for (let i = 0; i < text.length; i++) {
-      hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
-    }
-    const soundIndex = Math.abs(hash) % meowSounds.length;
-    const randomSound = meowSounds[soundIndex];
-    const audio = new Audio(randomSound);
-    audio.play().catch(e => console.log("Audio play failed:", e));
+    const words = text.split(/\s+/);
+    const wordCount = words.length;
+
+    translationResult.textContent = "meow ".repeat(wordCount - 1).trim() + "...meow";
+
+    const playNext = (index) => {
+      if (index >= wordCount) return;
+      const soundIndex = hashStr(words[index]);
+      const audio = new Audio(meowSounds[soundIndex]);
+      audio.play().catch(e => console.log("Audio play failed:", e));
+      audio.addEventListener("ended", () => playNext(index + 1));
+    };
+
+    playNext(0);
   };
 
   translateBtn.addEventListener("click", performTranslation);
