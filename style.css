@@ -179,14 +179,6 @@ main {
   background: rgba(212, 175, 55, 0.1);
   margin: 10px 0;
   padding: 10px;
-  border-rightarrow: 4px solid #d4af37; /* Wait, I'll fix this */
-}
-
-/* Let me just use border-left */
-.about-list li, .top-cat-news li {
-  background: rgba(212, 175, 55, 0.1);
-  margin: 10px 0;
-  padding: 10px;
   border-left: 4px solid #d4af37;
 }
 
@@ -204,9 +196,6 @@ footer { text-align: center; padding: 2rem 0; font-size: 0.9rem; opacity: 0.6; }
 .side-panel h3 { color: #d4af37; margin-top: 0; }
 .side-panel ul { list-style: none; padding: 0; }
 .side-panel li { border-left: 2px solid #d4af37; margin-bottom: 10px; background: rgba(212, 175, 55, 0.05); }
-.side-rel-a { color: #f4f4f4; text-decoration: none; display: block; padding: 5px 10px; } /* Wait, I'll fix this */
-
-/* Let me just use .side-panel a */
 .side-panel a { color: #f4f4f4; text-decoration: none; display: block; padding: 5px 10px; }
 .side-panel a:hover { color: #d4af37; }
 
