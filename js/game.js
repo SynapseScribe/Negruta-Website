@@ -55,7 +55,7 @@ function spawnObstacle() {
 }
 
 function spawnCollectible() {
-    const size = 30;
+    const size = 60;
     // Collectibles spawn within cat's double-jump range (roughly 280-650px from bottom)
     collectibles.push({
         x: canvas.width,
@@ -165,9 +165,9 @@ function draw() {
     });
 
     // Draw Collectibles (Fish Emoji)
-    ctx.font = "30px Arial";
+    ctx.font = "60px Arial";
     collectibles.forEach(coll => {
-        ctx.fillText("🐟", coll.x, coll.y + 25);
+        ctx.fillText("🐟", coll.x, coll.y + 50);
     });
 }
 
