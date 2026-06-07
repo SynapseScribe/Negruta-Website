@@ -9,9 +9,9 @@
 # TOOL SELECTION #
 2.1 Use `glob` for file pattern matching.
 2.2 Use `read` for reading file content.
-2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content` via the `bash` tool if `read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
+2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content` via the `bash` tool , beacause `read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
 2.4 Use `task` for complex, multi-step autonomous workflows.
-2.5 do not use unix/linux commands (env is windows)
+2.5 do not use unix/linux commands (env is windows), such as: grep
 
 # EDITING #
 3.1 To check line endings in PowerShell: `(Get-Content -Raw "filename") -match "`r"`
