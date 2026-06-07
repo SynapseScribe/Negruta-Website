@@ -90,28 +90,21 @@ function update() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
         obstacles[i].x -= currentSpeed;
 
-        const obsTop = obstacles[i].y;
-        const obsBottom = obstacles[i].y + obstacles[i].height - 40;
+        const obsTop = obstacles[i].y + 40;           // Hitbox starts 40px below draw position
+        const obsBottom = obstacles[i].y + obstacles[i].height - 60;  // Bottom after both hitbox offsets
         const obsLeft = obstacles[i].x + 40;
         const obsRight = obstacles[i].x + obstacles[i].width - 40;
 
-        // Auto-jump when cat hits top of obstacle (bottom edge touches obstacle top, within horizontal range)
-        if (catBottom <= obsTop + 15 && catBottom >= obsTop && catLeft <= obsRight && catRight >= obsLeft) {
+        // Auto-jump when cat bottom touches obstacle top (within horizontal range)
+        if (catTop <= obsBottom && catBottom >= obsTop && catLeft <= obsRight && catRight >= obsLeft) {
             velocityY = jumpStrength;
             jumpCount++;
         }
 
-        // Collision with side/bottom of obstacle triggers game over
-        if (
-            catTop <= obsBottom - 40 &&
-            catBottom >= obsBottom + 40 &&
-            catLeft <= obsRight - 40 &&
-            catRight >= obsLeft + 40
-        ) {
+        // Collision with side/bottom of obstacle (only if NOT hitting top)
+        if (catTop <= obsBottom && catBottom > obsTop && catLeft <= obsRight && catRight >= obsLeft) {
             gameOver();
         }
-
-        // Remove off-screen obstacles
         if (obstacles[i].x + obstacles[i].width < 0) {
             obstacles.splice(i, 1);
             score++;
