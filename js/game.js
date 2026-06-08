@@ -88,7 +88,12 @@ let frameCount = 0;
 let nextObstacleFrame = 100;
 let jumpCount = 0;
 let currentSpeed = INITIAL_SPEED;
+let grassItems = [];
+let grassOffset = 0;
 const maxJumpsBeforeReset = 2;
+const GRASS_EMOJIS = ["🌱", "🌿", "☘️", "🍀", "🍃", "🌾", "🪻", "🌷", "🌻", "🌺", "🥀", "🍄", "🍂"];
+const GRASS_SIZE = Math.floor(CAT_SIZE / 2);
+const GRASS_SPACING = 25;
 
 function resetGame() {
   score = 0;
@@ -99,7 +104,19 @@ function resetGame() {
   frameCount = 0;
   nextObstacleFrame = 100;
   currentSpeed = INITIAL_SPEED;
+  grassOffset = 0;
+  initGrass();
   scoreElement.innerText = "Score: 0";
+}
+
+function initGrass() {
+  grassItems = [];
+  for (let x = -GRASS_SIZE; x <= canvas.width + GRASS_SIZE; x += GRASS_SPACING) {
+    grassItems.push({
+      x: x,
+      emoji: GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)],
+    });
+  }
 }
 
 function spawnObstacle() {
@@ -209,6 +226,14 @@ function update() {
     }
   }
 
+  // Grass scrolling
+  for (const item of grassItems) {
+    item.x -= currentSpeed;
+    if (item.x < -GRASS_SIZE) {
+      item.x += grassItems.length * GRASS_SPACING;
+    }
+  }
+
   // Spawn obstacles and collectibles
   frameCount++;
   if (frameCount >= nextObstacleFrame && nextObstacleFrame > 0) {
@@ -227,6 +252,14 @@ function update() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw grass ground texture
+  ctx.font = `${GRASS_SIZE}px Arial`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  grassItems.forEach((item) => {
+    ctx.fillText(item.emoji, item.x, canvas.height);
+  });
 
   // Draw Speed counter (top-right)
   ctx.save();
