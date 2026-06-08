@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -80,7 +84,8 @@ header p {
 }
 
 main {
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1300px;
   margin: 2rem auto;
   padding: 0 1rem;
 }
@@ -208,9 +213,14 @@ footer { text-align: center; padding: 2rem 0; font-size: 0.9rem; opacity: 0.6; }
 #playerNameInput, #startGameBtn { padding: 0.5rem; border-radius: 5px; border: 1px solid #d4af37; }
 #startGameBtn { background-color: #d4af37; color: #000; font-weight: bold; cursor: pointer; }
 .game-info { font-size: 1.5rem; font-weight: bold; color: #d4af37; }
-.score-board { margin-top: 1rem; text-align: left; width: 100%; }
-.score-board h4 { color: #d4af37; margin-bottom: 0.5rem; }
+.score-board { margin-top: 1rem; text-align: center; width: 100%; }
+.score-board h4 { color: #d4af37; margin-bottom: 0.5rem; font-size: 2rem; font-weight: bold; }
 .score-board ul { list-style: none; padding: 0; }
+.score-board li { font-weight: bold; margin: 0.5rem 0; }
+.score-board li:nth-child(1) { color: #ffd700; font-size: 1.5rem; }
+.score-board li:nth-child(2) { color: #c0c0c0; font-size: 1.3rem; }
+.score-board li:nth-child(3) { color: #cd7f32; font-size: 1.1rem; }
+.score-board li:nth-child(4), .score-board li:nth-child(5) { font-size: 0.9rem; }
 
 /* Meow Translator */
 .meow-translator { background-color: rgba(212, 175, 55, 0.1); padding: 2rem; border-radius: 15px; margin-top: 2rem; text-align: center; border: 1px solid #d4af37; }

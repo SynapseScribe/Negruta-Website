@@ -250,11 +250,13 @@ function displayScores() {
   const scoreList = document.getElementById("scoreList");
   if (!scoreList) return;
   const scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
-  const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 10);
+  const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
   scoreList.innerHTML = "";
-  topScores.forEach((s) => {
+  const medals = ["🥇", "🥈", "🥉"];
+  topScores.forEach((s, i) => {
     const li = document.createElement("li");
-    const text = document.createTextNode(`${s.name}: ${s.score} (${s.date})`);
+    const medal = i < 3 ? medals[i] : `${i + 1}.`;
+    const text = document.createTextNode(`${medal} ${s.name}: ${s.score} (${s.date})`);
     li.appendChild(text);
     scoreList.appendChild(li);
   });

@@ -8,7 +8,7 @@
 
 
 # TOOL SELECTION #
-2.1 Use Get-ChildItem instead of `glob` for file pattern matching.
+2.1 Use `Get-ChildItem` instead of `glob` for file pattern matching.
 2.2 Use `read` for reading file content.
 2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content` via the `bash` tool , beacause `read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
 2.4 Use `task` for complex, multi-step autonomous workflows.
