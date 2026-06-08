@@ -4,7 +4,7 @@ const ctx = canvas.getContext("2d"); // 2D drawing context
 const CAT_SIZE = 80;
 const CAT_X = 160;
 const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 400;
+const CANVAS_HEIGHT = 550;
 
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
