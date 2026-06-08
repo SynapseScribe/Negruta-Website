@@ -119,7 +119,7 @@ main {
 
 .floating-cats span {
   position: absolute;
-  font-size: 2rem;
+  font-size: 2.5rem;
   animation: float 10s linear infinite;
   opacity: 0.6;
 }

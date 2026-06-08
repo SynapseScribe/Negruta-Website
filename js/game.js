@@ -17,15 +17,21 @@ const startBtn = document.getElementById("startGameBtn");
 const gravity = 0.18;
 const jumpStrength = -9;
 const maxJumpsBeforeReset = 2;
-const INITIAL_SPEED = 5;
-const MAX_SPEED = 15;
-const SPEED_INCREMENT = 0.5;
-const OBSTACLE_TYPES = ["🌲", "🏠", "🏀", "🚗", "🌵", "📦", "🧱", "🦄", "🛸", "🦖", "🍕", "🍍", "🗿", "🤡", "🍄", "👻", "👽", "🐙", "🌈", "🍦", "🍩", "🍔", "🌮", "🍣", "🥨", "🥑", "🍉", "🐉", "🦁", "🐵", "🐧", "🐘", "🦒", "🐢", "🐍", "🐝", "🦋", "🚀", "🚁", "🚂", "🚢", "🚲", "🛵", "🏎️", "🚜", "🚐", "🚠", "🎸", "🎹", "🎻", "🎺", "🥁", "🎨", "📚", "🧪", "🔬", "🔭", "🏰", "🎡", "🎢", "🗼", "🗽", "⛩️"];
+const INITIAL_SPEED = 4;
+const MAX_SPEED = 10;
+const SPEED_INCREMENT = 0.1;
+const OBSTACLE_TYPES = ["🌲", "🏠", "🏀", "🚗", "🌵", "📦", "🧱", "🦄", "🛸", "🦖", "🍕", "🍍", "🗿", "🤡", "🍄", "👻", "👽", "🐙", "🌈", "🍦", "🍩", "🍔", "🌮", "🍣", "🥨", "🥑", "🍉", "🦁", "🐵", "🐧", "🐘", "🦒", "🐢", "🐍", "🐝", "🦋", "🚀", "🚁", "🚂", "🚢", "🚲", "🛵", "🚜", "🚐", "🚠", "🎸", "🎹", "🎻", "🎺", "🥁", "🎨", "📚", "🧪", "🔬", "🔭", "🏰", "🎢", "🗼", "🗽", "⛩️"];
+const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
+const COLLISION_VERTICAL_PADDING = 30;   // increase to be more permissive
+const MIN_OBSTACLE_SIZE = 150;
+const MAX_OBSTACLE_SIZE = 250;
+const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
+const AUTOJUMP_HORIZONTAL_MARGIN = 30;  // how close horizontally before auto-jump
 
-
-const GRASS_EMOJIS = ["🌱", "🌿", "☘️", "🍀", "🍃", "🌾", "🪻", "🌷", "🌻", "🌺", "🥀", "🍄", "🍂"];
 const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
-const GRASS_SPACING = 30;
+const GRASS_SPACING = 40;
+const GROUND_HEIGHT = 0;          // adjust how tall the ground area is
+let groundY = canvas.height - GROUND_HEIGHT;
 
 const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
 
@@ -43,45 +49,67 @@ function resetGame() {
   frameCount = 0;
   nextObstacleFrame = 100;
   currentSpeed = INITIAL_SPEED;
+  groundY = canvas.height - GROUND_HEIGHT;
   initGrass();
   initCelestial();
   scoreElement.innerText = "Score: 0";
 }
 
-function initGrass() {
-  grassItems = [];
-  for (let x = -GRASS_SIZE; x <= canvas.width + GRASS_SIZE; x += GRASS_SPACING) {
-    grassItems.push({
-      x: x,
-      emoji: GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)],
-      size: Math.floor(Math.random() * GRASS_SIZE) + 1,
-    });
+
+
+
+// build cache once, for faster rendering
+//const GRASS_EMOJIS = ["🌱","🌿","☘️","🍀","🍃","🌾","🎍","🪴","🌴","🌲","🌳","🌼","🌻","🌺","🌷","🥀","🍂","🍁","🍄","🐝","🦋","🐞","🪲","💐","🎋","🌸","🌹","🪻","🪨","🪵"];
+const GRASS_EMOJIS = ["🌱","🌿","☘️","🍀","🌾","🎍","🪴", "🌼","🌻","🌷","🥀","🍂","🍁","🌹","🪻"];
+const sizeList = [28, 32, 36, 40, 44]; // limited set
+// cache per emoji+size to speed drawing
+const emojiCache = new Map();
+for (const emoji of GRASS_EMOJIS) {
+  for (const s of sizeList) {
+    const key = `${emoji}_${s}`;
+    const oc = document.createElement('canvas');
+    oc.width = oc.height = s * 2;
+    const cctx = oc.getContext('2d');
+    cctx.font = `${s}px serif`;
+    cctx.textAlign = 'center';
+    cctx.textBaseline = 'bottom';
+    cctx.clearRect(0,0,oc.width,oc.height);
+    cctx.fillText(emoji, oc.width / 2, oc.height - 1);
+    emojiCache.set(key, oc);
   }
 }
 
+function initGrass() {
+  grassItems = [];
+  for (let x = -GRASS_SIZE; x <= canvas.width + GRASS_SIZE; x += GRASS_SPACING) {
+    const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+    const size = sizeList[Math.floor(Math.random() * sizeList.length)];
+    grassItems.push({ x, emoji, size });
+  }
+}
 function initCelestial() {
   celestialObjects = [];
-  const count = Math.floor(Math.random() * 20) + 11;
+  const count = Math.floor(Math.random() * 30) + 11;
   for (let i = 0; i < count; i++) {
     celestialObjects.push({
       x: Math.random() * canvas.width,
       y: Math.random() * (canvas.height - 150) + 50,
       size: Math.floor(Math.random() * 20) + 7,
-      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)],
+      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
     });
   }
 }
 
 function spawnObstacle() {
-  const size = Math.floor(Math.random() * 257) + 50;
-  const type =
-    OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+  const OBSTACLE_VERTICAL_OFFSET = 25; // tweak until it looks flush
+  const size = Math.floor(Math.random() * (MAX_OBSTACLE_SIZE - MIN_OBSTACLE_SIZE + 1)) + MIN_OBSTACLE_SIZE;
+  const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
   obstacles.push({
     x: canvas.width,
-    y: canvas.height - size,
+    y: canvas.height - size + OBSTACLE_VERTICAL_OFFSET, // move visually down
     width: size,
     height: size,
-    type: type,
+    type
   });
 }
 
@@ -108,8 +136,8 @@ function update() {
   velocityY += gravity;
   CAT_Y += velocityY;
 
-  const catLeft = CAT_X - CAT_SIZE/2;
-  const catRight = CAT_X + CAT_SIZE/2;
+  const catLeft = CAT_X - CAT_SIZE / 2;
+  const catRight = CAT_X + CAT_SIZE / 2;
   const catTop = CAT_Y - CAT_SIZE / 2;
   const catBottom = CAT_Y + CAT_SIZE / 2;
 
@@ -130,23 +158,27 @@ function update() {
     const obsRight = obstacles[i].x + obstacles[i].width - 10;
 
     // Auto-jump when cat is about to land on top of obstacle
-    if (
-      catBottom >= obsTop - 20 &&
-      catBottom <= obsTop &&
-      velocityY >= 0 &&
-      catLeft < obsRight &&
-      catRight > obsLeft
-    ) {
+if (
+  // cat bottom is at or below the top, or slightly into it (tolerance)
+  catBottom >= obsTop - AUTOJUMP_VERTICAL_TOLERANCE &&
+  catBottom <= obsTop + AUTOJUMP_VERTICAL_TOLERANCE &&
+  // only auto-jump when falling or near landing
+  velocityY >= 0 &&
+  // horizontal overlap: cat is overlapping or very close to obstacle horizontally
+  catLeft < obsRight + AUTOJUMP_HORIZONTAL_MARGIN &&
+  catRight > obsLeft - AUTOJUMP_HORIZONTAL_MARGIN
+) {
       velocityY = jumpStrength;
       jumpCount++;
     }
 
     // Collision with sides or bottom of obstacle triggers game over
     else if (
-      catBottom > obsTop + 20 &&
-      catTop < obsBottom &&
-      catLeft < obsRight &&
-      catRight > obsLeft
+  catBottom > obsTop + COLLISION_VERTICAL_PADDING &&
+  catTop < obsBottom - COLLISION_VERTICAL_PADDING &&
+  // require more horizontal overlap (ignore glancing side contacts)
+  catLeft < obsRight - COLLISION_HORIZONTAL_PADDING &&
+  catRight >= obsLeft + 20 + COLLISION_HORIZONTAL_PADDING
     ) {
       gameOver();
       return;
@@ -179,6 +211,7 @@ function update() {
     }
   }
 
+//*
   // Grass scrolling
   for (const item of grassItems) {
     item.x -= currentSpeed;
@@ -186,6 +219,7 @@ function update() {
       item.x += grassItems.length * GRASS_SPACING;
     }
   }
+//*/
 
   // Spawn obstacles and collectibles
   frameCount++;
@@ -246,6 +280,8 @@ function draw() {
   ctx.fillText("🐈‍⬛", 0, 0);
   ctx.restore();
 
+//
+/*
   // Draw grass ground texture
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
@@ -253,13 +289,24 @@ function draw() {
     ctx.font = `${item.size}px Arial`;
     ctx.fillText(item.emoji, item.x, canvas.height);
   });
+  //*/
+  // in draw loop use drawImage (fast)
+ctx.textAlign = "center";
+ctx.textBaseline = "bottom";
+for (const item of grassItems) {
+  const key = `${item.emoji}_${item.size}`;
+  const img = emojiCache.get(key);
+  if (!img) continue;
+  const y = canvas.height; // bottom of canvas (or use groundY + GROUND_HEIGHT)
+  ctx.drawImage(img, item.x - img.width/2, y - img.height);
+}
 
   // Draw Obstacles (centered on collision box center)
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
   obstacles.forEach((obs) => {
     ctx.font = `${obs.height}px Arial`;
-    ctx.fillText(obs.type, obs.x + obs.width / 2 - 10, obs.y + obs.height);
+    ctx.fillText(obs.type, obs.x + obs.width / 2 - 30, obs.y + obs.height);
   });
 
   // Draw Collectibles (Fish Emoji)
@@ -289,6 +336,16 @@ function saveScore(name, finalScore) {
   displayScores();
 }
 
+
+// create a default high score if none exist
+function ensureDefaultHighScore() {
+  const key = "catGameScores";
+  const existing = JSON.parse(localStorage.getItem(key) || "null");
+  if (!existing) {
+    const defaultScores = [{ name: "Negruta", score: 500, date: new Date().toLocaleDateString() }];
+    localStorage.setItem(key, JSON.stringify(defaultScores));
+  }
+}
 function displayScores() {
   const scoreList = document.getElementById("scoreList");
   if (!scoreList) return;
@@ -342,4 +399,5 @@ canvas.addEventListener("mousedown", () => {
 });
 
 // Initialize scores display on load
+ensureDefaultHighScore();
 displayScores();
