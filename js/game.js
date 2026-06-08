@@ -1,46 +1,40 @@
 const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-const CAT_X = 80;
-const CAT_SIZE = 60;
+const ctx = canvas.getContext("2d"); // 2D drawing context
+
+const CAT_X = 160; // center of cat is at 160px from left side of the game canvas
+const CAT_SIZE = 80;
+
 const scoreElement = document.getElementById("gameScore");
 const nameInput = document.getElementById("playerNameInput");
 const startBtn = document.getElementById("startGameBtn");
 
+
 const gravity = 0.18;
 const jumpStrength = -9;
+const maxJumpsBeforeReset = 2;
 const INITIAL_SPEED = 1.3;
 const MAX_SPEED = 15;
 const SPEED_INCREMENT = 0.3;
 const OBSTACLE_TYPES = ["🌲", "🏠", "🏀", "🚗", "🌵", "📦", "🧱", "🦄", "🛸", "🦖", "🍕", "🍍", "🗿", "🤡", "🍄", "👻", "👽", "🐙", "🌈", "🍦", "🍩", "🍔", "🌮", "🍣", "🥨", "🥑", "🍉", "🐉", "🦁", "🐵", "🐧", "🐘", "🦒", "🐢", "🐍", "🐝", "🦋", "🚀", "🚁", "🚂", "🚢", "🚲", "🛵", "🏎️", "🚜", "🚐", "🚠", "🎸", "🎹", "🎻", "🎺", "🥁", "🎨", "📚", "🧪", "🔬", "🔭", "🏰", "🎡", "🎢", "🗼", "🗽", "⛩️"];
 
-let gameRunning = false;
-let score = 0;
-let playerName = "";
-let catY = 150;
-let velocityY = 0;
-let obstacles = [];
-let collectibles = [];
-let frameCount = 0;
-let nextObstacleFrame = 100;
-let jumpCount = 0;
-let currentSpeed = INITIAL_SPEED;
-let grassItems = [];
-let grassOffset = 0;
-const maxJumpsBeforeReset = 2;
+
 const GRASS_EMOJIS = ["🌱", "🌿", "☘️", "🍀", "🍃", "🌾", "🪻", "🌷", "🌻", "🌺", "🥀", "🍄", "🍂"];
-const GRASS_SIZE = Math.floor(CAT_SIZE / 2);
+const GRASS_SIZE = Math.floor(CAT_SIZE / 3);
 const GRASS_SPACING = 25;
+
+let gameRunning = false;
+let playerName = "";
+let jumpCount = 0;
 
 function resetGame() {
   score = 0;
-  catY = 150;
+  CAT_Y = canvas.height - CAT_SIZE / 2; // center of cat is at half the size of cat, initially
   velocityY = 0;
   obstacles = [];
   collectibles = [];
   frameCount = 0;
   nextObstacleFrame = 100;
   currentSpeed = INITIAL_SPEED;
-  grassOffset = 0;
   initGrass();
   scoreElement.innerText = "Score: 0";
 }
@@ -69,7 +63,6 @@ function spawnObstacle() {
 }
 
 function spawnCollectible() {
-  // Fish size: slightly larger than cat but still manageable
   const size = 60;
   // Collectibles spawn within cat's double-jump range (roughly 280-650px from bottom)
   collectibles.push({
@@ -90,16 +83,16 @@ function update() {
 
   // Gravity
   velocityY += gravity;
-  catY += velocityY;
+  CAT_Y += velocityY;
 
-  const catLeft = CAT_X - CAT_SIZE;
-  const catRight = CAT_X;
-  const catTop = catY;
-  const catBottom = catY + CAT_SIZE;
+  const catLeft = CAT_X - CAT_SIZE/2;
+  const catRight = CAT_X + CAT_SIZE/2;
+  const catTop = CAT_Y - CAT_SIZE / 2;
+  const catBottom = CAT_Y + CAT_SIZE / 2;
 
   // Floor collision
   if (catBottom > canvas.height) {
-    catY = canvas.height - CAT_SIZE;
+    CAT_Y = canvas.height - CAT_SIZE / 2;
     velocityY = 0;
     jumpCount = 0;
   }
@@ -199,7 +192,7 @@ function draw() {
 
   // Draw Cat (Black Cat Emoji) - Flipped Horizontally
   ctx.save();
-  ctx.translate(CAT_X, catY + CAT_SIZE / 2);
+  ctx.translate(CAT_X, CAT_Y);
   ctx.scale(-1, 1);
   ctx.font = `${CAT_SIZE}px Arial`;
   ctx.textAlign = "center";

@@ -1,6 +1,6 @@
 # RULES #
 1.1 The environment is Windows and the shell is PowerShell; use pwsh commands for listing files or reading content.
-1.2 do not use unix/linux commands (env is windows), such as: grep
+1.2 do not use unix/linux commands (env is windows), such as: grep, ripgrep
 1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
 1.4 Avoid redundant tool calls within a single response.
 1.5 Ask follow-up questions only when necessary for task completion.
