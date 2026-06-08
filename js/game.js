@@ -24,12 +24,15 @@ const OBSTACLE_TYPES = ["🌲", "🏠", "🏀", "🚗", "🌵", "📦", "🧱", 
 
 
 const GRASS_EMOJIS = ["🌱", "🌿", "☘️", "🍀", "🍃", "🌾", "🪻", "🌷", "🌻", "🌺", "🥀", "🍄", "🍂"];
-const GRASS_SIZE = Math.floor(CAT_SIZE / 3);
-const GRASS_SPACING = 25;
+const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
+const GRASS_SPACING = 30;
+
+const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
 
 let gameRunning = false;
 let playerName = "";
 let jumpCount = 0;
+let celestialObjects = [];
 
 function resetGame() {
   score = 0;
@@ -41,6 +44,7 @@ function resetGame() {
   nextObstacleFrame = 100;
   currentSpeed = INITIAL_SPEED;
   initGrass();
+  initCelestial();
   scoreElement.innerText = "Score: 0";
 }
 
@@ -50,12 +54,26 @@ function initGrass() {
     grassItems.push({
       x: x,
       emoji: GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)],
+      size: Math.floor(Math.random() * GRASS_SIZE) + 1,
+    });
+  }
+}
+
+function initCelestial() {
+  celestialObjects = [];
+  const count = Math.floor(Math.random() * 20) + 11;
+  for (let i = 0; i < count; i++) {
+    celestialObjects.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * (canvas.height - 150) + 50,
+      size: Math.floor(Math.random() * 20) + 7,
+      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)],
     });
   }
 }
 
 function spawnObstacle() {
-  const size = Math.floor(Math.random() * 156) + 50;
+  const size = Math.floor(Math.random() * 257) + 50;
   const type =
     OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
   obstacles.push({
@@ -186,15 +204,37 @@ function update() {
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Night sky gradient background
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, "#0a0a2e");
+  gradient.addColorStop(0.5, "#1a1a4e");
+  gradient.addColorStop(1, "#2d1b69");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw moon (top right, below speed text)
+  ctx.font = "80px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🌖", canvas.width - 150, 120);
+
+  // Draw celestial objects (back layer)
+  ctx.save();
+  ctx.globalAlpha = 0.1;
+  ctx.filter = "blur(0.5px)";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  celestialObjects.forEach((obj) => {
+    ctx.font = `${obj.size}px Arial`;
+    ctx.fillText(obj.emoji, obj.x, obj.y);
+  });
+  ctx.restore();
 
   // Draw Speed counter (top-right)
-  ctx.save();
   ctx.fillStyle = "#d4af37";
   ctx.font = "bold 18px Arial";
   ctx.textAlign = "right";
   ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, canvas.width - 15, 25);
-  ctx.restore();
 
   // Draw Cat (Black Cat Emoji) - Flipped Horizontally
   ctx.save();
@@ -207,10 +247,10 @@ function draw() {
   ctx.restore();
 
   // Draw grass ground texture
-  ctx.font = `${GRASS_SIZE}px Arial`;
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
   grassItems.forEach((item) => {
+    ctx.font = `${item.size}px Arial`;
     ctx.fillText(item.emoji, item.x, canvas.height);
   });
 
