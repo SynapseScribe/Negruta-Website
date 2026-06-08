@@ -189,14 +189,6 @@ function update() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw grass ground texture
-  ctx.font = `${GRASS_SIZE}px Arial`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "bottom";
-  grassItems.forEach((item) => {
-    ctx.fillText(item.emoji, item.x, canvas.height);
-  });
-
   // Draw Speed counter (top-right)
   ctx.save();
   ctx.fillStyle = "#d4af37";
@@ -214,6 +206,14 @@ function draw() {
   ctx.textBaseline = "middle";
   ctx.fillText("🐈‍⬛", 0, 0);
   ctx.restore();
+
+  // Draw grass ground texture
+  ctx.font = `${GRASS_SIZE}px Arial`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  grassItems.forEach((item) => {
+    ctx.fillText(item.emoji, item.x, canvas.height);
+  });
 
   // Draw Obstacles
   obstacles.forEach((obs) => {
