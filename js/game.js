@@ -3,21 +3,19 @@ const ctx = canvas.getContext("2d"); // 2D drawing context
 
 const CAT_SIZE = 80;
 const CAT_X = 160;
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 550;
 
-canvas.width = CANVAS_WIDTH;
-canvas.height = CANVAS_HEIGHT;
+canvas.width = 800;
+canvas.height = 550;
 
 const scoreElement = document.getElementById("gameScore");
 const nameInput = document.getElementById("playerNameInput");
 const startBtn = document.getElementById("startGameBtn");
 
-const gravity = 0.18;
-const jumpStrength = -9;
+const gravity = 1;
+const jumpStrength = -20;
 const maxJumpsBeforeReset = 2;
-const INITIAL_SPEED = 4;
-const MAX_SPEED = 20;
+const INITIAL_SPEED = 10;
+const MAX_SPEED = 50;
 const SPEED_INCREMENT = 0.1;
 const OBSTACLE_TYPES = [
   "🌲","🏠","🏀","🚗","🌵","📦","🧱","🦄","🛸","🦖","🍕","🍍","🗿","🤡","🍄","👻",
@@ -29,14 +27,15 @@ const OBSTACLE_TYPES = [
   "🛡️","⚔️","🗡️","🔧","🪛","🔩","⚙️","🦺","🏳️‍🌈","🎈","🕹️","🧳","🗝️","🦽","🛏️",
   "🛋️","🦊","🐺","🐻","🐼","🐨","🦝","🦌","🦅","🦉","🦇","🐿️","🦜","🐇","🐁","🐀",
   "🦨","🦡","🦔","🐗","🦃","🦚","🥕","🍓","🍒","🍇","🥝","🥥","🍪","🍫","🥞","🍯",
-  "🛶","🛰️","🛎️","🪙","⚽","🥎","🏐","🏉","🥏","🏓","🏸","🥊","🥋","🧗","🏃","🏄",
+  "🛶","🛰️","🛎️","⚽","🥎","🏐","🏉","🥏","🏓","🏸","🥊","🥋","🧗","🏃","🏄",
   "🏊","🚣","🤺","🤸","🛼","🛻","🪕","🪗","🧩","🪬","🪚","🧰","🛠️","🔨","⚒️","🧴",
   "🧷","🧹","🧺","🪣","🩺","💡","🔦","🔌","💻","🖥️","🖨️","🖱️","🎛️","📻","📺","📷",
   "🎥","📽️","📡","🗺️","🪧","🏳️","🏴","🎌","🎭","🎪","🎟️","🎫","🔔","🚨","🚧","⛏️",
-  "🛟","🪼","🪸","🪜","🪝","🪞","🪟","🪦","🪙","🧲","🧯","🧫","🧬","🧻","🧼","🧽",
-  "🎤","🎧","🎷","🪇","🪆","🪪", "🦈", "🪼", "🦉", "🫷","👈","🤚","🔫","👝","🤾","👜"
+  "🛟","🪸","🪜","🪝","🪞","🪟","🪦","🧻","🧼","🧽","🪙","🪼","🧲","🎤","🎧","🎷",
+  "🪇","🪆","🪪", "🦈", "🫷","👈","🤚","🔫","👝","🤾","👜"
 ];
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
+const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
 const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
 const MIN_OBSTACLE_SIZE = 150;
 const MAX_OBSTACLE_SIZE = 300;
@@ -54,6 +53,15 @@ let gameRunning = false;
 let playerName = "";
 let jumpCount = 0;
 let celestialObjects = [];
+let score = 0;
+let CAT_Y = 0;
+let velocityY = 0;
+let obstacles = [];
+let collectibles = [];
+let frameCount = 0;
+let nextObstacleFrame = 100;
+let currentSpeed = INITIAL_SPEED;
+let grassItems = [];
 
 const meowSounds = [
     "meow_sounds/soundzee-cat-meow-361882.mp3",
@@ -94,6 +102,7 @@ const meowAudioPool = meowSounds.map(src => {
 function meow() {
     const idx = Math.floor(Math.random() * meowAudioPool.length);
     const audio = meowAudioPool[idx].cloneNode(); // clone to allow overlapping plays
+	audio.volume = 0.1;
     audio.play().catch(e => console.log("Audio play failed:", e));
 }
 
@@ -280,17 +289,21 @@ function spawnCollectible() {
   });
 }
 
-function update() {
+let lastTime = 0;
+function update(timestamp) {
     if (!gameRunning)
         return;
+
+    const dt = timestamp ? (timestamp - lastTime) / 16.67 : 1; // normalize to ~60fps
+    lastTime = timestamp || 0;
 
     currentSpeed = Math.min(
             MAX_SPEED,
             INITIAL_SPEED + Math.floor(score / 5) * SPEED_INCREMENT, );
 
     // Gravity
-    velocityY += gravity;
-    CAT_Y += velocityY;
+    velocityY += gravity * dt;
+    CAT_Y += velocityY * dt;
 
     const catLeft = CAT_X - CAT_SIZE / 2;
     const catRight = CAT_X + CAT_SIZE / 2;
@@ -306,7 +319,7 @@ function update() {
 
     // Obstacle movement
     for (let i = obstacles.length - 1; i >= 0; i--) {
-        obstacles[i].x -= currentSpeed;
+        obstacles[i].x -= currentSpeed * dt;
 
         const obsTop = obstacles[i].y;
         const obsBottom = obstacles[i].y + obstacles[i].height;
@@ -334,7 +347,7 @@ function update() {
             catTop < obsBottom - COLLISION_VERTICAL_PADDING &&
             // require more horizontal overlap (ignore glancing side contacts)
             catLeft < obsRight - COLLISION_HORIZONTAL_PADDING &&
-            catRight >= obsLeft + 20 + COLLISION_HORIZONTAL_PADDING) {
+            catRight >= obsLeft + OBSTACLE_HITBOX_INSET + COLLISION_HORIZONTAL_PADDING) {
             meow();
             gameOver();
             return;
@@ -348,7 +361,7 @@ function update() {
 
     // Collectibles movement and collision (fish has larger hitbox for easier collection)
     for (let i = collectibles.length - 1; i >= 0; i--) {
-        collectibles[i].x -= currentSpeed;
+        collectibles[i].x -= currentSpeed * dt;
 
         if (
             catLeft <= collectibles[i].x + collectibles[i].width - 15 &&
@@ -367,10 +380,9 @@ function update() {
         }
     }
 
-    //*
     // Grass scrolling
 for (const item of grassItems) {
-  item.x -= currentSpeed;
+   item.x -= currentSpeed * dt;
   if (item.x < -GRASS_SIZE) {
     // find the rightmost item x to place this one after it with random gap
     const rightmostX = Math.max(...grassItems.map(g => g.x));
@@ -380,7 +392,6 @@ for (const item of grassItems) {
     item.size = sizeList[Math.floor(Math.random() * sizeList.length)];
   }
 }
-    //*/
 
     // Spawn obstacles and collectibles
     frameCount++;
@@ -388,7 +399,7 @@ for (const item of grassItems) {
         spawnObstacle();
         const minGap = Math.max(680, 180 - score);
         nextObstacleFrame =
-            frameCount + minGap + Math.floor(Math.random() * (240 - minGap + 1));
+            frameCount + minGap + Math.floor(Math.random() * 120);
     }
     if (frameCount % 150 === 0) {
         spawnCollectible();
