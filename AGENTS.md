@@ -9,7 +9,7 @@
 
 # TOOL SELECTION #
 2.1 Use `Get-ChildItem` instead of `glob` for file pattern matching.
-2.2 Use `read` for reading file content.
+2.2 Use `read` for file content.
 2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content` via the `bash` tool , beacause `read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
 2.4 Use `task` for complex, multi-step autonomous workflows.
 
@@ -36,7 +36,7 @@
 6.1 Run `git status --verbose` in every reply using the `bash` tool.
 6.2 Use `git reset --hard HEAD && git clean -f` to restore changes when requested.
 6.3 Only when user says "lookin crispy": stage changes, commit with description, and push to master. Do not push to master, unless i specifically say so, or I say "lookin crispy"
-6.4 Never pull changes, unless you ask first and receive confirmation.
+6.4 Never pull changes, unless you ask first and get confirmation.
 
 
 # SELF-IMPROVEMENT RULES #
@@ -45,3 +45,16 @@
 7.3 apply new/edited rules for the following replies
 
 # SELF-IMPROVEMENT #
+
+# PIPELINE SYSTEM #
+9.1 Trigger: User says "pipeline: [task]" → start pipeline workflow.
+9.2 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`.
+9.3 Create GitHub issue via `gh issue create` (title: "[Pipeline] <task>", body: contents of 00-spec.md, label: "pipeline").
+9.4 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify → close.
+9.5 Each stage writes to `<#>/NN-stage.md`. Comment on issue per stage.
+9.6 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
+9.7 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
+9.8 Build: branch `pipeline/<#>-<slug>`, implement, commit with clear messages.
+9.9 Verify: run lint, check HTML validity, test responsive breakpoints, verify no broken links/images.
+9.10 On completion: move to `.pipeline/done/<#>/`, close issue with summary (files changed, screenshots if UI change).
+9.11 "pipeline abort #<n>" → close issue, move to `.pipeline/aborted/`.
