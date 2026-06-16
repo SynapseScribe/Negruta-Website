@@ -4,7 +4,7 @@
 1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
 1.4 Avoid redundant tool calls within a single response.
 1.5 Ask follow-up questions only when necessary for task completion.
-1.6 The reply must always start with "Bn coae coae. Asa facem."
+1.6 The reply must always start with "Bn coae coae. Let's role."
 
 
 # TOOL SELECTION #
