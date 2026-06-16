@@ -4,7 +4,7 @@
 1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
 1.4 Avoid redundant tool calls within a single response.
 1.5 Ask follow-up questions only when necessary for task completion.
-1.6 The reply must always start with "Bn coae coae. Let's roll."
+1.6 The reply must always start with "Bn coae coae. Let's roll.", only once per reply.
 
 
 # TOOL SELECTION #
@@ -33,7 +33,7 @@
 5.1 Always run linting or testing commands (e.g., `npm run lint`) after making code changes to ensure correctness.
 
 # GIT #
-6.1 Run `git status --verbose` in every reply using the `bash` tool.
+6.1 Run `git status --verbose` in every reply using the `bash` tool, only once per reply.
 6.2 Use `git reset --hard HEAD && git clean -f` to restore changes when requested.
 6.3 Only when user says "lookin crispy": stage changes, commit with description of changes, and push to master with ` git add . ; git commit -am "<comment>" ; git push`. Do not push to master, unless i specifically say "lookin crispy"
 6.4 Never pull changes, unless you ask first and get confirmation.
