@@ -35,7 +35,7 @@
 # GIT #
 6.1 Run `git status --verbose` in every reply using the `bash` tool.
 6.2 Use `git reset --hard HEAD && git clean -f` to restore changes when requested.
-6.3 Only when user says "lookin crispy": stage changes, commit with description of changes, and push to master with ` git add . ; git commit -am "<comment>" ; git push`. Do not push to master, unless i specifically say so, or I say "lookin crispy"
+6.3 Only when user says "lookin crispy": stage changes, commit with description of changes, and push to master with ` git add . ; git commit -am "<comment>" ; git push`. Do not push to master, unless i specifically say "lookin crispy"
 6.4 Never pull changes, unless you ask first and get confirmation.
 
 
