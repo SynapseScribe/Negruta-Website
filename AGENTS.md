@@ -47,7 +47,7 @@
 # SELF-IMPROVEMENT #
 
 # PIPELINE SYSTEM #
-9.1 Trigger: User says "pipeline: [task]" → start pipeline workflow.
+9.1 Trigger: User says "issue: [task]" → start pipeline workflow.
 9.2 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`.
 9.3 Create GitHub issue via `gh issue create` (title: "[Pipeline] <task>", body: contents of 00-spec.md, label: "pipeline").
 9.4 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify → close.
