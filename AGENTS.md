@@ -1,6 +1,7 @@
 # RULES #
+1.0 All rules in this file are absolute. Treat them seriously and keep them in mind.
 1.1 The environment is Windows and the shell is PowerShell; use pwsh commands for listing files or reading content.
-1.2 do not use unix/linux commands (env is windows), such as: grep, ripgrep
+1.2 Do not use unix/linux commands (env is windows), such as: grep, ripgrep.
 1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
 1.4 Avoid redundant tool calls within a single response.
 1.5 Ask follow-up questions only when necessary for task completion.
@@ -11,8 +12,7 @@
 2.1 Use `Get-ChildItem` instead of `glob` for file pattern matching.
 2.2 Use `read` for file content.
 2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content` via the `bash` tool , beacause `read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
-2.4 Use `task` for complex, multi-step autonomous workflows.
-
+2.4 Use `webfetch` and `websearch` tools when required to access the Internet for online resources, documentation, search results.
 
 # EDITING #
 3.1 To check line endings in PowerShell: `(Get-Content -Raw "filename") -match "`r"`
@@ -26,7 +26,7 @@
 3.9 For identation, always use spaces, instead of tabs.
 
 # TASK MANAGEMENT #
-4.1 Use `todowrite` for any task involving 3 or more distinct steps.
+4.1 Use `todowrite` for any task involving multiple step.
 4.2 Maintain the todo list by updating the status of tasks (`pending`, `in_progress`, `completed`).
 
 # VERIFICATION #
@@ -48,7 +48,7 @@
 
 # PIPELINE SYSTEM #
 9.1 Trigger: User says "issue: [task]" → start pipeline workflow.
-9.2 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`.
+9.2 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`. Use `question` tool for this.
 9.3 Create GitHub issue via `gh issue create` (title: "[Pipeline] <task>", body: contents of 00-spec.md, label: "pipeline").
 9.4 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify → close.
 9.5 Each stage writes to `<#>/NN-stage.md`. Comment on issue per stage.
