@@ -5,7 +5,12 @@ const panel = document.querySelector(".side-panel");
 const themeBtn = document.getElementById("themeToggle");
 
 if (container && trigger && panel) {
+  let hideTimeout = null;
+
   container.addEventListener("mouseenter", (e) => {
+    clearTimeout(hideTimeout);
+    panel.classList.add("visible");
+
     let newTop = e.clientY - OFFSET;
 
     const panelHeight = panel.offsetHeight;
@@ -23,5 +28,11 @@ if (container && trigger && panel) {
     if (themeBtn) {
       themeBtn.style.top = `${newTop - 35}px`;
     }
+  });
+
+  container.addEventListener("mouseleave", () => {
+    hideTimeout = setTimeout(() => {
+      panel.classList.remove("visible");
+    }, 1000);
   });
 }

@@ -215,7 +215,7 @@ footer { text-align: center; padding: 2rem 0; font-size: 0.9rem; opacity: 0.6; }
 .side-panel-container { position: fixed; right: 0; top: 0; width: 40px; height: 100vh; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; }
 .side-panel-trigger { width: 35px; height: 35px; background-color: var(--accent); color: #000; text-align: center; line-height: 35px; font-size: 1.2rem; cursor: pointer; border-radius: 0 0 0 5px; box-shadow: -4px 0 6px rgba(0,0,0,0.15), 0 4px 6px rgba(0,0,0,0.15);;; margin-right: 5px; position: absolute; top: 55px; transition: top 0.3s ease; }
 .side-panel { position: absolute; right: 0; width: 200px; background-color: var(--card-bg); border: 2px solid var(--accent); border-right: none; padding: 15px; transform: translateX(100%); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease, background-color var(--transition-speed); pointer-events: none; top: 0; }
-.side-panel-container:hover .side-panel { transform: translateX(0); opacity: 1; pointer-events: auto; }
+.side-panel.visible { transform: translateX(0); opacity: 1; pointer-events: auto; }
 .side-panel h3 { color: #d4af37; margin-top: 0; }
 .side-panel ul { list-style: none; padding: 0; }
 .side-panel li { border-left: 2px solid #d4af37; margin-bottom: 10px; background: rgba(212, 175, 55, 0.05); }
