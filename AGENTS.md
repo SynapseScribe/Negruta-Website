@@ -33,7 +33,7 @@
 
 # GIT #
 6.1 Run `git status --verbose` in every reply using the `bash` tool, only once per reply.
-6.2 Use `git reset --hard HEAD && git clean -f` to restore changes when requested.
+6.2 Use `git reset --hard HEAD && git clean -fd` to restore changes when requested.
 6.3 Never attempt to push to master unless I specifically say "lookin crispy" which will require to: stage changes, commit with description of changes, and push to master. If on a feature branch, merge into master first (`git checkout master && git merge <branch>`). Keep branches as historic.
 6.4 Never pull changes, unless you ask first and get confirmation.
 
