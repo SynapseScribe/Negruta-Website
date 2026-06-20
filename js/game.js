@@ -18,21 +18,21 @@ const INITIAL_SPEED = 10;
 const MAX_SPEED = 50;
 const SPEED_INCREMENT = 0.1;
 const OBSTACLE_TYPES = [
-  "🌲","🏠","🏀","🚗","🌵","📦","🧱","🦄","🛸","🦖","🍕","🍍","🗿","🤡","🍄","👻",
-  "👽","🐙","🌈","🍦","🍩","🍔","🌮","🍣","🥨","🥑","🍉","🦁","🐵","🐧","🐘","🦒",
-  "🐢","🐍","🐝","🦋","🚀","🚁","🚂","🚢","🚲","🛵","🚜","🚐","🚠","🎸","🎹","🎻",
-  "🎺","🥁","🎨","📚","🧪","🔬","🔭","🏰","🎢","🗼","🗽","⛩️","🪨","🧯","🛑","⚠️",
-  "🪵","🪺","🌋","⛰️","🏔️","🏝️","🏜️","🏟️","🏗️","🪂","🧭","🪄","🕳️",
-  "🪓","🔒","🧨","💣","🪤","🩸","🧫","🧬","🪀","🪁","🧿","🔮","🧸","🎯","🏹","🪃",
-  "🛡️","⚔️","🗡️","🔧","🪛","🔩","⚙️","🦺","🏳️‍🌈","🎈","🕹️","🧳","🗝️","🦽","🛏️",
-  "🛋️","🦊","🐺","🐻","🐼","🐨","🦝","🦌","🦅","🦉","🦇","🐿️","🦜","🐇","🐁","🐀",
-  "🦨","🦡","🦔","🐗","🦃","🦚","🥕","🍓","🍒","🍇","🥝","🥥","🍪","🍫","🥞","🍯",
-  "🛶","🛰️","🛎️","⚽","🥎","🏐","🏉","🥏","🏓","🏸","🥊","🥋","🧗","🏃","🏄",
-  "🏊","🚣","🤺","🤸","🛼","🛻","🪕","🪗","🧩","🪬","🪚","🧰","🛠️","🔨","⚒️","🧴",
-  "🧷","🧹","🧺","🪣","🩺","💡","🔦","🔌","💻","🖥️","🖨️","🖱️","🎛️","📻","📺","📷",
-  "🎥","📽️","📡","🗺️","🪧","🏳️","🏴","🎌","🎭","🎪","🎟️","🎫","🔔","🚨","🚧","⛏️",
-  "🛟","🪸","🪜","🪝","🪞","🪟","🪦","🧻","🧼","🧽","🪙","🪼","🧲","🎤","🎧","🎷",
-  "🪇","🪆","🪪", "🦈", "🫷","👈","🤚","🔫","👝","🤾","👜"
+    "🌲", "🏠", "🏀", "🚗", "🌵", "📦", "🧱", "🦄", "🛸", "🦖", "🍕", "🍍", "🗿", "🤡", "🍄", "👻",
+    "👽", "🐙", "🌈", "🍦", "🍩", "🍔", "🌮", "🍣", "🥨", "🥑", "🍉", "🦁", "🐵", "🐧", "🐘", "🦒",
+    "🐢", "🐍", "🐝", "🦋", "🚀", "🚁", "🚂", "🚢", "🚲", "🛵", "🚜", "🚐", "🚠", "🎸", "🎹", "🎻",
+    "🎺", "🥁", "🎨", "📚", "🧪", "🔬", "🔭", "🏰", "🎢", "🗼", "🗽", "⛩️", "🪨", "🧯", "🛑", "⚠️",
+    "🪵", "🪺", "🌋", "⛰️", "🏔️", "🏝️", "🏜️", "🏟️", "🏗️", "🪂", "🧭", "🪄", "🕳️",
+    "🪓", "🔒", "🧨", "💣", "🪤", "🩸", "🧫", "🧬", "🪀", "🪁", "🧿", "🔮", "🧸", "🎯", "🏹", "🪃",
+    "🛡️", "⚔️", "🗡️", "🔧", "🪛", "🔩", "⚙️", "🦺", "🏳️‍🌈", "🎈", "🕹️", "🧳", "🗝️", "🦽", "🛏️",
+    "🛋️", "🦊", "🐺", "🐻", "🐼", "🐨", "🦝", "🦌", "🦅", "🦉", "🦇", "🐿️", "🦜", "🐇", "🐁", "🐀",
+    "🦨", "🦡", "🦔", "🐗", "🦃", "🦚", "🥕", "🍓", "🍒", "🍇", "🥝", "🥥", "🍪", "🍫", "🥞", "🍯",
+    "🛶", "🛰️", "🛎️", "⚽", "🥎", "🏐", "🏉", "🥏", "🏓", "🏸", "🥊", "🥋", "🧗", "🏃", "🏄",
+    "🏊", "🚣", "🤺", "🤸", "🛼", "🛻", "🪕", "🪗", "🧩", "🪬", "🪚", "🧰", "🛠️", "🔨", "⚒️", "🧴",
+    "🧷", "🧹", "🧺", "🪣", "🩺", "💡", "🔦", "🔌", "💻", "🖥️", "🖨️", "🖱️", "🎛️", "📻", "📺", "📷",
+    "🎥", "📽️", "📡", "🗺️", "🪧", "🏳️", "🏴", "🎌", "🎭", "🎪", "🎟️", "🎫", "🔔", "🚨", "🚧", "⛏️",
+    "🛟", "🪸", "🪜", "🪝", "🪞", "🪟", "🪦", "🧻", "🧼", "🧽", "🪙", "🪼", "🧲", "🎤", "🎧", "🎷",
+    "🪇", "🪆", "🪪", "🦈", "🫷", "👈", "🤚", "🔫", "👝", "🤾", "👜"
 ];
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
 const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
@@ -102,7 +102,7 @@ const meowAudioPool = meowSounds.map(src => {
 function meow() {
     const idx = Math.floor(Math.random() * meowAudioPool.length);
     const audio = meowAudioPool[idx].cloneNode(); // clone to allow overlapping plays
-	audio.volume = 0.1;
+    audio.volume = 0.1;
     audio.play().catch(e => console.log("Audio play failed:", e));
 }
 
@@ -137,7 +137,7 @@ const sizeList = [28, 36, 44, 48]; // limited set
 
 const GRASS_MIN_SPACING = 40;
 const GRASS_MAX_SPACING = 80;
-function randomGrassGap(){ return GRASS_MIN_SPACING + Math.random() * (GRASS_MAX_SPACING - GRASS_MIN_SPACING); }
+function randomGrassGap() { return GRASS_MIN_SPACING + Math.random() * (GRASS_MAX_SPACING - GRASS_MIN_SPACING); }
 
 // cache per emoji+size to speed drawing - for GROUND GRASS
 const emojiCache = new Map();
@@ -157,14 +157,14 @@ for (const emoji of GRASS_EMOJIS) {
 }
 
 function initGrass() {
-  grassItems = [];
-  let x = -GRASS_SIZE;
-  while (x <= canvas.width + GRASS_SIZE) {
-    const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
-    const size = sizeList[Math.floor(Math.random() * sizeList.length)];
-    grassItems.push({ x, emoji, size });
-    x += randomGrassGap();
-  }
+    grassItems = [];
+    let x = -GRASS_SIZE;
+    while (x <= canvas.width + GRASS_SIZE) {
+        const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+        const size = sizeList[Math.floor(Math.random() * sizeList.length)];
+        grassItems.push({ x, emoji, size });
+        x += randomGrassGap();
+    }
 }
 
 
@@ -190,24 +190,24 @@ function initCelestial() {
 
 const emojiRenderCache = new Map();
 function prerenderEmoji(emoji, size) {
-  const key = `${emoji}_${size}`;
-  if (emojiRenderCache.has(key)) return emojiRenderCache.get(key);
+    const key = `${emoji}_${size}`;
+    if (emojiRenderCache.has(key)) return emojiRenderCache.get(key);
 
-  const padding = Math.ceil(size * 0.25);            // extra room to avoid cropping
-  const w = size + padding * 2;
-  const oc = document.createElement('canvas');
-  oc.width = oc.height = w;
-  const c = oc.getContext('2d');
+    const padding = Math.ceil(size * 0.25);            // extra room to avoid cropping
+    const w = size + padding * 2;
+    const oc = document.createElement('canvas');
+    oc.width = oc.height = w;
+    const c = oc.getContext('2d');
 
-  // use emoji-friendly font fallbacks (order matters)
-  c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-  c.textAlign = 'center';
-  c.textBaseline = 'middle';
-  c.clearRect(0, 0, w, w);
-  c.fillText(emoji, w / 2, w / 2);
+    // use emoji-friendly font fallbacks (order matters)
+    c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.clearRect(0, 0, w, w);
+    c.fillText(emoji, w / 2, w / 2);
 
-  emojiRenderCache.set(key, oc);
-  return oc;
+    emojiRenderCache.set(key, oc);
+    return oc;
 }
 function spawnObstacle() {
     const OBSTACLE_VERTICAL_OFFSET = 60;
@@ -230,63 +230,63 @@ function spawnObstacle() {
 
 // 									# COLLECTIBLES
 
-const COLLECTIBLE_TYPES = ["🐟","🐠","💎","🍪","🍩","🎁","🪙","⭐","🌟","🎵", "🐟","🐠","🦐","🐡","🕊️","🐦‍⬛","🦆","🐓","🐥","🦜","🦢","🪿","🦃"];
+const COLLECTIBLE_TYPES = ["🐟", "🐠", "💎", "🍪", "🍩", "🎁", "🪙", "⭐", "🌟", "🎵", "🐟", "🐠", "🦐", "🐡", "🕊️", "🐦‍⬛", "🦆", "🐓", "🐥", "🦜", "🦢", "🪿", "🦃"];
 const COLLECTIBLE_SCORES = {
-  "🐟": 5,
-  "🐠": 6,
-  "🦐": 7,
-  "🐡": 8,
-  "💎": 25,
-  "🍪": 10,
-  "🍩": 10,
-  "🎁": 15,
-  "🪙": 12,
-  "⭐": 20,
-  "🌟": 20,
-  "🎵": 5,
-  "🕊️": 8,
-  "🐦‍⬛": 9,
-  "🦆": 8,
-  "🐓": 7,
-  "🐥": 6,
-  "🦜": 9,
-  "🦢": 10,
-  "🪿": 10,
-  "🦃": 12
+    "🐟": 5,
+    "🐠": 6,
+    "🦐": 7,
+    "🐡": 8,
+    "💎": 25,
+    "🍪": 10,
+    "🍩": 10,
+    "🎁": 15,
+    "🪙": 12,
+    "⭐": 20,
+    "🌟": 20,
+    "🎵": 5,
+    "🕊️": 8,
+    "🐦‍⬛": 9,
+    "🦆": 8,
+    "🐓": 7,
+    "🐥": 6,
+    "🦜": 9,
+    "🦢": 10,
+    "🪿": 10,
+    "🦃": 12
 };
 const DEFAULT_COLLECTIBLE_SCORE = 5;
 
 const collectibleRenderCache = new Map();
 function prerenderCollectible(emoji, size) {
-  const key = `${emoji}_${size}`;
-  if (collectibleRenderCache.has(key)) return collectibleRenderCache.get(key);
-  const padding = Math.ceil(size * 0.25);
-  const w = size + padding * 2;
-  const oc = document.createElement('canvas');
-  oc.width = oc.height = w;
-  const c = oc.getContext('2d');
-  c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-  c.textAlign = 'center';
-  c.textBaseline = 'middle';
-  c.clearRect(0,0,w,w);
-  c.fillText(emoji, w/2, w/2);
-  collectibleRenderCache.set(key, oc);
-  return oc;
+    const key = `${emoji}_${size}`;
+    if (collectibleRenderCache.has(key)) return collectibleRenderCache.get(key);
+    const padding = Math.ceil(size * 0.25);
+    const w = size + padding * 2;
+    const oc = document.createElement('canvas');
+    oc.width = oc.height = w;
+    const c = oc.getContext('2d');
+    c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.clearRect(0, 0, w, w);
+    c.fillText(emoji, w / 2, w / 2);
+    collectibleRenderCache.set(key, oc);
+    return oc;
 }
 
 function spawnCollectible() {
-  const size = 48 + Math.floor(Math.random() * 36); // 48..83
-  const type = COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
-  const y = canvas.height - 350 + Math.random() * 180;
-  const img = prerenderCollectible(type, size);
-  collectibles.push({
-    x: canvas.width,
-    y,
-    width: size,
-    height: size,
-    type,
-    img
-  });
+    const size = 48 + Math.floor(Math.random() * 36); // 48..83
+    const type = COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
+    const y = canvas.height - 350 + Math.random() * 180;
+    const img = prerenderCollectible(type, size);
+    collectibles.push({
+        x: canvas.width,
+        y,
+        width: size,
+        height: size,
+        type,
+        img
+    });
 }
 
 let lastTime = 0;
@@ -298,8 +298,8 @@ function update(timestamp) {
     lastTime = timestamp || 0;
 
     currentSpeed = Math.min(
-            MAX_SPEED,
-            INITIAL_SPEED + Math.floor(score / 5) * SPEED_INCREMENT, );
+        MAX_SPEED,
+        INITIAL_SPEED + Math.floor(score / 5) * SPEED_INCREMENT,);
 
     // Gravity
     velocityY += gravity * dt;
@@ -381,17 +381,17 @@ function update(timestamp) {
     }
 
     // Grass scrolling
-for (const item of grassItems) {
-   item.x -= currentSpeed * dt;
-  if (item.x < -GRASS_SIZE) {
-    // find the rightmost item x to place this one after it with random gap
-    const rightmostX = Math.max(...grassItems.map(g => g.x));
-    item.x = rightmostX + randomGrassGap();
-    // optionally randomize emoji/size on recycle:
-    item.emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
-    item.size = sizeList[Math.floor(Math.random() * sizeList.length)];
-  }
-}
+    for (const item of grassItems) {
+        item.x -= currentSpeed * dt;
+        if (item.x < -GRASS_SIZE) {
+            // find the rightmost item x to place this one after it with random gap
+            const rightmostX = Math.max(...grassItems.map(g => g.x));
+            item.x = rightmostX + randomGrassGap();
+            // optionally randomize emoji/size on recycle:
+            item.emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+            item.size = sizeList[Math.floor(Math.random() * sizeList.length)];
+        }
+    }
 
     // Spawn obstacles and collectibles
     frameCount++;
@@ -477,11 +477,11 @@ function draw() {
 
     // Draw Collectibles
     collectibles.forEach(coll => {
-  const img = coll.img || prerenderCollectible(coll.type, coll.height);
-  const dx = coll.x - img.width/2 + coll.width/2; // center horizontally
-  const dy = coll.y + coll.height - img.height;   // align bottom
-  ctx.drawImage(img, dx, dy, img.width, img.height);
-});
+        const img = coll.img || prerenderCollectible(coll.type, coll.height);
+        const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
+        const dy = coll.y + coll.height - img.height;   // align bottom
+        ctx.drawImage(img, dx, dy, img.width, img.height);
+    });
 }
 
 function gameOver() {
@@ -510,10 +510,10 @@ function ensureDefaultHighScore() {
     const existing = JSON.parse(localStorage.getItem(key) || "null");
     if (!existing) {
         const defaultScores = [{
-                name: "Negruta",
-                score: 500,
-                date: new Date().toLocaleDateString()
-            }
+            name: "Negruta",
+            score: 500,
+            date: new Date().toLocaleDateString()
+        }
         ];
         localStorage.setItem(key, JSON.stringify(defaultScores));
     }
@@ -557,12 +557,22 @@ nameInput.addEventListener("keydown", (e) => {
     }
 });
 
+/*
 window.addEventListener("keydown", (e) => {
     if (jumpCount >= maxJumpsBeforeReset)
         return;
     if (e.code === "Space" && gameRunning) {
         velocityY = jumpStrength;
         jumpCount++;
+    }
+});
+*/
+
+window.addEventListener("keydown", (e) => {
+    if (jumpCount >= maxJumpsBeforeReset) return;
+    const isSpace = e.code === "Space" || e.key === " " || e.key === "Spacebar" || e.keyCode === 32;
+    if (isSpace && gameRunning) {
+        velocityY = jumpStrength; jumpCount++;
     }
 });
 
@@ -572,6 +582,17 @@ canvas.addEventListener("mousedown", () => {
         jumpCount++;
     }
 });
+
+// allow double-clicks to perform an extra jump (helps automation/double-click input) 
+canvas.addEventListener("dblclick", () => {
+    if (!gameRunning) return; // if there's room for another jump, do it
+    if (jumpCount < maxJumpsBeforeReset) {
+        velocityY = jumpStrength; jumpCount++;
+    }
+}
+);
+
+
 
 // Initialize scores display on load
 ensureDefaultHighScore();
