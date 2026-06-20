@@ -30,6 +30,7 @@
 
 # VERIFICATION #
 5.1 Always run linting or testing commands (e.g., `npm run lint`) after making code changes to ensure correctness.
+5.2 Use this playwright command to test UI/UX from user's perspective directly on the live published page, when asked to do so. For example: `playwright-cli open --headed --persistent --browser firefox https://synapsescribe.github.io/Negruta-Website/#meow-translator`
 
 # GIT #
 6.1 Run `git status --verbose` in every reply using the `bash` tool, only once per reply.
