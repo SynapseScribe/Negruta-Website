@@ -127,7 +127,6 @@ function resetGame() {
 
 
 
-
 // # GRASS #
 
 
@@ -228,7 +227,7 @@ function spawnObstacle() {
 
 
 
-// 									# COLLECTIBLES
+// 						# COLLECTIBLES
 
 const COLLECTIBLE_TYPES = ["🐟", "🐠", "💎", "🍪", "🍩", "🎁", "🪙", "⭐", "🌟", "🎵", "🐟", "🐠", "🦐", "🐡", "🕊️", "🐦‍⬛", "🦆", "🐓", "🐥", "🦜", "🦢", "🪿", "🦃"];
 const COLLECTIBLE_SCORES = {
@@ -568,10 +567,20 @@ window.addEventListener("keydown", (e) => {
 });
 */
 
+// prevent spacebar from scrolling the page while the game is running,
+// but allow normal typing in inputs/textareas and contenteditable elements.
 window.addEventListener("keydown", (e) => {
-    if (jumpCount >= maxJumpsBeforeReset) return;
     const isSpace = e.code === "Space" || e.key === " " || e.key === "Spacebar" || e.keyCode === 32;
-    if (isSpace && gameRunning) {
+    if (!isSpace) return;
+
+    const target = e.target;
+    const tag = target && target.tagName;
+    const isEditable = target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA");
+    if (isEditable) return;
+
+    if (gameRunning) {
+        e.preventDefault(); // stop page from scrolling
+        if (jumpCount >= maxJumpsBeforeReset) return;
         velocityY = jumpStrength; jumpCount++;
     }
 });
