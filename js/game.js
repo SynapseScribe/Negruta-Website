@@ -545,7 +545,8 @@ function startGame() {
     startBtn.disabled = true;
     nameInput.disabled = true;
     resetGame();
-    update();
+    lastTime = performance.now();
+    update(performance.now());
 }
 
 startBtn.addEventListener("click", startGame);
