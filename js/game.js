@@ -63,6 +63,9 @@ let nextObstacleFrame = 100;
 let currentSpeed = INITIAL_SPEED;
 let grassItems = [];
 
+// modalOpen indicates a non-blocking game-modal is visible
+let modalOpen = false;
+
 const meowSounds = [
     "assets/audio/meow_sounds/soundzee-cat-meow-361882.mp3",
     "assets/audio/meow_sounds/sound_garage-cat-meow-13-fx-306192.mp3",
@@ -104,7 +107,7 @@ function meow() {
     const audio = meowAudioPool[idx].cloneNode(); // clone to allow overlapping plays
     audio.volume = 0.1;
     audio.play().catch(e => console.log("Audio play failed:", e));
-}
+});
 
 function resetGame() {
     score = 0;
@@ -121,8 +124,31 @@ function resetGame() {
     scoreElement.innerText = "Score: 0";
 }
 
-
-
+// show/hide non-blocking game over modal
+function showGameOverModal(text) {
+  modalOpen = true;
+  const mod = document.getElementById('gameOverModal');
+  const msg = document.getElementById('gameOverMessage');
+  if (msg) msg.textContent = text;
+  if (mod) {
+    mod.classList.add('open');
+    mod.setAttribute('aria-hidden', 'false');
+  }
+  document.body.style.overflow = 'hidden';
+  const ok = document.getElementById('gameOverOk');
+  if (ok) ok.focus();
+}
+function hideGameOverModal() {
+  modalOpen = false;
+  const mod = document.getElementById('gameOverModal');
+  if (mod) {
+    mod.classList.remove('open');
+    mod.setAttribute('aria-hidden', 'true');
+  }
+  document.body.style.overflow = '';
+  const nameInputEl = document.getElementById('playerNameInput');
+  if (nameInputEl) nameInputEl.focus();
+}
 
 
 
@@ -229,7 +255,7 @@ function spawnObstacle() {
 
 // 						# COLLECTIBLES
 
-const COLLECTIBLE_TYPES = ["🐟", "🐠", "💎", "🍪", "🍩", "🎁", "🪙", "⭐", "🌟", "🎵", "🐟", "🐠", "🦐", "🐡", "🕊️", "🐦‍⬛", "🦆", "🐓", "🐥", "🦜", "🦢", "🪿", "🦃"];
+const COLLECTIBLE_TYPES = ["🐟", "🐠", "💎", "🍪", "🍩", "🎁", "🪙", "⭐", "🌟", "🎵", "🐟", "🐠", "🦐", "🐡", "🕊️", "🐦‍⬛", "🦆", "🐓", "🐥", "🦜", [...]];
 const COLLECTIBLE_SCORES = {
     "🐟": 5,
     "🐠": 6,
@@ -485,7 +511,11 @@ function draw() {
 
 function gameOver() {
     gameRunning = false;
-    alert(`Game Over, ${playerName}! Your score: ${score}`);
+
+    // show the non-blocking modal
+    showGameOverModal(`Game Over, ${playerName}! Your score: ${score}`);
+
+    // Save score and restore controls
     saveScore(playerName, score);
     startBtn.disabled = false;
     nameInput.disabled = false;
@@ -544,6 +574,15 @@ function startGame() {
     startBtn.disabled = true;
     nameInput.disabled = true;
     resetGame();
+
+    // focus canvas so keyboard events are predictable
+    const canvasEl = document.getElementById('gameCanvas');
+    if (canvasEl) {
+      canvasEl.tabIndex = canvasEl.tabIndex || 0;
+      canvasEl.style.outline = canvasEl.style.outline || 'none';
+      canvasEl.focus();
+    }
+
     lastTime = performance.now();
     update(performance.now());
 }
@@ -567,7 +606,7 @@ window.addEventListener("keydown", (e) => {
 });
 */
 
-// prevent spacebar from scrolling the page while the game is running,
+// prevent spacebar from scrolling the page while the game is running or modal is open,
 // but allow normal typing in inputs/textareas and contenteditable elements.
 window.addEventListener("keydown", (e) => {
     const isSpace = e.code === "Space" || e.key === " " || e.key === "Spacebar" || e.keyCode === 32;
@@ -578,11 +617,16 @@ window.addEventListener("keydown", (e) => {
     const isEditable = target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA");
     if (isEditable) return;
 
-    if (gameRunning) {
-        e.preventDefault(); // stop page from scrolling
-        if (jumpCount >= maxJumpsBeforeReset) return;
-        velocityY = jumpStrength; jumpCount++;
+    // Prevent page scroll when the game is running or when the modal is open
+    if (gameRunning || modalOpen) {
+      e.preventDefault(); // stop page from scrolling
     }
+
+    // Only perform a jump if the game is running
+    if (!gameRunning) return;
+
+    if (jumpCount >= maxJumpsBeforeReset) return;
+    velocityY = jumpStrength; jumpCount++;
 });
 
 canvas.addEventListener("mousedown", () => {
@@ -602,7 +646,30 @@ canvas.addEventListener("dblclick", () => {
 );
 
 
-
 // Initialize scores display on load
 ensureDefaultHighScore();
 displayScores();
+
+// modal button wiring
+(function initGameModalButtons() {
+  const ok = document.getElementById('gameOverOk');
+  const restart = document.getElementById('gameOverRestart');
+  if (ok) ok.addEventListener('click', () => { hideGameOverModal(); });
+  if (restart) restart.addEventListener('click', () => {
+    hideGameOverModal();
+    startBtn.disabled = false;
+    nameInput.disabled = false;
+    if (nameInput.value.trim() !== '') {
+      // optional auto restart:
+      // startGame();
+    }
+  });
+
+  // Also close modal on Escape
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOpen) {
+      e.preventDefault();
+      hideGameOverModal();
+    }
+  });
+})();
