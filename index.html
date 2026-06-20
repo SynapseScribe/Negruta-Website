@@ -8,6 +8,59 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🐈</text></svg>" >
   <link rel="stylesheet" href="style.css" >
+
+  <!-- Game modal styles (minimal, self-contained) -->
+  <style>
+    /* Simple non-blocking game over modal */
+    #gameOverModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    #gameOverModal.open {
+      display: flex;
+      pointer-events: auto;
+    }
+    #gameOverModal .backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(2px);
+    }
+    #gameOverModal .dialog {
+      position: relative;
+      background: #111;
+      color: #fff;
+      border-radius: 10px;
+      padding: 20px 24px;
+      min-width: 280px;
+      max-width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 2;
+      text-align: center;
+    }
+    #gameOverModal .dialog h2 { margin: 0 0 8px 0; font-size: 18px }
+    #gameOverModal .dialog p { margin: 6px 0 14px 0; }
+    #gameOverModal .dialog .actions { display:flex; gap:10px; justify-content:center }
+    #gameOverModal .dialog button {
+      background: #d4af37;
+      border: none;
+      color: #111;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #gameOverModal .dialog button.secondary {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+  </style>
 </head>
 
 <body>
@@ -181,11 +234,24 @@
         <li><a href="#negruta-carousel">Carousel</a></li>
         <li><a href="#friends">Negruta's Friends</a></li>
         <li><a href="#top-cat-news">Top News</a></li>
-		<li><a href="#cat-game">Negruta's Adventures</a></li>
+ 		<li><a href="#cat-game">Negruta's Adventures</a></li>
         <li><a href="#meow-translator">Meow Translator</a></li>
         <li><a href="#contact-form">Contact Us</a></li>
       </ul>
       </aside>
+  </div>
+
+  <!-- Game over modal (non-blocking) -->
+  <div id="gameOverModal" aria-hidden="true">
+    <div class="backdrop" aria-hidden="true"></div>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+      <h2 id="gameOverTitle">Game Over</h2>
+      <p id="gameOverMessage">Your score: 0</p>
+      <div class="actions">
+        <button id="gameOverOk">OK</button>
+        <button id="gameOverRestart" class="secondary">Play Again</button>
+      </div>
+    </div>
   </div>
 
   <script src="js/theme-toggle.js"></script>
