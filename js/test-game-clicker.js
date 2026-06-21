@@ -1,8 +1,12 @@
+// run with `node ./js/test-game.js
+	// requires 
+
+
 const { firefox } = require('playwright');
 
 (async () => {
   const REPEAT_MS = 300; // time between double-jump attempts
-  const GAP_MS = 300;        // gap between the two Space presses
+  const GAP_MS = 300; // gap between the two Space presses
   const URL = 'https://synapsescribe.github.io/Negruta-Website/#cat-game';
 
   const browser = await firefox.launch({ headless: false });
