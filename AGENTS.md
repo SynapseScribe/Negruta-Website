@@ -40,8 +40,8 @@
 
 
 # PIPELINE SYSTEM #
-7.1 Trigger: User says "issue: [task]" → start pipeline workflow.
-7.2 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the number of the issue. Use `question` tool for this.
+7.1 Trigger: User asks to create issue(s): for some [task(s)] → start pipeline workflow. More issues can be created.
+7.2 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the next number of the issue that will be created in github. Use `question` tool for this.
 7.3 Create GitHub issue via `gh issue create` (title: "[Pipeline] <task>", body: contents of 00-spec.md, label: "pipeline").
 7.4 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify → close.
 7.5 Each stage writes to `<#>/NN-stage.md`. Comment on issue per stage.
@@ -50,7 +50,7 @@
 7.8 Build: branch `pipeline/<#>-<slug>`, implement, commit with clear messages.
 7.9 Verify: run lint, check HTML validity, test responsive breakpoints, verify no broken links/images.
 7.10 On completion: move to `.pipeline/done/<#>/`, close issue with summary (files changed, screenshots if UI change).
-7.11 "pipeline abort #<n>" → close issue, move to `.pipeline/aborted/`.
+7.11 "issue delete #<n>" → delete issue on github, and delete from `.pipeline/active`.
 
 # SELF-IMPROVEMENT RULES #
 8.1 review existing rules in this file, keep them in memory during discussion.
