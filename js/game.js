@@ -442,6 +442,7 @@ function drawLoadingScreen(current, total) {
 
 const emojiRenderCache = new Map();
 async function initEmojiCache(progressCallback) {
+  if (emojiRenderCache.size > 0) return;
   const total = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
   let count = 0;
   for (const emoji of OBSTACLE_TYPES) {
@@ -850,20 +851,23 @@ async function startGame() {
   playerName = nameInput.value.trim();
   startBtn.disabled = true;
   nameInput.disabled = true;
-  const totalObstacles =
-    OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
-  const totalCollectibles =
-    COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
-  const grandTotal = totalObstacles + totalCollectibles;
-  const progressObstacles = (count) => {
-    drawLoadingScreen(count, grandTotal);
-  };
-  const progressCollectibles = (count) => {
-    drawLoadingScreen(totalObstacles + count, grandTotal);
-  };
-  drawLoadingScreen(0, grandTotal);
-  await initEmojiCache(progressObstacles);
-  await initCollectibleCache(progressCollectibles);
+  const cachesReady = emojiRenderCache.size > 0 && collectibleRenderCache.size > 0;
+  if (!cachesReady) {
+    const totalObstacles =
+      OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
+    const totalCollectibles =
+      COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
+    const grandTotal = totalObstacles + totalCollectibles;
+    const progressObstacles = (count) => {
+      drawLoadingScreen(count, grandTotal);
+    };
+    const progressCollectibles = (count) => {
+      drawLoadingScreen(totalObstacles + count, grandTotal);
+    };
+    drawLoadingScreen(0, grandTotal);
+    await initEmojiCache(progressObstacles);
+    await initCollectibleCache(progressCollectibles);
+  }
   gameRunning = true;
   resetGame();
   lastTime = performance.now();
