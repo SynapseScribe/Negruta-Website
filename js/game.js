@@ -413,7 +413,8 @@ function initCelestial() {
 // # OBSTACLES
 
 const emojiRenderCache = new Map();
-(function () {
+function initEmojiCache() {
+  if (emojiRenderCache.size > 0) return;
   for (const emoji of OBSTACLE_TYPES) {
     for (const size of OBSTACLE_SIZES) {
       const key = `${emoji}_${size}`;
@@ -430,7 +431,7 @@ const emojiRenderCache = new Map();
       emojiRenderCache.set(key, oc);
     }
   }
-})();
+}
 function prerenderEmoji(emoji, size) {
   return emojiRenderCache.get(`${emoji}_${size}`);
 }
@@ -505,7 +506,8 @@ const DEFAULT_COLLECTIBLE_SCORE = 5;
 const COLLECTIBLE_SIZES = [48, 60, 72, 83];
 
 const collectibleRenderCache = new Map();
-(function () {
+function initCollectibleCache() {
+  if (collectibleRenderCache.size > 0) return;
   for (const emoji of COLLECTIBLE_TYPES) {
     for (const size of COLLECTIBLE_SIZES) {
       const key = `${emoji}_${size}`;
@@ -522,7 +524,7 @@ const collectibleRenderCache = new Map();
       collectibleRenderCache.set(key, oc);
     }
   }
-})();
+}
 function prerenderCollectible(emoji, size) {
   return collectibleRenderCache.get(`${emoji}_${size}`);
 }
@@ -805,6 +807,8 @@ function startGame() {
     return;
   }
   playerName = nameInput.value.trim();
+  initEmojiCache();
+  initCollectibleCache();
   gameRunning = true;
   startBtn.disabled = true;
   nameInput.disabled = true;
