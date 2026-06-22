@@ -34,7 +34,7 @@
 - GIT
 6.1 Run `git status --verbose`, when making meaningful code changes.
 6.2 Use `git reset --hard HEAD && git clean -fd` to restore changes when requested.
-6.3 Never attempt to push to master unless I specifically say "lookin crispy" (exact phrase) which will authorize you to: stage changes, commit with description of changes, and push to master. If on a feature branch, merge into master first (`git checkout master && git merge <branch>`). Keep branches as historic.
+6.3 Never attempt to push to master unless I specifically say `lookin crispy` (exact phrase) which will authorize you to: stage changes, commit with description of changes, and push to master (eg. `git add . ; git commit -am "fix for bug" ; git push"`. If on a feature branch, merge into master first (`git checkout master && git merge <branch>`). Keep branches as historic.
 6.4 Never pull changes, unless you ask first and get confirmation.
 
 
@@ -43,13 +43,15 @@
 7.2 Create the GitHub issue(s) via `gh issue create` (title: "[Pipeline] <task>", label: "pipeline" (already existing label)).
 7.3 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the next number of the issue that will be created in github. Use `question` tool for this.
 7.4 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify → close.
-7.5 Add the contents of 00-spec.md to the github issue as its body. Each stage writes to `<#>/NN-stage.md` as a comment. If multiple issues are going to be created, create them one by one, making sure each github issue has one "00-spec.md" file containing the same details as in the github issue. We store the initial issue details in files to query them more easilly locally instead of checking github issue itself.
+7.5 Add the contents of 00-spec.md to the github issue as its body. Each stage writes to `<#>/NN-stage.md` as a comment. If multiple issues are going to be created, create them one by one, making sure each github issue has one "00-spec.md" file containing the same details as in the github issue. 
 7.6 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
 7.7 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
 7.8 Build: branch `pipeline/<#>-<slug>`, implement, commit with clear messages.
 7.9 Verify: run lint, check HTML validity, test responsive breakpoints, verify no broken links/images. On failure, attempt to fix.
-7.10 On completion: move to `.pipeline/done/<#>/`, close issue with summary (files changed, screenshots if UI change).
-7.11 "issue delete #<n>" → delete issue on github, and delete from `.pipeline/active`.
+7.10 If verification is complete, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. "Fixes #123"), so that the issue is also correlated with the PR.
+7.11 When I (the user), approve the PR, I will tell you `lookin crispy`, so that you can proceed on completion: move to `.pipeline/done/<#>/`, close issue with summary (files changed, screenshots if UI change). If the PR does not fix the issue, I will also let you know to resume the work, and in this case don't close the issue yet, but instead add comments with the new fixes and add the new commits to the same PR (one PR per issue).
+7.12 "issue delete <#>" → delete issue on github, and delete from `.pipeline/active`.
+7.13 When asked to work on issue <#> (eg. issue #10), check the files inside `.pipeline/active/<#>/` instead of reading the github issue itself (which holds the same information). We store the initial issue details and the stages comments in files to query them more easilly locally instead of checking github issue itself every time.
 
 - SELF-IMPROVEMENT RULES
 8.1 review existing rules in this file, keep them in memory during discussion.

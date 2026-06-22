@@ -110,6 +110,7 @@ function resetGame() {
     score = 0;
     CAT_Y = canvas.height - CAT_SIZE / 2; // center of cat is at half the size of cat, initially
     velocityY = 0;
+    jumpCount = 0;
     obstacles = [];
     collectibles = [];
     frameCount = 0;
