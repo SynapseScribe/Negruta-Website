@@ -252,8 +252,7 @@ const OBSTACLE_TYPES = [
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
 const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
 const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
-const MIN_OBSTACLE_SIZE = 150;
-const MAX_OBSTACLE_SIZE = 300;
+const OBSTACLE_SIZES = [160, 200, 240, 270, 300];
 const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
 const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
 
@@ -416,7 +415,7 @@ function initCelestial() {
 const emojiRenderCache = new Map();
 (function () {
   for (const emoji of OBSTACLE_TYPES) {
-    for (let size = MIN_OBSTACLE_SIZE; size <= MAX_OBSTACLE_SIZE; size++) {
+    for (const size of OBSTACLE_SIZES) {
       const key = `${emoji}_${size}`;
       const padding = Math.ceil(size * 0.25);
       const w = size + padding * 2;
@@ -438,8 +437,7 @@ function prerenderEmoji(emoji, size) {
 function spawnObstacle() {
   const OBSTACLE_VERTICAL_OFFSET = 60;
   const size =
-    Math.floor(Math.random() * (MAX_OBSTACLE_SIZE - MIN_OBSTACLE_SIZE + 1)) +
-    MIN_OBSTACLE_SIZE;
+    OBSTACLE_SIZES[Math.floor(Math.random() * OBSTACLE_SIZES.length)];
   const type =
     OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
   const img = prerenderEmoji(type, size); // cheap if cached
@@ -504,11 +502,12 @@ const COLLECTIBLE_SCORES = {
   "🦃": 12,
 };
 const DEFAULT_COLLECTIBLE_SCORE = 5;
+const COLLECTIBLE_SIZES = [48, 60, 72, 83];
 
 const collectibleRenderCache = new Map();
 (function () {
   for (const emoji of COLLECTIBLE_TYPES) {
-    for (let size = 48; size <= 83; size++) {
+    for (const size of COLLECTIBLE_SIZES) {
       const key = `${emoji}_${size}`;
       const padding = Math.ceil(size * 0.25);
       const w = size + padding * 2;
@@ -529,7 +528,7 @@ function prerenderCollectible(emoji, size) {
 }
 
 function spawnCollectible() {
-  const size = 48 + Math.floor(Math.random() * 36); // 48..83
+  const size = COLLECTIBLE_SIZES[Math.floor(Math.random() * COLLECTIBLE_SIZES.length)];
   const type =
     COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
   const y = canvas.height - 350 + Math.random() * 180;
