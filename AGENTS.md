@@ -46,10 +46,13 @@
 7.5 Add the contents of 00-spec.md to the github issue as its body. Each stage writes to `<#>/NN-stage.md` as a comment. If multiple issues are going to be created, create them one by one, making sure each github issue has one "00-spec.md" file containing the same details as in the github issue. 
 7.6 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
 7.7 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
-7.8 Build: branch `pipeline/<#>-<slug>`, implement, commit with clear messages.
-7.9 Verify: run lint, check HTML validity, test responsive breakpoints, verify no broken links/images. On failure, attempt to fix.
-7.10 If verification is complete, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. "Fixes #123"), so that the issue is also correlated with the PR.
-7.11 When I (the user), approve the PR, I will tell you `lookin crispy`, so that you can proceed on completion: move to `.pipeline/done/<#>/`, close issue with summary (files changed, screenshots if UI change). If the PR does not fix the issue, I will also let you know to resume the work, and in this case don't close the issue yet, but instead add comments with the new fixes and add the new commits to the same PR (one PR per issue).
+7.8 Build: create branch `pipeline/<#>-<issue_short_title>`, checkout to it, implement, commit with clear messages.
+7.9 Verify: run lint, beautify (with prettier), check HTML validity, test responsive breakpoints, verify no broken links/images. On failure, attempt to fix.
+7.10 If verification is completed successfully, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. "Fixes #123"), so that the issue is also correlated with the PR. 
+7.11 When I (the user), approve the PR, I will tell you `lookin crispy`, so that you can proceed on completion:
+	- move to `.pipeline/done/<#>/`
+	- close issue with summary (files changed, screenshots if UI change)
+	If the PR does not fix the issue, I will also let you know to resume the work, and in this case don't close the issue yet, but instead add comments with the new fixes and add the new commits to the same PR (one PR per issue).
 7.12 "issue delete <#>" → delete issue on github, and delete from `.pipeline/active`.
 7.13 When asked to work on issue <#> (eg. issue #10), check the files inside `.pipeline/active/<#>/` instead of reading the github issue itself (which holds the same information). We store the initial issue details and the stages comments in files to query them more easilly locally instead of checking github issue itself every time.
 
