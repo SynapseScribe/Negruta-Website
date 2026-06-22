@@ -48,7 +48,7 @@
   7.10 If verification is completed successfully, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. "Fixes #123"), so that the issue is also correlated with the PR.
   7.11 When I (the user), approve the PR, I will eventually tell you `lookin crispy`, so that you can proceed on completion: move from active to `.pipeline/done/<#>/` -> merge into master (`git checkout master && git merge <branch>`). Keep branches as historic (no delete). -> close gh issue adding one comment for each stage (each `<#>/NN-stage.md` file) + an extra comment with the summary of what files changed.
   7.12 I will also test before approving the PR, and if the PR does not fix the issue, I will provide you the details and then you resume the work on it (go through pipeline again investigate->plan->build->verify). In this case, don't close the issue yet, but instead update the .md files with your new changes and add the new commits to the same PR (one PR per issue) after verification successful. Afterwards, I will recheck and let you know if you can complete the issue (`PR lookin crispy`)
-  7.13 "issue delete <#>" → delete issue on github, and delete from `.pipeline/active`.
+  7.13 "delete issue <#>" → delete issue on github, and delete from `.pipeline/active`.
   7.14 When asked to work on issue <#> (eg. issue #10), check the files inside `.pipeline/active/<#>/` instead of reading the github issue itself (which holds the same information). We store the initial issue details and the stages comments in files to query them more easilly locally instead of checking github issue itself every time.
 
 - SELF-IMPROVEMENT RULES

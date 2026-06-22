@@ -683,7 +683,7 @@ function draw() {
   // Draw celestial objects (back layer)
   ctx.save();
   ctx.globalAlpha = 0.2;
-  ctx.filter = "blur(0.6px)";
+  ctx.filter = "blur(0.5px)";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   celestialObjects.forEach((obj) => {
