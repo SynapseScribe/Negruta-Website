@@ -397,7 +397,7 @@ function update(timestamp) {
     frameCount++;
     if (frameCount >= nextObstacleFrame && nextObstacleFrame > 0) {
         spawnObstacle();
-        const minGap = Math.max(680, 180 - score);
+        const minGap = Math.max(60, 680 - score * 5);
         nextObstacleFrame =
             frameCount + minGap + Math.floor(Math.random() * 120);
     }
