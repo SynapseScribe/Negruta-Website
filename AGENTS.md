@@ -43,7 +43,7 @@
 7.2 Create the GitHub issue(s) via `gh issue create` (title: "[Pipeline] <task>", label: "pipeline" (already existing label)).
 7.3 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the next number of the issue that will be created in github. Use `question` tool for this.
 7.4 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify → close.
-7.5 Add the contents of 00-spec.md to the github issue as its body. Each stage writes to `<#>/NN-stage.md` as a comment in gh issue (01-investigate.md, 02-plan.md, 03-build.md, 04-verify.md). If multiple issues are going to be created, create them one by one, making sure each github issue is initialized with the info from "00-spec.md" file.
+7.5 Add the contents of 00-spec.md to the github issue as its body. Each stage will write to `<#>/NN-stage.md` as a comment in gh issue (01-investigate.md, 02-plan.md, 03-build.md, 04-verify.md) upon PR approval. If multiple issues are going to be created, create them one by one, making sure each github issue is initialized with the info from "00-spec.md" file.
 7.6 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
 7.7 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
 7.8 Build: create branch `pipeline/<#>-<issue_short_title>`, checkout to it, implement, commit with clear messages.
