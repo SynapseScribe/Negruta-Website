@@ -34,7 +34,7 @@
 - GIT
 6.1 Run `git status --verbose`, when making meaningful code changes.
 6.2 Use `git reset --hard HEAD && git clean -fd` to restore changes when requested.
-6.3 Never attempt to push to master unless I specifically say `lookin crispy` (exact phrase) which will authorize you to: stage changes, commit with description of changes, and push to master (eg. `git add . ; git commit -am "fix for bug" ; git push"`.
+6.3 Never attempt to push to master unless I specifically say `lookin crispy` (exact phrase) which will authorize you to: stage changes, commit with description of changes, and push to master (eg. `git add . ; git commit -am "fix for bug" ; git push"`. When working on a branch, see 7.11.
 6.4 Never pull changes, unless you ask first and get confirmation.
 
 
@@ -46,10 +46,10 @@
 7.5 Add the contents of 00-spec.md to the github issue as its body. Each stage will write to `<#>/NN-stage.md` as a comment in gh issue (01-investigate.md, 02-plan.md, 03-build.md, 04-verify.md) upon PR approval. If multiple issues are going to be created, create them one by one, making sure each github issue is initialized with the info from "00-spec.md" file.
 7.6 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
 7.7 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
-7.8 Build: create branch `pipeline/<#>-<issue_short_title>`, checkout to it, implement, commit with clear messages.
+7.8 Build: create branch `pipeline/<#>-<issue_short_title>`, checkout to it, implement, commit with clear messages. The md files must be also committed as part of the branch.
 7.9 Verify: run lint (with eslint), beautify (with prettier), check HTML validity, test responsive breakpoints, verify no broken links/images. On failure, attempt to fix and update the corresponding .md files accordingly.
 7.10 If verification is completed successfully, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. "Fixes #123"), so that the issue is also correlated with the PR. 
-7.11 When I (the user), approve the PR, I will eventually tell you `PR lookin crispy`, so that you can proceed on completion:
+7.11 When I (the user), approve the PR, I will eventually tell you `lookin crispy`, so that you can proceed on completion:
 	- move from active to `.pipeline/done/<#>/`
 	- merge into master (`git checkout master && git merge <branch>`). Keep branches as historic (no delete).
 	- close gh issue adding one comment for each stage (each `<#>/NN-stage.md` file) + an extra comment with the summary of what files changed.
