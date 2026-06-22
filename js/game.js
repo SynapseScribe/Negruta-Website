@@ -414,25 +414,26 @@ function initCelestial() {
 // # OBSTACLES
 
 const emojiRenderCache = new Map();
+(function () {
+  for (const emoji of OBSTACLE_TYPES) {
+    for (let size = MIN_OBSTACLE_SIZE; size <= MAX_OBSTACLE_SIZE; size++) {
+      const key = `${emoji}_${size}`;
+      const padding = Math.ceil(size * 0.25);
+      const w = size + padding * 2;
+      const oc = document.createElement("canvas");
+      oc.width = oc.height = w;
+      const c = oc.getContext("2d");
+      c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+      c.clearRect(0, 0, w, w);
+      c.fillText(emoji, w / 2, w / 2);
+      emojiRenderCache.set(key, oc);
+    }
+  }
+})();
 function prerenderEmoji(emoji, size) {
-  const key = `${emoji}_${size}`;
-  if (emojiRenderCache.has(key)) return emojiRenderCache.get(key);
-
-  const padding = Math.ceil(size * 0.25); // extra room to avoid cropping
-  const w = size + padding * 2;
-  const oc = document.createElement("canvas");
-  oc.width = oc.height = w;
-  const c = oc.getContext("2d");
-
-  // use emoji-friendly font fallbacks (order matters)
-  c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-  c.textAlign = "center";
-  c.textBaseline = "middle";
-  c.clearRect(0, 0, w, w);
-  c.fillText(emoji, w / 2, w / 2);
-
-  emojiRenderCache.set(key, oc);
-  return oc;
+  return emojiRenderCache.get(`${emoji}_${size}`);
 }
 function spawnObstacle() {
   const OBSTACLE_VERTICAL_OFFSET = 60;
@@ -505,21 +506,26 @@ const COLLECTIBLE_SCORES = {
 const DEFAULT_COLLECTIBLE_SCORE = 5;
 
 const collectibleRenderCache = new Map();
+(function () {
+  for (const emoji of COLLECTIBLE_TYPES) {
+    for (let size = 48; size <= 83; size++) {
+      const key = `${emoji}_${size}`;
+      const padding = Math.ceil(size * 0.25);
+      const w = size + padding * 2;
+      const oc = document.createElement("canvas");
+      oc.width = oc.height = w;
+      const c = oc.getContext("2d");
+      c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+      c.clearRect(0, 0, w, w);
+      c.fillText(emoji, w / 2, w / 2);
+      collectibleRenderCache.set(key, oc);
+    }
+  }
+})();
 function prerenderCollectible(emoji, size) {
-  const key = `${emoji}_${size}`;
-  if (collectibleRenderCache.has(key)) return collectibleRenderCache.get(key);
-  const padding = Math.ceil(size * 0.25);
-  const w = size + padding * 2;
-  const oc = document.createElement("canvas");
-  oc.width = oc.height = w;
-  const c = oc.getContext("2d");
-  c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-  c.textAlign = "center";
-  c.textBaseline = "middle";
-  c.clearRect(0, 0, w, w);
-  c.fillText(emoji, w / 2, w / 2);
-  collectibleRenderCache.set(key, oc);
-  return oc;
+  return collectibleRenderCache.get(`${emoji}_${size}`);
 }
 
 function spawnCollectible() {
