@@ -634,6 +634,7 @@ function update(timestamp) {
   }
 
   // Grass scrolling
+  rightmostX -= currentSpeed * dt;
   for (const item of grassItems) {
     item.x -= currentSpeed * dt;
     if (item.x < -GRASS_SIZE) {
