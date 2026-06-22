@@ -252,8 +252,7 @@ const OBSTACLE_TYPES = [
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
 const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
 const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
-const MIN_OBSTACLE_SIZE = 150;
-const MAX_OBSTACLE_SIZE = 300;
+const OBSTACLE_SIZES = [160, 200, 240, 270, 300];
 const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
 const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
 
@@ -411,34 +410,70 @@ function initCelestial() {
   }
 }
 
+// # LOADING SCREEN
+
+function drawLoadingScreen(current, total) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#1a1a2e";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#fff";
+  ctx.font = '36px "Segoe UI", Arial, sans-serif';
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2 - 40);
+  const barWidth = 400;
+  const barHeight = 24;
+  const barX = (canvas.width - barWidth) / 2;
+  const barY = canvas.height / 2 + 20;
+  ctx.fillStyle = "#333";
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+  const pct = current / total;
+  ctx.fillStyle = "#4caf50";
+  ctx.fillRect(barX, barY, barWidth * pct, barHeight);
+  ctx.strokeStyle = "#555";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(barX, barY, barWidth, barHeight);
+  ctx.fillStyle = "#ccc";
+  ctx.font = '18px "Segoe UI", Arial, sans-serif';
+  ctx.fillText(`${Math.round(pct * 100)}%`, canvas.width / 2, barY + barHeight + 30);
+}
+
 // # OBSTACLES
 
 const emojiRenderCache = new Map();
+async function initEmojiCache(progressCallback) {
+  if (emojiRenderCache.size > 0) return;
+  const total = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
+  let count = 0;
+  for (const emoji of OBSTACLE_TYPES) {
+    for (const size of OBSTACLE_SIZES) {
+      const key = `${emoji}_${size}`;
+      const padding = Math.ceil(size * 0.25);
+      const w = size + padding * 2;
+      const oc = document.createElement("canvas");
+      oc.width = oc.height = w;
+      const c = oc.getContext("2d");
+      c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+      c.clearRect(0, 0, w, w);
+      c.fillText(emoji, w / 2, w / 2);
+      emojiRenderCache.set(key, oc);
+      count++;
+      if (count % 10 === 0) {
+        progressCallback(count, total);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+  }
+}
 function prerenderEmoji(emoji, size) {
-  const key = `${emoji}_${size}`;
-  if (emojiRenderCache.has(key)) return emojiRenderCache.get(key);
-
-  const padding = Math.ceil(size * 0.25); // extra room to avoid cropping
-  const w = size + padding * 2;
-  const oc = document.createElement("canvas");
-  oc.width = oc.height = w;
-  const c = oc.getContext("2d");
-
-  // use emoji-friendly font fallbacks (order matters)
-  c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-  c.textAlign = "center";
-  c.textBaseline = "middle";
-  c.clearRect(0, 0, w, w);
-  c.fillText(emoji, w / 2, w / 2);
-
-  emojiRenderCache.set(key, oc);
-  return oc;
+  return emojiRenderCache.get(`${emoji}_${size}`);
 }
 function spawnObstacle() {
   const OBSTACLE_VERTICAL_OFFSET = 60;
   const size =
-    Math.floor(Math.random() * (MAX_OBSTACLE_SIZE - MIN_OBSTACLE_SIZE + 1)) +
-    MIN_OBSTACLE_SIZE;
+    OBSTACLE_SIZES[Math.floor(Math.random() * OBSTACLE_SIZES.length)];
   const type =
     OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
   const img = prerenderEmoji(type, size); // cheap if cached
@@ -503,27 +538,41 @@ const COLLECTIBLE_SCORES = {
   "🦃": 12,
 };
 const DEFAULT_COLLECTIBLE_SCORE = 5;
+const COLLECTIBLE_SIZES = [48, 60, 72, 83];
 
 const collectibleRenderCache = new Map();
+async function initCollectibleCache(progressCallback) {
+  if (collectibleRenderCache.size > 0) return;
+  const total = COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
+  let count = 0;
+  for (const emoji of COLLECTIBLE_TYPES) {
+    for (const size of COLLECTIBLE_SIZES) {
+      const key = `${emoji}_${size}`;
+      const padding = Math.ceil(size * 0.25);
+      const w = size + padding * 2;
+      const oc = document.createElement("canvas");
+      oc.width = oc.height = w;
+      const c = oc.getContext("2d");
+      c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+      c.clearRect(0, 0, w, w);
+      c.fillText(emoji, w / 2, w / 2);
+      collectibleRenderCache.set(key, oc);
+      count++;
+      if (count % 10 === 0) {
+        progressCallback(count, total);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+  }
+}
 function prerenderCollectible(emoji, size) {
-  const key = `${emoji}_${size}`;
-  if (collectibleRenderCache.has(key)) return collectibleRenderCache.get(key);
-  const padding = Math.ceil(size * 0.25);
-  const w = size + padding * 2;
-  const oc = document.createElement("canvas");
-  oc.width = oc.height = w;
-  const c = oc.getContext("2d");
-  c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-  c.textAlign = "center";
-  c.textBaseline = "middle";
-  c.clearRect(0, 0, w, w);
-  c.fillText(emoji, w / 2, w / 2);
-  collectibleRenderCache.set(key, oc);
-  return oc;
+  return collectibleRenderCache.get(`${emoji}_${size}`);
 }
 
 function spawnCollectible() {
-  const size = 48 + Math.floor(Math.random() * 36); // 48..83
+  const size = COLLECTIBLE_SIZES[Math.floor(Math.random() * COLLECTIBLE_SIZES.length)];
   const type =
     COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
   const y = canvas.height - 350 + Math.random() * 180;
@@ -794,15 +843,32 @@ function displayScores() {
   });
 }
 
-function startGame() {
+async function startGame() {
   if (nameInput.value.trim() === "") {
     alert("Please enter your name first!");
     return;
   }
   playerName = nameInput.value.trim();
-  gameRunning = true;
   startBtn.disabled = true;
   nameInput.disabled = true;
+  const cachesReady = emojiRenderCache.size > 0 && collectibleRenderCache.size > 0;
+  if (!cachesReady) {
+    const totalObstacles =
+      OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
+    const totalCollectibles =
+      COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
+    const grandTotal = totalObstacles + totalCollectibles;
+    const progressObstacles = (count) => {
+      drawLoadingScreen(count, grandTotal);
+    };
+    const progressCollectibles = (count) => {
+      drawLoadingScreen(totalObstacles + count, grandTotal);
+    };
+    drawLoadingScreen(0, grandTotal);
+    await initEmojiCache(progressObstacles);
+    await initCollectibleCache(progressCollectibles);
+  }
+  gameRunning = true;
   resetGame();
   lastTime = performance.now();
   update(performance.now());
