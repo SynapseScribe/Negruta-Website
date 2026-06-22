@@ -22,6 +22,7 @@ Once `score >= 180`, `180 - score` becomes <= 0, so `minGap` clamps to the hardc
 ## Fix
 
 Investigate whether the 68-frame minimum is actually reachable and causes problems. If not, document the formula and leave as-is. If reachable, consider:
+
 1. Raising the minimum gap floor
 2. Scaling the gap with `currentSpeed`
 3. Capping `currentSpeed` growth

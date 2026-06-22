@@ -4,8 +4,8 @@ const translationResult = document.getElementById("translationResult");
 
 if (translateBtn && translatorInput && translationResult) {
   fetch("assets/lists/meow-sounds.json")
-    .then(response => response.json())
-    .then(meowSounds => {
+    .then((response) => response.json())
+    .then((meowSounds) => {
       const hashStr = (str) => {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
@@ -21,18 +21,21 @@ if (translateBtn && translatorInput && translationResult) {
           return;
         }
 
-        const words = text.split(/\s+/).filter(w => /[a-zA-Z\u00C0-\u024F]/.test(w));
+        const words = text
+          .split(/\s+/)
+          .filter((w) => /[a-zA-Z\u00C0-\u024F]/.test(w));
         const wordCount = words.length;
 
         const lastChar = text.slice(-1);
         const punctuation = ["!", "?", "."].includes(lastChar) ? lastChar : ".";
-        translationResult.textContent = "meow ".repeat(wordCount - 1).trim() + "...meow" + punctuation;
+        translationResult.textContent =
+          "meow ".repeat(wordCount - 1).trim() + "...meow" + punctuation;
 
         const playNext = (index) => {
           if (index >= wordCount) return;
           const soundIndex = hashStr(words[index]);
           const audio = new Audio(meowSounds[soundIndex]);
-          audio.play().catch(e => console.log("Audio play failed:", e));
+          audio.play().catch((e) => console.log("Audio play failed:", e));
           audio.addEventListener("ended", () => playNext(index + 1));
         };
 
@@ -47,5 +50,5 @@ if (translateBtn && translatorInput && translationResult) {
         }
       });
     })
-    .catch(error => console.error("Failed to load meow sounds:", error));
+    .catch((error) => console.error("Failed to load meow sounds:", error));
 }
