@@ -697,7 +697,7 @@ function update(timestamp) {
 
   // Spawn obstacles and collectibles
   frameCount++;
-  if (frameCount >= nextObstacleFrame && nextObstacleFrame > 0) {
+  if (frameCount >= nextObstacleFrame) {
     spawnObstacle();
     const minGap = Math.max(60, 680 - score);
     nextObstacleFrame = frameCount + minGap + Math.floor(Math.random() * 120);
