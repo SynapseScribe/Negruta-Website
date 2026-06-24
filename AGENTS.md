@@ -4,8 +4,7 @@
   1.2 Do not use unix/linux commands (env is windows), such as: grep, ripgrep. But can use other tools that are compatible and already installed: gh, git, playwright-cli, other pwsh tools. gh is already authenticated.
   1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
   1.4 Avoid redundant tool calls within a single response.
-  1.5 Ask follow-up questions only when necessary for task completion.
-  1.6 The reply must always start with "Bn coae coae. Let's roll.", only once per reply (it's just my preffered appellative)
+  1.5 The reply must always start with "Bn coae coae. Let's roll.", only once per reply (it's just my preffered appellative)
 
 - TOOL SELECTION
   2.1 You may also use `Get-ChildItem` for file pattern matching.
@@ -42,17 +41,18 @@
   7.4 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the next number of the issue that will be created in github. Use `question` tool for this.
   7.5 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify → close. After each stage, write to `<#>/NN-stage.md`.
   7.6 Add the contents of `00-spec.md` to the github issue as its body. If multiple issues were identified, analyze them one by one, creating the `00-spec.md` and adding it to the issue's body, before going for the next (to keep the context focused).
-  7.7 After each stage, write the details to the corresponding file: `01-investigate.md`, `02-plan.md`, `03-build.md`, `04-verify.md`
-  7.8 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
-  7.9 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
-  7.10 Build: implement, commit with clear messages. The md files must be also committed as part of the branch.
-  7.11 Verify: run lint (with eslint), beautify (with prettier), check JS, CSS and HTML validity, test responsive breakpoints, verify no broken links/images, etc.. On failure, attempt to fix and update the corresponding .md files accordingly.
-  7.12 If verification stage is completed successfully, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. `Fixes #123`), so that the issue is also correlated with the PR and the issue is closed automatically because of the keyword `Fixes` (do not attempt to close the issue again, as it will be already closed).
-  7.13 When I (the user), approve the PR, I will eventually tell you `lookin crispy`, so that you can proceed on completion: move from active state to done (`.pipeline/done/<#>/`) -> always add one comment for each stage in the gh issue (each `<#>/NN-stage.md`) + an extra comment with the summary of what files changed. -> finally, merge into master (`git checkout master && git merge <branch>`). Keep branches as historic (no deletion).
-  7.14 I will also test before approving the PR, and if the PR does not fix the issue, I will provide you the details and then you resume the work on it (go through pipeline again investigate->plan->build->verify). In this case, don't close the issue yet, but instead update the .md files with your new changes and add the new commits to the same PR (one PR per issue) after verification successful. Afterwards, I will recheck and let you know if you can complete the issue (`PR lookin crispy`)
-  7.15 "delete issue <#>" → delete issue on github, and delete from `.pipeline/active`.
-  7.16 "abort issue <#>. reason: <xyz>" -> close issue on gh, adding a comment with the reason <xyz>. do not merge the pr.
-  7.17 When asked to work on issue <#> (eg. issue #10), check the files inside `.pipeline/active/<#>/` instead of reading the github issue itself (which holds the same information). We store the initial issue details and the stages comments in files to query them more easilly locally instead of checking github issue itself every time. When asked to work on the next issue, check `.pipeline/active/<#>` for the lowest issue number which has a `00-spec.md` file.
+  7.7 Go through the stages, one by one
+  7.8 After completing each stage, write the details to the corresponding file: `01-investigate.md`, `02-plan.md`, `03-build.md`, `04-verify.md`.
+  7.9 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
+  7.10 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
+  7.11 Build: implement, commit with clear messages. The md files must be also committed as part of the branch.
+  7.12 Verify: run lint (with eslint), beautify (with prettier), check JS, CSS and HTML validity, test responsive breakpoints, verify no broken links/images, etc.. On failure, attempt to fix and update the corresponding .md files accordingly.
+  7.13 If verification stage is completed successfully, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. `Fixes #123`), so that the issue is also correlated with the PR and the issue is closed automatically because of the keyword `Fixes` (do not attempt to close the issue again, as it will be already closed).
+  7.14 When I (the user), approve the PR, I will eventually tell you `lookin crispy`, so that you can proceed on completion: move from active state to done (`.pipeline/done/<#>/`) -> always add one comment for each stage in the gh issue (each `<#>/NN-stage.md`) + an extra comment with the summary of what files changed. -> finally, merge into master (`git checkout master && git merge <branch>`). Keep branches as historic (no deletion).
+  7.15 I will also test before approving the PR, and if the PR does not fix the issue, I will provide you the details and then you resume the work on it (go through pipeline again investigate->plan->build->verify). In this case, don't close the issue yet, but instead update the .md files with your new changes and add the new commits to the same PR (one PR per issue) after verification successful. Afterwards, I will recheck and let you know if you can complete the issue (`PR lookin crispy`)
+  7.16 "delete issue <#>" → delete issue on github, and delete from `.pipeline/active`.
+  7.17 "abort issue <#>. reason: <xyz>" -> close issue on gh, adding a comment with the reason <xyz>. do not merge the pr.
+  7.18 When asked to work on issue <#> (eg. issue #10), check the files inside `.pipeline/active/<#>/` instead of reading the github issue itself (which holds the same information). We store the initial issue details and the stages comments in files to query them more easilly locally instead of checking github issue itself every time. When asked to work on the next issue, check `.pipeline/active/<#>` for the lowest issue number which has a `00-spec.md` file.
 
 - SELF-IMPROVEMENT RULES
   8.1 review existing rules in this file, keep them in memory during discussion.

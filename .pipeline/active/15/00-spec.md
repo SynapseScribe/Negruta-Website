@@ -2,20 +2,19 @@
 
 ## Description
 
-At line 232, `COLLECTIBLE_TYPES` contains duplicate entries:
-
-- `🐟` appears at index 0 and index 11
-- `🐠` appears at index 1 and index 12
+At line 492, `COLLECTIBLE_TYPES` contains duplicate entries:
+- `🐟` appears at index 0 and index 10
+- `🐠` appears at index 1 and index 11
 
 This doubles the spawn weight of these two collectibles compared to others.
 
 ## Impact
 
-If unintentional, fish collectibles spawn twice as often as intended.
+Fish collectibles spawn twice as often as intended.
 
 ## Location
 
-- `js/game.js:232` - `COLLECTIBLE_TYPES` array
+- `js/game.js:492` - `COLLECTIBLE_TYPES` array
 
 ## Decision
 
