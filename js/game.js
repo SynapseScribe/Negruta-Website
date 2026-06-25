@@ -431,7 +431,11 @@ function drawLoadingScreen(current, total) {
   ctx.strokeRect(barX, barY, barWidth, barHeight);
   ctx.fillStyle = "#ccc";
   ctx.font = '18px "Segoe UI", Arial, sans-serif';
-  ctx.fillText(`${Math.round(pct * 100)}%`, canvas.width / 2, barY + barHeight + 30);
+  ctx.fillText(
+    `${Math.round(pct * 100)}%`,
+    canvas.width / 2,
+    barY + barHeight + 30,
+  );
 }
 
 // # OBSTACLES
@@ -496,7 +500,7 @@ const COLLECTIBLE_TYPES = [
   "⭐",
   "🌟",
   "🎵",
-   "🦐",
+  "🦐",
   "🐡",
   "🕊️",
   "🐦‍⬛",
@@ -566,7 +570,8 @@ function prerenderCollectible(emoji, size) {
 }
 
 function spawnCollectible() {
-  const size = COLLECTIBLE_SIZES[Math.floor(Math.random() * COLLECTIBLE_SIZES.length)];
+  const size =
+    COLLECTIBLE_SIZES[Math.floor(Math.random() * COLLECTIBLE_SIZES.length)];
   const type =
     COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
   const y = canvas.height - 350 + Math.random() * 180;
@@ -800,6 +805,8 @@ function saveScore(name, finalScore) {
   };
   let scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
   scores.push(newScore);
+  scores.sort((a, b) => b.score - a.score);
+  if (scores.length > 50) scores = scores.slice(0, 50);
   localStorage.setItem("catGameScores", JSON.stringify(scores));
   displayScores();
 }
@@ -845,10 +852,10 @@ async function startGame() {
   playerName = nameInput.value.trim();
   startBtn.disabled = true;
   nameInput.disabled = true;
-  const cachesReady = emojiRenderCache.size > 0 && collectibleRenderCache.size > 0;
+  const cachesReady =
+    emojiRenderCache.size > 0 && collectibleRenderCache.size > 0;
   if (!cachesReady) {
-    const totalObstacles =
-      OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
+    const totalObstacles = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
     const totalCollectibles =
       COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
     const grandTotal = totalObstacles + totalCollectibles;
@@ -920,13 +927,17 @@ canvas.addEventListener("mousedown", () => {
 });
 
 // touch support for mobile devices
-canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  if (gameRunning && jumpCount < maxJumpsBeforeReset) {
-    velocityY = jumpStrength;
-    jumpCount++;
-  }
-}, { passive: false });
+canvas.addEventListener(
+  "touchstart",
+  (e) => {
+    e.preventDefault();
+    if (gameRunning && jumpCount < maxJumpsBeforeReset) {
+      velocityY = jumpStrength;
+      jumpCount++;
+    }
+  },
+  { passive: false },
+);
 
 // allow double-clicks to perform an extra jump (helps automation/double-click input)
 canvas.addEventListener("dblclick", () => {
