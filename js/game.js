@@ -875,24 +875,25 @@ function displayScores() {
   });
 }
 
-const nameError = document.getElementById("nameError");
+let emptyNameAttempts = 0;
 
-function clearNameError() {
-  nameError.textContent = "";
-  nameInput.classList.remove("error");
-}
-
-nameInput.addEventListener("input", clearNameError);
+nameInput.addEventListener("input", () => {
+  emptyNameAttempts = 0;
+});
 
 async function startGame() {
   if (nameInput.value.trim() === "") {
-    nameError.textContent = "Please enter your name first!";
-    nameInput.classList.add("error");
-    nameInput.focus();
-    nameInput.style.animation = "none";
-    nameInput.offsetHeight;
-    nameInput.style.animation = "inputShake 0.4s ease";
-    return;
+    emptyNameAttempts++;
+    if (emptyNameAttempts >= 2) {
+      nameInput.value = "Anon";
+      emptyNameAttempts = 0;
+    } else {
+      nameInput.focus();
+      nameInput.style.animation = "none";
+      nameInput.offsetHeight;
+      nameInput.style.animation = "inputShake 0.4s ease";
+      return;
+    }
   }
   playerName = nameInput.value.trim();
   startBtn.disabled = true;
