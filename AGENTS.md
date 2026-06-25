@@ -26,8 +26,8 @@
   4.2 Maintain the todo list by updating the status of tasks (`pending`, `in_progress`, `completed`).
 
 - VERIFICATION
-  5.1 Always run linting or testing commands (e.g., `npm run lint`) after making code changes to ensure correctness.
-  5.2 Use playwright (already installed) to test UI/UX from user's perspective directly on the live published page, when asked to do so. For example: `playwright-cli open --headed --persistent --browser firefox https://synapsescribe.github.io/Negruta-Website/#meow-translator` (using playwright-cli) or `node js/playwright-test-game.js` (using npm playwright module)
+  5.1 Always run linting (`npm run lint`) or testing commands after making code changes to ensure correctness.
+  5.2 Use playwright (already installed) to test UI/UX from user's perspective directly on the live published page, but only when asked to do so. For example: `playwright-cli open --headed --persistent --browser firefox https://synapsescribe.github.io/Negruta-Website/#meow-translator` (using playwright-cli) or `node js/playwright-test-game.js` (using npm playwright module)
 
 - GIT
   6.1 Run `git status --verbose`, when making meaningful code changes.
@@ -46,7 +46,7 @@
   7.8 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
   7.9 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
   7.10 Build: implement, commit with clear messages.
-  7.11 Verify: run lint (with eslint), beautify (with prettier), check JS, CSS and HTML validity, test responsive breakpoints, verify no broken links/images, etc.. On failure, attempt to fix and update the corresponding .md files accordingly.
+  7.11 Verify: run lint (`npm run lint`), beautify (`npm run format`), check JS, CSS and HTML validity, test responsive breakpoints, verify no broken links/images, etc.. On failure, attempt to fix and update the corresponding .md files accordingly.
   7.12 If verification stage is completed successfully, open a pull request with the commits related to the issue and add a reference to the issue in the PR (eg. `Fixes #123`), so that the issue is also correlated with the PR and the issue is closed automatically on PR merge - this is because of the keyword `Fixes` (thus, do not attempt to close the issue again, as it will be already closed).
   7.13 Only after I (the user), approve the PR, I will eventually tell you `lookin crispy`, so that you can proceed on completion: move issue folder from active state to done (`.pipeline/done/<#>/`) -> then always add one comment for each stage in the gh issue (eg. `gh issue comment 15 --body (Get-Content -Raw ".pipeline/active/15/01-investigate.md")`) + an extra comment with the summary of what files changed -> stage and commit and push the related files (modified ones and the md files) -> finally, merge into master (`git checkout master && git merge <branch>`) which will also close the issue. Keep branches as historic (no deletion).
   7.14 I will also test before approving the PR, and if the PR does not fix the issue, I will provide you the details and then you resume the work on it (go through pipeline again investigate->plan->build->verify). In this case, don't close the issue yet, but instead update the .md files with your new changes and add the new commits to the same PR (one PR per issue) after verification successful. Afterwards, I will recheck and let you know if you can complete the issue (`PR lookin crispy`)
