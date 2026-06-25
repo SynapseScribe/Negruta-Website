@@ -634,7 +634,7 @@ function update(timestamp) {
       catRight > obsLeft - AUTOJUMP_HORIZONTAL_MARGIN
     ) {
       velocityY = jumpStrength;
-      jumpCount = 0;
+      jumpCount = 1;
       meow();
     }
 
