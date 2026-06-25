@@ -37,11 +37,11 @@
 
 - PIPELINE SYSTEM
   7.1 Trigger: User asks to create a github issue(s) for some task(s) → start pipeline workflow. Eg. user asks "create a gh issue for adding a new button".
-  7.2 Create the GitHub issue(s) via `gh issue create` (title: "[Pipeline] <task>", label: "pipeline" (already existing label)).
+  7.2 Always create the GitHub issue(s) first via `gh issue create --title "[Pipeline][FEATURE]/[BUG] + short description) --label pipeline --body "Reported by user/AI"`. For now, keep the body as a placeholder, will be later populated with the contents of `00-spec.md`. We create the issue(s) first to get the Number `<#>` right away.
   7.3 Create and switch to the branch `git checkout -b pipeline/<#>-<issue_short_title>`, before modifying any files.
   7.4 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the next number of the issue that will be created in github. Use `question` tool for this.
-  7.5 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify, then close. After each stage, write to `<#>/NN-stage.md`.
-  7.6 Add the contents of `00-spec.md` to the github issue as its body. If multiple issues were identified, analyze them one by one, creating the `00-spec.md` and adding it to the issue's body, before going for the next (to keep the context focused).
+  7.5 Store issue `<#>` in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify, then close. After each stage, write to `<#>/NN-stage.md`.
+  7.6 Add the contents of `00-spec.md` to the github issue's body (issues already created). If multiple issues were identified, analyze them one by one, creating the `00-spec.md` and adding it to the issue's body, before going for the next (to keep the context focused).
   7.7 Go through the stages, one by one, in order. After completing each stage, write the details to the corresponding file: `01-investigate.md`, `02-plan.md`, `03-build.md`, `04-verify.md`.
   7.8 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
   7.9 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
