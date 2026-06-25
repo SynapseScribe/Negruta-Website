@@ -3,6 +3,7 @@
 ## Changes Made
 
 ### index.html
+
 - Added `<dialog id="gameOverDialog">` inside `.game-container` with:
   - Player name display (`#gameOverName`)
   - Final score display (`#gameOverScore`)
@@ -11,12 +12,14 @@
   - "Play Again" button (`#playAgainBtn`)
 
 ### style.css
+
 - Added dialog styles: dark background, gold theme, backdrop overlay
 - Styled score display, high scores list with medal colors
 - Added hover effects for "Play Again" button
 - Added `@keyframes inputShake` for empty name validation
 
 ### js/game.js
+
 - Added `gameOverDialog` and `playAgainBtn` element references
 - Replaced `alert()` in `gameOver()` with dialog showing stats and top scores
 - Added `playAgainBtn` click handler: closes dialog, re-enables controls, calls `startGame()`

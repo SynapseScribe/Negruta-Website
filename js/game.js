@@ -12,6 +12,7 @@ const nameInput = document.getElementById("playerNameInput");
 const startBtn = document.getElementById("startGameBtn");
 const gameOverDialog = document.getElementById("gameOverDialog");
 const playAgainBtn = document.getElementById("playAgainBtn");
+const gameOverCloseBtn = document.getElementById("gameOverCloseBtn");
 
 const gravity = 1;
 const jumpStrength = -20;
@@ -819,6 +820,12 @@ playAgainBtn.addEventListener("click", () => {
   startBtn.disabled = false;
   nameInput.disabled = false;
   startGame();
+});
+
+gameOverCloseBtn.addEventListener("click", () => {
+  gameOverDialog.close();
+  startBtn.disabled = false;
+  nameInput.disabled = false;
 });
 
 function saveScore(name, finalScore) {

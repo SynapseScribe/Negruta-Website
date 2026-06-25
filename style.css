@@ -486,6 +486,26 @@ footer {
   background: #1a1a2e;
   color: #fff;
   box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+}
+.game-over-close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.game-over-close:hover {
+  color: #fff;
 }
 #gameOverDialog::backdrop {
   background: rgba(0, 0, 0, 0.7);
