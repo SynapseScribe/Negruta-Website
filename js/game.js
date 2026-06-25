@@ -257,9 +257,6 @@ const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically 
 const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
 
 const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
-const GRASS_SPACING = 50;
-const GROUND_HEIGHT = 0; // adjust how tall the ground area is
-let groundY = canvas.height - GROUND_HEIGHT;
 
 const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
 
@@ -331,7 +328,6 @@ function resetGame() {
   frameCount = 0;
   nextObstacleFrame = 100;
   currentSpeed = INITIAL_SPEED;
-  groundY = canvas.height - GROUND_HEIGHT;
   initGrass();
   initCelestial();
   scoreElement.innerText = "Score: 0";
@@ -762,7 +758,7 @@ function draw() {
     const key = `${item.emoji}_${item.size}`;
     const img = emojiCache.get(key);
     if (!img) continue;
-    const y = canvas.height; // bottom of canvas (or use groundY + GROUND_HEIGHT)
+    const y = canvas.height; // bottom of canvas
     ctx.drawImage(img, item.x - img.width / 2, y - img.height);
   }
 
