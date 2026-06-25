@@ -923,6 +923,15 @@ canvas.addEventListener("mousedown", () => {
   }
 });
 
+// touch support for mobile devices
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  if (gameRunning && jumpCount < maxJumpsBeforeReset) {
+    velocityY = jumpStrength;
+    jumpCount++;
+  }
+}, { passive: false });
+
 // allow double-clicks to perform an extra jump (helps automation/double-click input)
 canvas.addEventListener("dblclick", () => {
   if (!gameRunning) return; // if there's room for another jump, do it
