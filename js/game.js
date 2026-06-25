@@ -875,13 +875,25 @@ function displayScores() {
   });
 }
 
+let emptyNameAttempts = 0;
+
+nameInput.addEventListener("input", () => {
+  emptyNameAttempts = 0;
+});
+
 async function startGame() {
   if (nameInput.value.trim() === "") {
-    nameInput.focus();
-    nameInput.style.animation = "none";
-    nameInput.offsetHeight;
-    nameInput.style.animation = "inputShake 0.4s ease";
-    return;
+    emptyNameAttempts++;
+    if (emptyNameAttempts >= 2) {
+      nameInput.value = "Anon";
+      emptyNameAttempts = 0;
+    } else {
+      nameInput.focus();
+      nameInput.style.animation = "none";
+      nameInput.offsetHeight;
+      nameInput.style.animation = "inputShake 0.4s ease";
+      return;
+    }
   }
   playerName = nameInput.value.trim();
   startBtn.disabled = true;
