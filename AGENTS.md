@@ -12,7 +12,7 @@
   2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content`, because `Read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
   2.4 Use `webfetch` and `websearch` tools when required to access the Internet for online resources, documentation, search results.
   2.5 Use `question` tool for asking follow-up questions, but only if really required.
-  2.6 Don't use `Glob` tool, it's broken.
+  2.6 Don't use `Glob` tool, it's broken. Use Read or pwsh commands instead.
 
 - EDITING
   3.1 To check line endings in PowerShell: `(Get-Content -Raw "filename") -match "`r"`3.2 Before editing, make sure the line endings are unix style (LF). If not, convert line endings to Unix style:`(Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename`. Or use dos2unix (already installed - as windows version)
