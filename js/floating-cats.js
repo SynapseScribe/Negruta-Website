@@ -103,7 +103,7 @@ const catFacts = [
   "A cat's eyes contain 200,000 rods per square millimeter for night vision.",
   "Cats were considered sacred by the Vikings and traveled with them on ships.",
   "A cat's brain is 90% similar to a human brain.",
-  "Cats have a unique ability to slow their heart rate when resting.",
+  "Cats have a unique ability to slow their heart rate when resting."
 ];
 
 const floatingCats = document.querySelectorAll(".floating-cats span");

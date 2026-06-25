@@ -14,7 +14,7 @@ canvas.addEventListener(
       jumpCount++;
     }
   },
-  { passive: false },
+  { passive: false }
 );
 ```
 
