@@ -476,6 +476,109 @@ footer {
   font-size: 0.9rem;
 }
 
+/* Game Over Dialog */
+#gameOverDialog {
+  border: none;
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 450px;
+  width: 90%;
+  background: #1a1a2e;
+  color: #fff;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+}
+#gameOverDialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+.game-over-content {
+  text-align: center;
+}
+.game-over-content h2 {
+  color: #d4af37;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.game-over-name {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+.game-over-score {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ffd700;
+  margin: 0.5rem 0;
+}
+.game-over-date {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+.game-over-highscores {
+  margin: 1.5rem 0;
+  text-align: left;
+}
+.game-over-highscores h4 {
+  color: #d4af37;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.game-over-highscores ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.game-over-highscores li {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+.game-over-highscores li:nth-child(1) {
+  color: #ffd700;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.game-over-highscores li:nth-child(2) {
+  color: #c0c0c0;
+  font-weight: bold;
+}
+.game-over-highscores li:nth-child(3) {
+  color: #cd7f32;
+  font-weight: bold;
+}
+#playAgainBtn {
+  background: #d4af37;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+#playAgainBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+@keyframes inputShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  75% {
+    transform: translateX(-4px);
+  }
+}
+
 /* Meow Translator */
 .meow-translator {
   background-color: rgba(212, 175, 55, 0.1);
@@ -599,11 +702,15 @@ footer {
   border-radius: 16px;
   font-size: 0.95rem;
   line-height: 1.4;
-  box-shadow: 0 4px 20px rgba(255, 152, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 20px rgba(255, 152, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 9999;
   opacity: 0;
   transform: translateY(10px) scale(0.95);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
   pointer-events: none;
   font-family: inherit;
 }
@@ -642,8 +749,6 @@ footer {
   .side-panel-container {
     display: none;
   }
-
-
 
   .orange-cat-container {
     flex-direction: column;

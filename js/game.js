@@ -10,6 +10,8 @@ canvas.height = 550;
 const scoreElement = document.getElementById("gameScore");
 const nameInput = document.getElementById("playerNameInput");
 const startBtn = document.getElementById("startGameBtn");
+const gameOverDialog = document.getElementById("gameOverDialog");
+const playAgainBtn = document.getElementById("playAgainBtn");
 
 const gravity = 1;
 const jumpStrength = -20;
@@ -790,11 +792,34 @@ function draw() {
 
 function gameOver() {
   gameRunning = false;
-  alert(`Game Over, ${playerName}! Your score: ${score}`);
   saveScore(playerName, score);
+
+  document.getElementById("gameOverName").textContent = playerName;
+  document.getElementById("gameOverScore").textContent = `Score: ${score}`;
+  document.getElementById("gameOverDate").textContent =
+    new Date().toLocaleDateString();
+
+  const scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
+  const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
+  const gameOverScoresList = document.getElementById("gameOverScores");
+  gameOverScoresList.innerHTML = "";
+  const medals = ["🥇", "🥈", "🥉"];
+  topScores.forEach((s, i) => {
+    const li = document.createElement("li");
+    const medal = i < 3 ? medals[i] : `${i + 1}.`;
+    li.textContent = `${medal} ${s.name}: ${s.score} (${s.date})`;
+    gameOverScoresList.appendChild(li);
+  });
+
+  gameOverDialog.showModal();
+}
+
+playAgainBtn.addEventListener("click", () => {
+  gameOverDialog.close();
   startBtn.disabled = false;
   nameInput.disabled = false;
-}
+  startGame();
+});
 
 function saveScore(name, finalScore) {
   const newScore = {
@@ -845,7 +870,10 @@ function displayScores() {
 
 async function startGame() {
   if (nameInput.value.trim() === "") {
-    alert("Please enter your name first!");
+    nameInput.focus();
+    nameInput.style.animation = "none";
+    nameInput.offsetHeight;
+    nameInput.style.animation = "inputShake 0.4s ease";
     return;
   }
   playerName = nameInput.value.trim();
