@@ -106,6 +106,56 @@ const catFacts = [
   "Cats have a unique ability to slow their heart rate when resting."
 ];
 
+let currentBubble = null;
+let bubbleTimeout = null;
+
+function dismissBubble() {
+  if (currentBubble) {
+    currentBubble.classList.add("cat-fact-bubble-fade-out");
+    setTimeout(() => {
+      if (currentBubble && currentBubble.parentNode) {
+        currentBubble.remove();
+        currentBubble = null;
+      }
+    }, 400);
+  }
+  if (bubbleTimeout) {
+    clearTimeout(bubbleTimeout);
+    bubbleTimeout = null;
+  }
+}
+
+function showCatFact(catElement, fact) {
+  dismissBubble();
+
+  const bubble = document.createElement("div");
+  bubble.className = "cat-fact-bubble";
+  bubble.setAttribute("role", "status");
+  bubble.setAttribute("aria-live", "polite");
+  bubble.textContent = `🐾 ${fact}`;
+
+  const rect = catElement.getBoundingClientRect();
+  const bubbleWidth = 280;
+  let left = rect.left + rect.width / 2 - bubbleWidth / 2;
+  let top = rect.top - 10;
+
+  left = Math.max(10, Math.min(left, window.innerWidth - bubbleWidth - 10));
+
+  bubble.style.left = `${left}px`;
+  bubble.style.top = `${top}px`;
+
+  document.body.appendChild(bubble);
+  currentBubble = bubble;
+
+  requestAnimationFrame(() => {
+    bubble.classList.add("cat-fact-bubble-visible");
+  });
+
+  bubbleTimeout = setTimeout(() => {
+    dismissBubble();
+  }, 4000);
+}
+
 const floatingCats = document.querySelectorAll(".floating-cats span");
 
 if (floatingCats.length > 0) {
@@ -120,7 +170,7 @@ if (floatingCats.length > 0) {
     factIndex++;
 
     cat.addEventListener("click", () => {
-      alert(`Cat Fact: ${myFact}`);
+      showCatFact(cat, myFact);
     });
     cat.style.cursor = "pointer";
   });
