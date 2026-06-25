@@ -565,6 +565,30 @@ footer {
   background-color: #ff8c00;
 }
 
+/* Success Message */
+.success-message {
+  background-color: rgba(100, 200, 100, 0.15);
+  border: 1px solid #64c864;
+  border-radius: 5px;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  text-align: center;
+  color: #64c864;
+  font-weight: bold;
+  animation: fadeOut 0.5s ease 3s forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   header h1 {
