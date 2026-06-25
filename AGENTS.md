@@ -58,7 +58,7 @@
 - SELF-IMPROVEMENT RULES
   8.1 review existing rules in this file, keep them in memory during discussion.
   8.2 create/update knowledge in the SELF-TOUGHT section below, whenever you learned something out of the ordinary that could help in the future (eg. how to use a specific tool after failing multiple times). This is the only section where you (the AI model) are allowed to modify/create lines in this file (AGENTS.md). Start the lines with 9.x, where x is incremented.
-  8.3 apply new/edited rules for the following replies
+  8.3 apply any newly created or edited rules on your following replies
 
 - SELF-TOUGHT
   9.0
