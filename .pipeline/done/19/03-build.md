@@ -1,6 +1,7 @@
 ## Build
 
 Removed from `js/game.js`:
+
 - Line 260: `const GRASS_SPACING = 50;`
 - Line 261: `const GROUND_HEIGHT = 0;`
 - Line 262: `let groundY = canvas.height - GROUND_HEIGHT;`

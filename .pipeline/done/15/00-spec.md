@@ -3,6 +3,7 @@
 ## Description
 
 At line 492, `COLLECTIBLE_TYPES` contains duplicate entries:
+
 - `🐟` appears at index 0 and index 10
 - `🐠` appears at index 1 and index 11
 

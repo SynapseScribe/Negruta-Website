@@ -1,6 +1,7 @@
 # Issue #14 - Plan Stage
 
 ## Changes
+
 - File: `js/game.js:700`
 - Remove `&& nextObstacleFrame > 0` from condition
 - Before: `if (frameCount >= nextObstacleFrame && nextObstacleFrame > 0)`
