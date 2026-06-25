@@ -8,13 +8,13 @@ export default [
         process: "readonly",
         console: "readonly",
         document: "readonly",
-        window: "readonly",
-      },
+        window: "readonly"
+      }
     },
     rules: {
       "no-unused-vars": "warn",
-      "no-undef": "error",
-    },
+      "no-undef": "error"
+    }
   },
   {
     files: ["**/*.js"],
@@ -42,12 +42,12 @@ export default [
         alert: "readonly",
         fetch: "readonly",
         setTimeout: "readonly",
-        clearTimeout: "readonly",
-      },
+        clearTimeout: "readonly"
+      }
     },
     rules: {
       "no-unused-vars": "warn",
-      "no-undef": "error",
-    },
-  },
+      "no-undef": "error"
+    }
+  }
 ];

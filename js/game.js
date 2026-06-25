@@ -247,7 +247,7 @@ const OBSTACLE_TYPES = [
   "🔫",
   "👝",
   "🤾",
-  "👜",
+  "👜"
 ];
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
 const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
@@ -302,7 +302,7 @@ const meowSounds = [
   "assets/audio/meow_sounds/freesound_community-cat-meow-85175.mp3",
   "assets/audio/meow_sounds/dragon-studio-meow-sfx-405456.mp3",
   "assets/audio/meow_sounds/dragon-studio-cute-cat-meow-472372.mp3",
-  "assets/audio/meow_sounds/dragon-studio-cat-meow-401729.mp3",
+  "assets/audio/meow_sounds/dragon-studio-cat-meow-401729.mp3"
 ];
 
 // preload
@@ -351,7 +351,7 @@ const GRASS_EMOJIS = [
   "🍂",
   "🍁",
   "🌹",
-  "🪻",
+  "🪻"
 ];
 const sizeList = [28, 36, 44, 48]; // limited set
 
@@ -400,8 +400,7 @@ function initCelestial() {
       x: Math.random() * canvas.width,
       y: Math.random() * (canvas.height - 150) + 50,
       size: Math.floor(Math.random() * 20) + 7,
-      emoji:
-        CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)],
+      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
     });
   }
 }
@@ -434,7 +433,7 @@ function drawLoadingScreen(current, total) {
   ctx.fillText(
     `${Math.round(pct * 100)}%`,
     canvas.width / 2,
-    barY + barHeight + 30,
+    barY + barHeight + 30
   );
 }
 
@@ -483,7 +482,7 @@ function spawnObstacle() {
     width: size,
     height: size,
     type,
-    img, // store the offscreen canvas
+    img // store the offscreen canvas
   });
 }
 
@@ -510,7 +509,7 @@ const COLLECTIBLE_TYPES = [
   "🦜",
   "🦢",
   "🪿",
-  "🦃",
+  "🦃"
 ];
 const COLLECTIBLE_SCORES = {
   "🐟": 5,
@@ -533,7 +532,7 @@ const COLLECTIBLE_SCORES = {
   "🦜": 9,
   "🦢": 10,
   "🪿": 10,
-  "🦃": 12,
+  "🦃": 12
 };
 const DEFAULT_COLLECTIBLE_SCORE = 5;
 const COLLECTIBLE_SIZES = [48, 60, 72, 83];
@@ -582,7 +581,7 @@ function spawnCollectible() {
     width: size,
     height: size,
     type,
-    img,
+    img
   });
 }
 
@@ -595,7 +594,7 @@ function update(timestamp) {
 
   currentSpeed = Math.min(
     MAX_SPEED,
-    INITIAL_SPEED + Math.floor(score / 5) * SPEED_INCREMENT,
+    INITIAL_SPEED + Math.floor(score / 5) * SPEED_INCREMENT
   );
 
   // Gravity
@@ -776,7 +775,7 @@ function draw() {
       obs.x + obs.width / 2 - img.width / 2 - 30,
       obs.y + obs.height - img.height,
       img.width,
-      img.height,
+      img.height
     );
   });
 
@@ -801,7 +800,7 @@ function saveScore(name, finalScore) {
   const newScore = {
     name,
     score: finalScore,
-    date: new Date().toLocaleDateString(),
+    date: new Date().toLocaleDateString()
   };
   let scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
   scores.push(newScore);
@@ -820,8 +819,8 @@ function ensureDefaultHighScore() {
       {
         name: "Negruta",
         score: 500,
-        date: new Date().toLocaleDateString(),
-      },
+        date: new Date().toLocaleDateString()
+      }
     ];
     localStorage.setItem(key, JSON.stringify(defaultScores));
   }
@@ -837,7 +836,7 @@ function displayScores() {
     const li = document.createElement("li");
     const medal = i < 3 ? medals[i] : `${i + 1}.`;
     const text = document.createTextNode(
-      `${medal} ${s.name}: ${s.score} (${s.date})`,
+      `${medal} ${s.name}: ${s.score} (${s.date})`
     );
     li.appendChild(text);
     scoreList.appendChild(li);
@@ -936,7 +935,7 @@ canvas.addEventListener(
       jumpCount++;
     }
   },
-  { passive: false },
+  { passive: false }
 );
 
 // allow double-clicks to perform an extra jump (helps automation/double-click input)
