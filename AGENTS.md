@@ -12,7 +12,7 @@
   2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content`, because `Read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
   2.4 Use `webfetch` and `websearch` tools when required to access the Internet for online resources, documentation, search results.
   2.5 Use `question` tool for asking follow-up questions, but only if really required.
-  2.6 Don't use `Glob` tool, it's broken. Use Read or pwsh commands instead.
+  2.6 Don't use `Glob` tool, it's broken. Use `Read` or `pwsh` commands instead.
 
 - EDITING
   3.1 To check line endings in PowerShell: `(Get-Content -Raw "filename") -match "`r"`3.2 Before editing, make sure the line endings are unix style (LF). If not, convert line endings to Unix style:`(Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename`. Or use dos2unix (already installed - as windows version)
@@ -38,7 +38,7 @@
 - PIPELINE SYSTEM
   7.1 Trigger: User asks to create a github issue(s) for some task(s) → start pipeline workflow. Eg. user asks "create a gh issue for adding a new button".
   7.2 Create the GitHub issue(s) via `gh issue create` (title: "[Pipeline] <task>", label: "pipeline" (already existing label)).
-  7.3 Create branch `pipeline/<#>-<issue_short_title>`, switch to it
+  7.3 Create branch `pipeline/<#>-<issue_short_title>`, switch to it before modifying any files.
   7.4 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the next number of the issue that will be created in github. Use `question` tool for this.
   7.5 Store issue # in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify, then close. After each stage, write to `<#>/NN-stage.md`.
   7.6 Add the contents of `00-spec.md` to the github issue as its body. If multiple issues were identified, analyze them one by one, creating the `00-spec.md` and adding it to the issue's body, before going for the next (to keep the context focused).
