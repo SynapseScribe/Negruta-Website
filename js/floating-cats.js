@@ -109,24 +109,22 @@ const catFacts = [
 let currentBubble = null;
 let bubbleTimeout = null;
 
-function dismissBubble() {
-  if (currentBubble) {
-    currentBubble.classList.add("cat-fact-bubble-fade-out");
-    setTimeout(() => {
-      if (currentBubble && currentBubble.parentNode) {
-        currentBubble.remove();
-        currentBubble = null;
-      }
-    }, 400);
-  }
+function showCatFact(catElement, fact) {
   if (bubbleTimeout) {
     clearTimeout(bubbleTimeout);
     bubbleTimeout = null;
   }
-}
 
-function showCatFact(catElement, fact) {
-  dismissBubble();
+  if (currentBubble) {
+    const oldBubble = currentBubble;
+    currentBubble = null;
+    oldBubble.classList.add("cat-fact-bubble-fade-out");
+    setTimeout(() => {
+      if (oldBubble.parentNode) {
+        oldBubble.remove();
+      }
+    }, 400);
+  }
 
   const bubble = document.createElement("div");
   bubble.className = "cat-fact-bubble";
@@ -152,8 +150,16 @@ function showCatFact(catElement, fact) {
   });
 
   bubbleTimeout = setTimeout(() => {
-    dismissBubble();
-  }, 4000);
+    const fadingBubble = currentBubble;
+    currentBubble = null;
+    fadingBubble.classList.add("cat-fact-bubble-fade-out");
+    setTimeout(() => {
+      if (fadingBubble.parentNode) {
+        fadingBubble.remove();
+      }
+    }, 400);
+    bubbleTimeout = null;
+  }, 3000);
 }
 
 const floatingCats = document.querySelectorAll(".floating-cats span");
