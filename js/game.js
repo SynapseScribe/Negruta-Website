@@ -67,7 +67,6 @@ const OBSTACLE_TYPES = [
   "🚐",
   "🚠",
   "🎸",
-  "🎹",
   "🎻",
   "🎺",
   "🥁",
@@ -103,7 +102,6 @@ const OBSTACLE_TYPES = [
   "🧨",
   "💣",
   "🪤",
-  "🩸",
   "🧫",
   "🧬",
   "🪀",
@@ -255,7 +253,7 @@ const OBSTACLE_TYPES = [
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
 const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
 const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
-const OBSTACLE_SIZES = [160, 200, 240, 270, 300];
+const OBSTACLE_SIZES = [200, 250, 300];
 const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
 const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
 
@@ -356,10 +354,10 @@ const GRASS_EMOJIS = [
   "🌹",
   "🪻"
 ];
-const sizeList = [28, 36, 44, 48]; // limited set
+const sizeList = [30, 40, 50]; // limited set
 
-const GRASS_MIN_SPACING = 40;
-const GRASS_MAX_SPACING = 80;
+const GRASS_MIN_SPACING = 50;
+const GRASS_MAX_SPACING = 90;
 function randomGrassGap() {
   return (
     GRASS_MIN_SPACING + Math.random() * (GRASS_MAX_SPACING - GRASS_MIN_SPACING)
@@ -538,7 +536,7 @@ const COLLECTIBLE_SCORES = {
   "🦃": 12
 };
 const DEFAULT_COLLECTIBLE_SCORE = 5;
-const COLLECTIBLE_SIZES = [48, 60, 72, 83];
+const COLLECTIBLE_SIZES = [60, 70, 80];
 
 const collectibleRenderCache = new Map();
 async function initCollectibleCache(progressCallback) {
