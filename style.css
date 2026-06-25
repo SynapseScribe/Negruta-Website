@@ -583,6 +583,18 @@ footer {
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
 }
 
+.error-message {
+  display: block;
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  min-height: 1.2em;
+}
+
+#playerNameInput.error {
+  border-color: #e74c3c;
+}
+
 @keyframes inputShake {
   0%,
   100% {

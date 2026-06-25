@@ -875,8 +875,19 @@ function displayScores() {
   });
 }
 
+const nameError = document.getElementById("nameError");
+
+function clearNameError() {
+  nameError.textContent = "";
+  nameInput.classList.remove("error");
+}
+
+nameInput.addEventListener("input", clearNameError);
+
 async function startGame() {
   if (nameInput.value.trim() === "") {
+    nameError.textContent = "Please enter your name first!";
+    nameInput.classList.add("error");
     nameInput.focus();
     nameInput.style.animation = "none";
     nameInput.offsetHeight;

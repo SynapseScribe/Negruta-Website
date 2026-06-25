@@ -200,7 +200,9 @@
               type="text"
               id="playerNameInput"
               placeholder="Enter your name"
+              aria-describedby="nameError"
             />
+            <span id="nameError" class="error-message" role="alert"></span>
             <button type="button" id="startGameBtn">Start Game</button>
           </div>
           <canvas id="gameCanvas" width="800" height="550"></canvas>
