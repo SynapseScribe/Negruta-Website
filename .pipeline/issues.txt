@@ -1,0 +1,26 @@
+50 - [Pipeline][BUG] Cancel animation loop on game over instead of letting it spin - OPEN
+49 - [Pipeline][BUG] Replace splice() in hot path with more efficient array removal - OPEN
+48 - [Pipeline][FEATURE] Cache static background (gradient, moon, celestial) to offscreen canvas - OPEN
+47 - [Pipeline][FEATURE] Batch grass rendering into pre-rendered ground strips - OPEN
+46 - [Pipeline][FEATURE] Adapt canvas resolution to device pixel ratio and screen size - OPEN
+41 - [Pipeline] Replace alert() with inline error for game name validation - CLOSED
+40 - [Pipeline] Replace alert() with dialog overlay for game over screen - CLOSED
+39 - [Pipeline] Replace alert() with pop bubble in floating cats - CLOSED
+38 - [Pipeline] Replace alert() with inline success message in contact form - CLOSED
+25 - [Pipeline] Remove trailing comma in Math.min() call - CLOSED
+24 - [Pipeline] Cap localStorage high scores to prevent unbounded growth - CLOSED
+23 - [Pipeline] Optimize O(n²) grass rendering in game loop - CLOSED
+22 - [Pipeline] Fix displayScores() not called on page load - CLOSED
+21 - [Pipeline] Obstacle minGap clamps to 68 frames at high scores, causing near-impossible density - CLOSED
+20 - [Pipeline] Fix syntax error in dblclick event listener (line 601) - CLOSED
+19 - [Pipeline] Dead code: groundY variable assigned but never read - CLOSED
+18 - [Pipeline] No touch event support — game unplayable on mobile - CLOSED
+17 - [Pipeline] Grass recycling uses O(n) scan on every frame item recycle - CLOSED
+16 - [Pipeline] Auto-jump increments jumpCount unboundedly, can lock player out of jumping - CLOSED
+15 - [Pipeline] Code quality: Duplicate entries in COLLECTIBLE_TYPES array - CLOSED
+14 - [Pipeline] Code quality: Redundant nextObstacleFrame > 0 check - CLOSED
+13 - [Pipeline] Optimization: Unbounded emoji render caches grow indefinitely - CLOSED
+12 - [Pipeline] Performance: O(n²) grass recycling via Math.max spread - CLOSED
+11 - [Pipeline] Bug: Dead code in obstacle spacing logic (minGap always 680) - CLOSED
+10 - [Pipeline] Bug: jumpCount not reset in resetGame() - CLOSED
+1 - [Pipeline] #1 - Add a toggle for dark theme - CLOSED
