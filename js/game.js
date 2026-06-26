@@ -1,31 +1,127 @@
 
-const BASE_WIDTH = 800;
-const BASE_HEIGHT = 550;
-const canvas = document.getElementById("gameCanvas");
-canvas.width = BASE_WIDTH;
-canvas.height = BASE_HEIGHT;
-const ctx = canvas.getContext("2d"); // 2D drawing context
-
-let CAT_SIZE = 120;
-let CAT_X = 150;
-let CAT_Y = 0;
-
-let scale = 1;
-let scaleComputed = false;
-
+/* GET ELEMENTS */
 const scoreElement = document.getElementById("gameScore");
 const nameInput = document.getElementById("playerNameInput");
 const startBtn = document.getElementById("startGameBtn");
 const gameOverDialog = document.getElementById("gameOverDialog");
 const playAgainBtn = document.getElementById("playAgainBtn");
 const gameOverCloseBtn = document.getElementById("gameOverCloseBtn");
+const canvas = document.getElementById("gameCanvas");
 
+/* CANVAS */
+const ctx = canvas.getContext("2d"); // 2D drawing context
+const BASE_WIDTH = 800;
+const BASE_HEIGHT = 550;
+
+let frameCount = 0;
+
+
+/* MOVEMENT */
 const gravity = 1;
 const jumpStrength = -20;
 const maxJumpsBeforeReset = 2;
 const INITIAL_SPEED = 10;
 const MAX_SPEED = 50;
 const SPEED_INCREMENT = 0.1;
+
+let currentSpeed = INITIAL_SPEED;
+let velocityY = 0;
+let rightmostX = 0;
+let jumpCount = 0;
+
+
+/* CAT */
+let CAT_SIZE = 120;
+let CAT_X = 150;
+let CAT_Y = 0;
+
+
+/* GAME */
+let playerName = "";
+let gameRunning = false;
+let score = 0;
+
+
+
+// ----------------------------- //
+/* GRASS */
+// ----------------------------- //
+
+
+let grassItems = [];
+const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
+const grassSizes = [30, 40, 50];
+const GRASS_MIN_SPACING = 120;
+const GRASS_MAX_SPACING = 200;
+
+const GRASS_EMOJIS = [
+  "🌱",
+  "🌿",
+  "☘️",
+  "🍀",
+  "🌾",
+  "🎍",
+  "🪴",
+  "🌼",
+  "🌻",
+  "🌷",
+  "🥀",
+  "🍂",
+  "🍁",
+  "🌹",
+  "🪻"
+];
+
+// cache per emoji+size to speed drawing - for GROUND GRASS
+const emojiCache = new Map();
+
+function buildGrassEmojiCache() {
+  emojiCache.clear();
+  for (const emoji of GRASS_EMOJIS) {
+    for (const s of grassSizes) {
+      const key = `${emoji}_${s}`;
+      const oc = document.createElement("canvas");
+      oc.width = oc.height = s * 2;
+      const cctx = oc.getContext("2d");
+      cctx.font = `${s}px serif`;
+      cctx.textAlign = "center";
+      cctx.textBaseline = "bottom";
+      cctx.clearRect(0, 0, oc.width, oc.height);
+      cctx.fillText(emoji, oc.width / 2, oc.height - 1);
+      emojiCache.set(key, oc);
+    }
+  }
+}
+buildGrassEmojiCache();
+
+function randomGrassGap() {
+  return Math.floor(
+    grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
+  );
+}
+
+// calls: randomGrassGap() 
+function initGrass() {
+  grassItems = [];
+  let x = -grassSize;
+  while (x <= canvas.width + grassSize) {
+    const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+    const size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
+    grassItems.push({ x, emoji, size });
+    x += randomGrassGap();
+  }
+  rightmostX = grassItems[grassItems.length - 1].x;
+}
+
+
+// ----------------------------- //
+/* OBSTACLES */
+// ----------------------------- //
+
+/* OBSTACLES */
+let obstacles = [];
+let nextObstacleFrame = 100;
+const OBSTACLE_SIZES = [200, 250, 300];
 const OBSTACLE_TYPES = [
   "🌲",
   "🏠",
@@ -256,251 +352,14 @@ const OBSTACLE_TYPES = [
   "🤾",
   "👜"
 ];
-
 const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
+
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
 const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
 
 const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
 const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
 
-const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
-const GRASS_MIN_SPACING = 120;
-const GRASS_MAX_SPACING = 200;
-
-const OBSTACLE_SIZES = [200, 250, 300];
-const COLLECTIBLE_SIZES = [40, 50, 60];
-const grassSizes = [30, 40, 50];
-
-let catSize, catX, gravityVal, jumpStrengthVal, initialSpeed, maxSpeed, speedIncrement, collisionHPadding, obstacleHitboxInset, collisionVPadding, obstacleSizes, autojumpVTolerance, autojumpHMargin, grassSize, grassMinSpacing, grassMaxSpacing, collectibleSizes, bgGradient;
-
-
-function createBackgroundGradient() {
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  gradient.addColorStop(0, "#0a0a2e");
-  gradient.addColorStop(0.5, "#1a1a4e");
-  gradient.addColorStop(1, "#2d1b69");
-  return gradient;
-}
-
-function computeScale() {
-  const renderedW = canvas.clientWidth || BASE_WIDTH;
-  const renderedH = canvas.clientHeight || BASE_HEIGHT;
-  scale = Math.min(renderedW / BASE_WIDTH, renderedH / BASE_HEIGHT);
-
-  canvas.width = Math.round(BASE_WIDTH * scale);
-  canvas.height = Math.round(BASE_HEIGHT * scale);
-
-  catSize = Math.round(CAT_SIZE * scale);
-  catX = Math.round(CAT_X * scale);
-  gravityVal = Math.round(gravity * scale * 10) / 10;
-  jumpStrengthVal = Math.round(jumpStrength * scale * 10) / 10;
-  initialSpeed = Math.round(INITIAL_SPEED * scale * 10) / 10;
-  maxSpeed = Math.round(MAX_SPEED * scale * 10) / 10;
-  speedIncrement = Math.round(SPEED_INCREMENT * scale * 100) / 100;
-  collisionHPadding = Math.round(COLLISION_HORIZONTAL_PADDING * scale);
-  obstacleHitboxInset = Math.round(OBSTACLE_HITBOX_INSET * scale);
-  collisionVPadding = Math.round(COLLISION_VERTICAL_PADDING * scale);
-  obstacleSizes = OBSTACLE_SIZES.map((s) => Math.round(s * scale));
-  autojumpVTolerance = Math.round(AUTOJUMP_VERTICAL_TOLERANCE * scale);
-  autojumpHMargin = Math.round(AUTOJUMP_HORIZONTAL_MARGIN * scale);
-  grassSize = Math.round(GRASS_SIZE * scale);
-  grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
-  grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
-  collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
-
-  bgGradient = createBackgroundGradient();
-}
-
-
-
-let gameRunning = false;
-let playerName = "";
-let jumpCount = 0;
-let score = 0;
-
-let obstacles = [];
-let collectibles = [];
-let celestialObjects = [];
-let grassItems = [];
-
-let currentSpeed = INITIAL_SPEED;
-let velocityY = 0;
-let rightmostX = 0;
-
-let frameCount = 0;
-let nextObstacleFrame = 100;
-
-const meowSounds = [
-  "assets/audio/meow_sounds/soundzee-cat-meow-361882.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-13-fx-306192.mp3",
-  "assets/audio/meow_sounds/ribhavagrawal-cat-meowing-type-02-293290.mp3",
-  "assets/audio/meow_sounds/freesound_community-cat-meow-99835.mp3",
-  "assets/audio/meow_sounds/freesound_community-meow-39411.mp3",
-  "assets/audio/meow_sounds/soulfuljamtracks-cat-meow-2-fx-323466.mp3",
-  "assets/audio/meow_sounds/dragon-studio-kitten-sfx-405457.mp3",
-  "assets/audio/meow_sounds/freesound_community-cat-purring-and-meow-5928.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-15-fx-306190.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-4-fx-306180.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-12-fx-306191.mp3",
-  "assets/audio/meow_sounds/soulfuljamtracks-cat-meow-1-fx-323465.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-3-fx-306179.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-14-fx-306189.mp3",
-  "assets/audio/meow_sounds/freesound_community-angry-cat-meow-82091.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-9-fx-306185.mp3",
-  "assets/audio/meow_sounds/freesound_community-cat-meow-81626.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-1-fx-306178.mp3",
-  "assets/audio/meow_sounds/scottishperson-sound-effect-cat-meow-279336.mp3",
-  "assets/audio/meow_sounds/dragon-studio-cartoon-cat-meow-487661.mp3",
-  "assets/audio/meow_sounds/sound_garage-cat-meow-7-fx-306186.mp3",
-  "assets/audio/meow_sounds/u_6ekfl947a2-cat-meow-297927.mp3",
-  "assets/audio/meow_sounds/dragon-studio-cartoon-kitten-meow-487668.mp3",
-  "assets/audio/meow_sounds/freesound_community-cat-meow-85175.mp3",
-  "assets/audio/meow_sounds/dragon-studio-meow-sfx-405456.mp3",
-  "assets/audio/meow_sounds/dragon-studio-cute-cat-meow-472372.mp3",
-  "assets/audio/meow_sounds/dragon-studio-cat-meow-401729.mp3"
-];
-
-// preload
-const meowAudioPool = meowSounds.map((src) => {
-  const a = new Audio(src);
-  a.preload = "auto";
-  return a;
-});
-function meow() {
-  const idx = Math.floor(Math.random() * meowAudioPool.length);
-  const audio = meowAudioPool[idx].cloneNode(); // clone to allow overlapping plays
-  audio.volume = 0.1;
-  audio.play().catch((e) => console.log("Audio play failed:", e));
-}
-
-
-
-// # GRASS #
-
-function randomGrassGap() {
-  return Math.floor(
-    grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
-  );
-}
-
-
-const GRASS_EMOJIS = [
-  "🌱",
-  "🌿",
-  "☘️",
-  "🍀",
-  "🌾",
-  "🎍",
-  "🪴",
-  "🌼",
-  "🌻",
-  "🌷",
-  "🥀",
-  "🍂",
-  "🍁",
-  "🌹",
-  "🪻"
-];
-
-// cache per emoji+size to speed drawing - for GROUND GRASS
-const emojiCache = new Map();
-
-function buildGrassEmojiCache() {
-  emojiCache.clear();
-  for (const emoji of GRASS_EMOJIS) {
-    for (const s of grassSizes) {
-      const key = `${emoji}_${s}`;
-      const oc = document.createElement("canvas");
-      oc.width = oc.height = s * 2;
-      const cctx = oc.getContext("2d");
-      cctx.font = `${s}px serif`;
-      cctx.textAlign = "center";
-      cctx.textBaseline = "bottom";
-      cctx.clearRect(0, 0, oc.width, oc.height);
-      cctx.fillText(emoji, oc.width / 2, oc.height - 1);
-      emojiCache.set(key, oc);
-    }
-  }
-}
-buildGrassEmojiCache();
-
-function initGrass() {
-  grassItems = [];
-  let x = -grassSize;
-  while (x <= canvas.width + grassSize) {
-    const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
-    const size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
-    grassItems.push({ x, emoji, size });
-    x += randomGrassGap();
-  }
-  rightmostX = grassItems[grassItems.length - 1].x;
-}
-
-function initCelestial() {
-  const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
-  celestialObjects = [];
-  const count = Math.floor(Math.random() * 20) + 11;
-  for (let i = 0; i < count; i++) {
-    celestialObjects.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * (canvas.height - 150 * scale) + 50 * scale,
-      size: Math.floor((Math.random() * 20 + 7) * scale),
-      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
-    });
-  }
-}
-
-
-
-// # RESET GAME
-function resetGame() {
-  score = 0;
-  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
-  velocityY = 0;
-  jumpCount = 0;
-  obstacles = [];
-  collectibles = [];
-  frameCount = 0;
-  nextObstacleFrame = 100;
-  currentSpeed = initialSpeed;
-  initGrass();
-  initCelestial();
-  scoreElement.innerText = "Score: 0";
-}
-
-// # LOADING SCREEN
-function drawLoadingScreen(current, total) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#1a1a2e";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#fff";
-  ctx.font = '36px "Segoe UI", Arial, sans-serif';
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2 - 40 * scale);
-  const barWidth = 400 * scale;
-  const barHeight = 24 * scale;
-  const barX = (canvas.width - barWidth) / 2;
-  const barY = canvas.height / 2 + 20 * scale;
-  ctx.fillStyle = "#333";
-  ctx.fillRect(barX, barY, barWidth, barHeight);
-  const pct = current / total;
-  ctx.fillStyle = "#4caf50";
-  ctx.fillRect(barX, barY, barWidth * pct, barHeight);
-  ctx.strokeStyle = "#555";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(barX, barY, barWidth, barHeight);
-  ctx.fillStyle = "#ccc";
-  ctx.font = '18px "Segoe UI", Arial, sans-serif';
-  ctx.fillText(
-    `${Math.round(pct * 100)}%`,
-    canvas.width / 2,
-    barY + barHeight + 30 * scale
-  );
-}
-
-// # OBSTACLES
 const emojiRenderCache = new Map();
 async function initEmojiCache(progressCallback) {
   if (emojiRenderCache.size > 0) return;
@@ -548,8 +407,14 @@ function spawnObstacle() {
 }
 
 
-// 						# COLLECTIBLES
+// ----------------------------- //
+/* COLLECTIBLES */
+// ----------------------------- //
 
+/* COLLECTIBLES */
+let collectibles = [];
+
+const COLLECTIBLE_SIZES = [40, 50, 60];
 const COLLECTIBLE_TYPES = [
   "🐟",
   "🐠",
@@ -597,7 +462,6 @@ const COLLECTIBLE_SCORES = {
   "🦃": 12
 };
 const DEFAULT_COLLECTIBLE_SCORE = 5;
-
 
 const collectibleRenderCache = new Map();
 async function initCollectibleCache(progressCallback) {
@@ -647,6 +511,181 @@ function spawnCollectible() {
   });
 }
 
+
+// ----------------------------- //
+/* AUDIO */
+// ----------------------------- //
+
+
+/* MEOWS */
+const meowSounds = [
+  "assets/audio/meow_sounds/soundzee-cat-meow-361882.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-13-fx-306192.mp3",
+  "assets/audio/meow_sounds/ribhavagrawal-cat-meowing-type-02-293290.mp3",
+  "assets/audio/meow_sounds/freesound_community-cat-meow-99835.mp3",
+  "assets/audio/meow_sounds/freesound_community-meow-39411.mp3",
+  "assets/audio/meow_sounds/soulfuljamtracks-cat-meow-2-fx-323466.mp3",
+  "assets/audio/meow_sounds/dragon-studio-kitten-sfx-405457.mp3",
+  "assets/audio/meow_sounds/freesound_community-cat-purring-and-meow-5928.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-15-fx-306190.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-4-fx-306180.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-12-fx-306191.mp3",
+  "assets/audio/meow_sounds/soulfuljamtracks-cat-meow-1-fx-323465.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-3-fx-306179.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-14-fx-306189.mp3",
+  "assets/audio/meow_sounds/freesound_community-angry-cat-meow-82091.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-9-fx-306185.mp3",
+  "assets/audio/meow_sounds/freesound_community-cat-meow-81626.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-1-fx-306178.mp3",
+  "assets/audio/meow_sounds/scottishperson-sound-effect-cat-meow-279336.mp3",
+  "assets/audio/meow_sounds/dragon-studio-cartoon-cat-meow-487661.mp3",
+  "assets/audio/meow_sounds/sound_garage-cat-meow-7-fx-306186.mp3",
+  "assets/audio/meow_sounds/u_6ekfl947a2-cat-meow-297927.mp3",
+  "assets/audio/meow_sounds/dragon-studio-cartoon-kitten-meow-487668.mp3",
+  "assets/audio/meow_sounds/freesound_community-cat-meow-85175.mp3",
+  "assets/audio/meow_sounds/dragon-studio-meow-sfx-405456.mp3",
+  "assets/audio/meow_sounds/dragon-studio-cute-cat-meow-472372.mp3",
+  "assets/audio/meow_sounds/dragon-studio-cat-meow-401729.mp3"
+];
+// preload MEOWS
+const meowAudioPool = meowSounds.map((src) => {
+  const a = new Audio(src);
+  a.preload = "auto";
+  return a;
+});
+// MEOW
+function meow() {
+  const idx = Math.floor(Math.random() * meowAudioPool.length);
+  const audio = meowAudioPool[idx].cloneNode(); // clone to allow overlapping plays
+  audio.volume = 0.1;
+  audio.play().catch((e) => console.log("Audio play failed:", e));
+}
+
+
+// ----------------------------- //
+/* RENDERING */
+// ----------------------------- //
+
+
+/* DRAW */
+
+/* LOADING SCREEN */
+// Used by startGame()
+function drawLoadingScreen(current, total) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#1a1a2e";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#fff";
+  ctx.font = '36px "Segoe UI", Arial, sans-serif';
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2 - 40 * scale);
+  const barWidth = 400 * scale;
+  const barHeight = 24 * scale;
+  const barX = (canvas.width - barWidth) / 2;
+  const barY = canvas.height / 2 + 20 * scale;
+  ctx.fillStyle = "#333";
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+  const pct = current / total;
+  ctx.fillStyle = "#4caf50";
+  ctx.fillRect(barX, barY, barWidth * pct, barHeight);
+  ctx.strokeStyle = "#555";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(barX, barY, barWidth, barHeight);
+  ctx.fillStyle = "#ccc";
+  ctx.font = '18px "Segoe UI", Arial, sans-serif';
+  ctx.fillText(
+    `${Math.round(pct * 100)}%`,
+    canvas.width / 2,
+    barY + barHeight + 30 * scale
+  );
+}
+
+
+// Generate Night Sky background gradient
+function createBackgroundGradient() {
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, "#0a0a2e");
+  gradient.addColorStop(0.5, "#1a1a4e");
+  gradient.addColorStop(1, "#2d1b69");
+  return gradient;
+}
+// Draw: createBackgroundGradient(), moon, celestial, speed counter, cat, grass [emojiCache], obstacles [prerenderEmoji], collectibles [prerenderCollectible]
+function draw() {
+  // Draw Night sky gradient background
+  ctx.fillStyle = createBackgroundGradient();
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw moon (top right, below speed text)
+  ctx.font = "80px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🌖", canvas.width - 150, 120);
+
+  // Draw celestial objects (back layer)
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  ctx.filter = "blur(0.5px)";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  celestialObjects.forEach((obj) => {
+    ctx.font = `${obj.size}px Arial`;
+    ctx.fillText(obj.emoji, obj.x, obj.y);
+  });
+  ctx.restore();
+
+  // Draw Speed counter (top-right)
+  ctx.fillStyle = "#d4af37";
+  ctx.font = "bold 18px Arial";
+  ctx.textAlign = "right";
+  ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, canvas.width - 15, 25);
+
+  // Draw Cat (Black Cat Emoji) - Flipped Horizontally
+  ctx.save();
+  ctx.translate(CAT_X, CAT_Y);
+  ctx.scale(-1, 1);
+  ctx.font = `${CAT_SIZE}px Arial`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🐈‍⬛", 0, 0);
+  ctx.restore();
+
+  // Draw Grass - in draw loop use drawImage (fast)
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  for (const item of grassItems) {
+    const key = `${item.emoji}_${item.size}`;
+    const img = emojiCache.get(key);
+    if (!img) continue;
+    const y = canvas.height; // bottom of canvas
+    ctx.drawImage(img, item.x - img.width / 2, y - img.height);
+  }
+
+  // Draw Obstacles (centered on collision box center)
+  obstacles.forEach((obs) => {
+    const img = obs.img || prerenderEmoji(obs.type, obs.height);
+    // center/position as you want (example aligns bottom center like before)
+    ctx.drawImage(
+      img,
+      obs.x + obs.width / 2 - img.width / 2,
+      obs.y + obs.height - img.height,
+      img.width,
+      img.height
+    );
+  });
+
+  // Draw Collectibles
+  collectibles.forEach((coll) => {
+    const img = coll.img || prerenderCollectible(coll.type, coll.height);
+    const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
+    const dy = coll.y + coll.height - img.height; // align bottom
+    ctx.drawImage(img, dx, dy, img.width, img.height);
+  });
+}
+
+
+/* UPDATE FRAME MOVEMENT */
+// gravity, floor collision, obstacle movement + collsion + meow(), Collectibles movement + collision, grass scrolling + randomGrassGap, spawnObstacle(), spawnCollectible(), draw(), 
 let lastTime = 0;
 function update(timestamp) {
   if (!gameRunning) return;
@@ -720,7 +759,7 @@ function update(timestamp) {
     }
   }
 
-  // Collectibles movement and collision (fish has larger hitbox for easier collection)
+  // Collectibles movement and collision (larger hitbox for easier collection)
   for (let i = collectibles.length - 1; i >= 0; i--) {
     collectibles[i].x -= currentSpeed * dt;
 
@@ -731,7 +770,6 @@ function update(timestamp) {
       catBottom >= collectibles[i].y - Math.floor(40 * scale)
     ) {
       score += COLLECTIBLE_SCORES[collectibles[i].type] ?? DEFAULT_COLLECTIBLE_SCORE;
-      //meow(); // too much meows lel
       scoreElement.innerText = `Score: ${score}`;
       collectibles.splice(i, 1);
       continue;
@@ -773,96 +811,95 @@ function update(timestamp) {
 }
 
 
-
-function draw() {
-  // Night sky gradient background
-  ctx.fillStyle = bgGradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw moon (top right, below speed text)
-  ctx.font = "80px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("🌖", canvas.width - 150, 120);
-
-  // Draw celestial objects (back layer)
-  ctx.save();
-  ctx.globalAlpha = 0.2;
-  ctx.filter = "blur(0.5px)";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  celestialObjects.forEach((obj) => {
-    ctx.font = `${obj.size}px Arial`;
-    ctx.fillText(obj.emoji, obj.x, obj.y);
-  });
-  ctx.restore();
-
-  // Draw Speed counter (top-right)
-  ctx.fillStyle = "#d4af37";
-  ctx.font = "bold 18px Arial";
-  ctx.textAlign = "right";
-  ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, canvas.width - 15, 25);
-
-  // Draw Cat (Black Cat Emoji) - Flipped Horizontally
-  ctx.save();
-  ctx.translate(CAT_X, CAT_Y);
-  ctx.scale(-1, 1);
-  ctx.font = `${CAT_SIZE}px Arial`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("🐈‍⬛", 0, 0);
-  ctx.restore();
-
-  // in draw loop use drawImage (fast)
-  ctx.textAlign = "center";
-  ctx.textBaseline = "bottom";
-  for (const item of grassItems) {
-    const key = `${item.emoji}_${item.size}`;
-    const img = emojiCache.get(key);
-    if (!img) continue;
-    const y = canvas.height; // bottom of canvas
-    ctx.drawImage(img, item.x - img.width / 2, y - img.height);
-  }
-
-  // Draw Obstacles (centered on collision box center)
-  obstacles.forEach((obs) => {
-    const img = obs.img || prerenderEmoji(obs.type, obs.height);
-    // center/position as you want (example aligns bottom center like before)
-    ctx.drawImage(
-      img,
-      obs.x + obs.width / 2 - img.width / 2,
-      obs.y + obs.height - img.height,
-      img.width,
-      img.height
-    );
-  });
-
-  // Draw Collectibles
-  collectibles.forEach((coll) => {
-    const img = coll.img || prerenderCollectible(coll.type, coll.height);
-    const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
-    const dy = coll.y + coll.height - img.height; // align bottom
-    ctx.drawImage(img, dx, dy, img.width, img.height);
-  });
-}
+// ----------------------------- //
+/* GAME START */
+// ----------------------------- //
 
 
-
-
-
-
-
-
-
-
-
-
-/* START GAME */
+// On 2 attempts to enter empty name, autocomplete to "Anon"
 let emptyNameAttempts = 0;
 nameInput.addEventListener("input", () => {
   emptyNameAttempts = 0;
 });
 
+
+/* RESET GAME */
+// Initialize celestials
+let celestialObjects = [];
+function initCelestial() {
+  const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
+  const count = Math.floor(Math.random() * 20) + 11;
+  for (let i = 0; i < count; i++) {
+    celestialObjects.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * (canvas.height - 150 * scale) + 50 * scale,
+      size: Math.floor((Math.random() * 20 + 7) * scale),
+      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
+    });
+  }
+}
+// Calls: initGrass(), initCelestial()
+function resetGame() {
+  score = 0;
+  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
+  velocityY = 0;
+  jumpCount = 0;
+  obstacles = [];
+  collectibles = [];
+  frameCount = 0;
+  nextObstacleFrame = 100;
+  currentSpeed = initialSpeed;
+  initGrass();
+  initCelestial();
+  scoreElement.innerText = "Score: 0";
+}
+
+
+
+/* HOW TO START */
+// Button starts game
+startBtn.addEventListener("click", startGame); 
+// Enter starts game 
+nameInput.addEventListener("keydown", (e) => {
+  if (e.code === "Enter") {
+    startGame();
+  }
+});
+
+
+// Scale sizes for different display sizes
+let scaleComputed = false;
+let scale, catSize, catX, gravityVal, jumpStrengthVal, initialSpeed, maxSpeed, speedIncrement, collisionHPadding, obstacleHitboxInset, collisionVPadding, obstacleSizes, autojumpVTolerance, autojumpHMargin, grassSize, grassMinSpacing, grassMaxSpacing, collectibleSizes, bgGradient;
+function computeScale() {
+  const renderedW = canvas.clientWidth || BASE_WIDTH;
+  const renderedH = canvas.clientHeight || BASE_HEIGHT;
+  scale = Math.min(renderedW / BASE_WIDTH, renderedH / BASE_HEIGHT);
+
+  canvas.width = Math.round(BASE_WIDTH * scale);
+  canvas.height = Math.round(BASE_HEIGHT * scale);
+
+  catSize = Math.round(CAT_SIZE * scale);
+  catX = Math.round(CAT_X * scale);
+  gravityVal = Math.round(gravity * scale * 10) / 10;
+  jumpStrengthVal = Math.round(jumpStrength * scale * 10) / 10;
+  initialSpeed = Math.round(INITIAL_SPEED * scale * 10) / 10;
+  maxSpeed = Math.round(MAX_SPEED * scale * 10) / 10;
+  speedIncrement = Math.round(SPEED_INCREMENT * scale * 100) / 100;
+  collisionHPadding = Math.round(COLLISION_HORIZONTAL_PADDING * scale);
+  obstacleHitboxInset = Math.round(OBSTACLE_HITBOX_INSET * scale);
+  collisionVPadding = Math.round(COLLISION_VERTICAL_PADDING * scale);
+  obstacleSizes = OBSTACLE_SIZES.map((s) => Math.round(s * scale));
+  autojumpVTolerance = Math.round(AUTOJUMP_VERTICAL_TOLERANCE * scale);
+  autojumpHMargin = Math.round(AUTOJUMP_HORIZONTAL_MARGIN * scale);
+  grassSize = Math.round(GRASS_SIZE * scale);
+  grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
+  grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
+  collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
+}
+
+
+/* START GAME */
+// calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
 async function startGame() {
   if (nameInput.value.trim() === "") {
     emptyNameAttempts++;
@@ -900,15 +937,9 @@ async function startGame() {
   lastTime = performance.now();
   update(performance.now());
 }
-// button starts game
-startBtn.addEventListener("click", startGame); 
-// enter starts game
-nameInput.addEventListener("keydown", (e) => {
-  if (e.code === "Enter") {
-    startGame();
-  }
-});
 
+
+/* HOW TO PLAY */
 // allow click
 canvas.addEventListener("mousedown", () => {
   if (gameRunning && jumpCount < maxJumpsBeforeReset) {
@@ -963,9 +994,10 @@ window.addEventListener("keydown", (e) => {
 
 
 
-
-
+// ----------------------------- //
 /* GAME OVER */
+// ----------------------------- //
+
 
 function saveScore(name, finalScore) {
   const newScore = {
@@ -981,6 +1013,7 @@ function saveScore(name, finalScore) {
   displayScores();
 }
 
+// saveScore(), gameOverDialog [playAgainBtn + gameOverCloseBtn]
 function gameOver() {
   gameRunning = false;
   saveScore(playerName, score);
@@ -1016,10 +1049,11 @@ gameOverCloseBtn.addEventListener("click", () => {
 });
 
 
-
-
-
+// ----------------------------- //
 /* ON LOAD */ 
+// ----------------------------- //
+
+
 // create a default high score if none exist
 function ensureDefaultHighScore() {
   const key = "catGameScores";
@@ -1036,6 +1070,7 @@ function ensureDefaultHighScore() {
   }
 }
 ensureDefaultHighScore();
+
 // Initialize scores display on load
 function displayScores() {
   const scoreList = document.getElementById("scoreList");
