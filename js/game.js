@@ -5,7 +5,11 @@ const BASE_WIDTH = 800;
 const BASE_HEIGHT = 550;
 const CAT_SIZE = 120;
 const CAT_X = 150;
+const CAT_SIZE = 120;
+const CAT_X = 150;
 
+let scale = 1;
+let scaleComputed = false;
 let scale = 1;
 let scaleComputed = false;
 canvas.width = BASE_WIDTH;
@@ -260,8 +264,69 @@ const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
 const OBSTACLE_SIZES = [200, 250, 300];
 const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
 const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
-
 const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
+const GRASS_MIN_SPACING = 120;
+const GRASS_MAX_SPACING = 200;
+const COLLECTIBLE_SIZES = [40, 50, 60];
+const sizeList = [30, 40, 50];
+
+// Scaled game variables (updated by computeScale)
+let catSize = CAT_SIZE;
+let catX = CAT_X;
+let gravityVal = 1;
+let jumpStrengthVal = -20;
+let initialSpeed = INITIAL_SPEED;
+let maxSpeed = MAX_SPEED;
+let speedIncrement = SPEED_INCREMENT;
+let collisionHPadding = COLLISION_HORIZONTAL_PADDING;
+let obstacleHitboxInset = OBSTACLE_HITBOX_INSET;
+let collisionVPadding = COLLISION_VERTICAL_PADDING;
+let obstacleSizes = OBSTACLE_SIZES;
+let autojumpVTolerance = AUTOJUMP_VERTICAL_TOLERANCE;
+let autojumpHMargin = AUTOJUMP_HORIZONTAL_MARGIN;
+let grassSize = GRASS_SIZE;
+let grassMinSpacing = GRASS_MIN_SPACING;
+let grassMaxSpacing = GRASS_MAX_SPACING;
+let collectibleSizes = COLLECTIBLE_SIZES;
+let grassSizes = sizeList;
+
+function computeScale() {
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+  const scaleX = cw / BASE_WIDTH;
+  const scaleY = ch / BASE_HEIGHT;
+  scale = Math.max(0.375, Math.min(1, Math.min(scaleX, scaleY)));
+
+  canvas.width = Math.floor(BASE_WIDTH * scale);
+  canvas.height = Math.floor(BASE_HEIGHT * scale);
+
+  catSize = Math.floor(CAT_SIZE * scale);
+  catX = Math.floor(CAT_X * scale);
+  gravityVal = Math.max(0.3, 1 * scale);
+  jumpStrengthVal = Math.floor(-20 * scale);
+  initialSpeed = Math.floor(INITIAL_SPEED * scale);
+  maxSpeed = Math.floor(MAX_SPEED * scale);
+  speedIncrement = Math.max(0.02, 0.1 * scale);
+  collisionHPadding = Math.floor(COLLISION_HORIZONTAL_PADDING * scale);
+  obstacleHitboxInset = Math.floor(OBSTACLE_HITBOX_INSET * scale);
+  collisionVPadding = Math.floor(COLLISION_VERTICAL_PADDING * scale);
+  autojumpVTolerance = Math.floor(AUTOJUMP_VERTICAL_TOLERANCE * scale);
+  autojumpHMargin = Math.floor(AUTOJUMP_HORIZONTAL_MARGIN * scale);
+  grassSize = Math.floor(GRASS_SIZE * scale);
+  grassMinSpacing = Math.floor(GRASS_MIN_SPACING * scale);
+  grassMaxSpacing = Math.floor(GRASS_MAX_SPACING * scale);
+  obstacleSizes = OBSTACLE_SIZES.map(function (s) {
+    return Math.floor(s * scale);
+  });
+  collectibleSizes = COLLECTIBLE_SIZES.map(function (s) {
+    return Math.floor(s * scale);
+  });
+  grassSizes = sizeList.map(function (s) {
+    return Math.floor(s * scale);
+  });
+  rebuildEmojiCaches();
+  scaleComputed = true;
+}
 const GRASS_MIN_SPACING = 120;
 const GRASS_MAX_SPACING = 200;
 const COLLECTIBLE_SIZES = [40, 50, 60];
@@ -436,6 +501,7 @@ function meow() {
 function resetGame() {
   score = 0;
   CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
+  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
   velocityY = 0;
   jumpCount = 0;
   obstacles = [];
@@ -476,10 +542,31 @@ function randomGrassGap() {
   return Math.floor(
     grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
   );
+  return Math.floor(
+    grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
+  );
 }
 
 // cache per emoji+size to speed drawing - for GROUND GRASS
 const emojiCache = new Map();
+function buildGrassEmojiCache() {
+  emojiCache.clear();
+  for (const emoji of GRASS_EMOJIS) {
+    for (const s of grassSizes) {
+      const key = `${emoji}_${s}`;
+      const oc = document.createElement("canvas");
+      oc.width = oc.height = s * 2;
+      const cctx = oc.getContext("2d");
+      cctx.font = `${s}px serif`;
+      cctx.textAlign = "center";
+      cctx.textBaseline = "bottom";
+      cctx.clearRect(0, 0, oc.width, oc.height);
+      cctx.fillText(emoji, oc.width / 2, oc.height - 1);
+      emojiCache.set(key, oc);
+    }
+  }
+}
+buildGrassEmojiCache();
 function buildGrassEmojiCache() {
   emojiCache.clear();
   for (const emoji of GRASS_EMOJIS) {
@@ -504,6 +591,7 @@ function initGrass() {
   let x = -grassSize;
   while (x <= canvas.width + grassSize) {
     const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+    const size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
     const size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
     grassItems.push({ x, emoji, size });
     x += randomGrassGap();
@@ -562,8 +650,10 @@ const emojiRenderCache = new Map();
 async function initEmojiCache(progressCallback) {
   if (emojiRenderCache.size > 0) return;
   const total = OBSTACLE_TYPES.length * obstacleSizes.length;
+  const total = OBSTACLE_TYPES.length * obstacleSizes.length;
   let count = 0;
   for (const emoji of OBSTACLE_TYPES) {
+    for (const size of obstacleSizes) {
     for (const size of obstacleSizes) {
       const key = `${emoji}_${size}`;
       const padding = Math.ceil(size * 0.25);
@@ -660,8 +750,10 @@ const collectibleRenderCache = new Map();
 async function initCollectibleCache(progressCallback) {
   if (collectibleRenderCache.size > 0) return;
   const total = COLLECTIBLE_TYPES.length * collectibleSizes.length;
+  const total = COLLECTIBLE_TYPES.length * collectibleSizes.length;
   let count = 0;
   for (const emoji of COLLECTIBLE_TYPES) {
+    for (const size of collectibleSizes) {
     for (const size of collectibleSizes) {
       const key = `${emoji}_${size}`;
       const padding = Math.ceil(size * 0.25);
@@ -691,11 +783,21 @@ function rebuildEmojiCaches() {
   collectibleRenderCache.clear();
   buildGrassEmojiCache();
 }
+function rebuildEmojiCaches() {
+  emojiRenderCache.clear();
+  collectibleRenderCache.clear();
+  buildGrassEmojiCache();
+}
 function spawnCollectible() {
   const size =
     collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
+    collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
   const type =
     COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
+  const y =
+    canvas.height -
+    Math.floor(350 * scale) +
+    Math.random() * Math.floor(180 * scale);
   const y =
     canvas.height -
     Math.floor(350 * scale) +
@@ -721,9 +823,12 @@ function update(timestamp) {
   currentSpeed = Math.min(
     maxSpeed,
     initialSpeed + Math.floor(score / 5) * speedIncrement
+    maxSpeed,
+    initialSpeed + Math.floor(score / 5) * speedIncrement
   );
 
   // Gravity
+  velocityY += gravityVal * dt;
   velocityY += gravityVal * dt;
   CAT_Y += velocityY * dt;
 
@@ -731,9 +836,14 @@ function update(timestamp) {
   const catRight = catX + catSize / 2;
   const catTop = CAT_Y - catSize / 2;
   const catBottom = CAT_Y + catSize / 2;
+  const catLeft = catX - catSize / 2;
+  const catRight = catX + catSize / 2;
+  const catTop = CAT_Y - catSize / 2;
+  const catBottom = CAT_Y + catSize / 2;
 
   // Floor collision
   if (catBottom > canvas.height) {
+    CAT_Y = canvas.height - catSize / 2;
     CAT_Y = canvas.height - catSize / 2;
     velocityY = 0;
     jumpCount = 0;
@@ -748,10 +858,15 @@ function update(timestamp) {
     const obsLeft = obstacles[i].x + Math.floor(10 * scale);
     const obsRight =
       obstacles[i].x + obstacles[i].width - Math.floor(10 * scale);
+    const obsLeft = obstacles[i].x + Math.floor(10 * scale);
+    const obsRight =
+      obstacles[i].x + obstacles[i].width - Math.floor(10 * scale);
 
     // Auto-jump when cat is about to land on top of obstacle
     if (
       // cat bottom is at or below the top, or slightly into it (tolerance)
+      catBottom >= obsTop - autojumpVTolerance &&
+      catBottom <= obsTop + autojumpVTolerance &&
       catBottom >= obsTop - autojumpVTolerance &&
       catBottom <= obsTop + autojumpVTolerance &&
       // only auto-jump when falling or near landing
@@ -759,7 +874,10 @@ function update(timestamp) {
       // horizontal overlap: cat is overlapping or very close to obstacle horizontally
       catLeft < obsRight + autojumpHMargin &&
       catRight > obsLeft - autojumpHMargin
+      catLeft < obsRight + autojumpHMargin &&
+      catRight > obsLeft - autojumpHMargin
     ) {
+      velocityY = jumpStrengthVal;
       velocityY = jumpStrengthVal;
       jumpCount = 1;
       meow();
@@ -769,7 +887,11 @@ function update(timestamp) {
     else if (
       catBottom > obsTop + collisionVPadding &&
       catTop < obsBottom - collisionVPadding &&
+      catBottom > obsTop + collisionVPadding &&
+      catTop < obsBottom - collisionVPadding &&
       // require more horizontal overlap (ignore glancing side contacts)
+      catLeft < obsRight - collisionHPadding &&
+      catRight >= obsLeft + obstacleHitboxInset + collisionHPadding
       catLeft < obsRight - collisionHPadding &&
       catRight >= obsLeft + obstacleHitboxInset + collisionHPadding
     ) {
@@ -795,6 +917,12 @@ function update(timestamp) {
       catTop <=
         collectibles[i].y + collectibles[i].height - Math.floor(15 * scale) &&
       catBottom >= collectibles[i].y - Math.floor(40 * scale)
+      catLeft <=
+        collectibles[i].x + collectibles[i].width - Math.floor(15 * scale) &&
+      catRight >= collectibles[i].x - Math.floor(40 * scale) &&
+      catTop <=
+        collectibles[i].y + collectibles[i].height - Math.floor(15 * scale) &&
+      catBottom >= collectibles[i].y - Math.floor(40 * scale)
     ) {
       score +=
         COLLECTIBLE_SCORES[collectibles[i].type] ?? DEFAULT_COLLECTIBLE_SCORE;
@@ -814,10 +942,12 @@ function update(timestamp) {
   for (const item of grassItems) {
     item.x -= currentSpeed * dt;
     if (item.x < -grassSize) {
+    if (item.x < -grassSize) {
       item.x = rightmostX + randomGrassGap();
       rightmostX = item.x;
       item.emoji =
         GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+      item.size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
       item.size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
     }
   }
@@ -832,7 +962,14 @@ function update(timestamp) {
     );
     nextObstacleFrame =
       frameCount + minGap + Math.floor(Math.random() * Math.floor(120 * scale));
+    const minGap = Math.max(
+      Math.floor(60 * scale),
+      Math.floor(680 * scale) - score
+    );
+    nextObstacleFrame =
+      frameCount + minGap + Math.floor(Math.random() * Math.floor(120 * scale));
   }
+  if (frameCount % Math.floor(150 * scale) === 0) {
   if (frameCount % Math.floor(150 * scale) === 0) {
     spawnCollectible();
   }
@@ -905,6 +1042,7 @@ function draw() {
     // center/position as you want (example aligns bottom center like before)
     ctx.drawImage(
       img,
+      obs.x + obs.width / 2 - img.width / 2,
       obs.x + obs.width / 2 - img.width / 2,
       obs.y + obs.height - img.height,
       img.width,
@@ -1091,12 +1229,14 @@ window.addEventListener("keydown", (e) => {
     e.preventDefault(); // stop page from scrolling
     if (jumpCount >= maxJumpsBeforeReset) return;
     velocityY = jumpStrengthVal;
+    velocityY = jumpStrengthVal;
     jumpCount++;
   }
 });
 
 canvas.addEventListener("mousedown", () => {
   if (gameRunning && jumpCount < maxJumpsBeforeReset) {
+    velocityY = jumpStrengthVal;
     velocityY = jumpStrengthVal;
     jumpCount++;
   }
@@ -1109,6 +1249,7 @@ canvas.addEventListener(
     e.preventDefault();
     if (gameRunning && jumpCount < maxJumpsBeforeReset) {
       velocityY = jumpStrengthVal;
+      velocityY = jumpStrengthVal;
       jumpCount++;
     }
   },
@@ -1119,6 +1260,7 @@ canvas.addEventListener(
 canvas.addEventListener("dblclick", () => {
   if (!gameRunning) return; // if there's room for another jump, do it
   if (jumpCount < maxJumpsBeforeReset) {
+    velocityY = jumpStrengthVal;
     velocityY = jumpStrengthVal;
     jumpCount++;
   }
