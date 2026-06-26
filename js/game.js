@@ -273,6 +273,16 @@ const COLLECTIBLE_SIZES = [40, 50, 60];
 const grassSizes = [30, 40, 50];
 
 let catSize, catX, gravityVal, jumpStrengthVal, initialSpeed, maxSpeed, speedIncrement, collisionHPadding, obstacleHitboxInset, collisionVPadding, obstacleSizes, autojumpVTolerance, autojumpHMargin, grassSize, grassMinSpacing, grassMaxSpacing, collectibleSizes, bgGradient;
+
+
+function createBackgroundGradient() {
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, "#0a0a2e");
+  gradient.addColorStop(0.5, "#1a1a4e");
+  gradient.addColorStop(1, "#2d1b69");
+  return gradient;
+}
+
 function computeScale() {
   const renderedW = canvas.clientWidth || BASE_WIDTH;
   const renderedH = canvas.clientHeight || BASE_HEIGHT;
@@ -372,9 +382,6 @@ function randomGrassGap() {
   return Math.floor(
     grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
   );
-  return Math.floor(
-    grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
-  );
 }
 
 
@@ -398,7 +405,7 @@ const GRASS_EMOJIS = [
 
 // cache per emoji+size to speed drawing - for GROUND GRASS
 const emojiCache = new Map();
-buildGrassEmojiCache();
+
 function buildGrassEmojiCache() {
   emojiCache.clear();
   for (const emoji of GRASS_EMOJIS) {
@@ -654,7 +661,6 @@ function update(timestamp) {
 
   // Gravity
   velocityY += gravityVal * dt;
-  velocityY += gravityVal * dt;
   CAT_Y += velocityY * dt;
 
   const catLeft = catX - catSize / 2;
@@ -684,13 +690,9 @@ function update(timestamp) {
       // cat bottom is at or below the top, or slightly into it (tolerance)
       catBottom >= obsTop - autojumpVTolerance &&
       catBottom <= obsTop + autojumpVTolerance &&
-      catBottom >= obsTop - autojumpVTolerance &&
-      catBottom <= obsTop + autojumpVTolerance &&
       // only auto-jump when falling or near landing
       velocityY >= 0 &&
       // horizontal overlap: cat is overlapping or very close to obstacle horizontally
-      catLeft < obsRight + autojumpHMargin &&
-      catRight > obsLeft - autojumpHMargin &&
       catLeft < obsRight + autojumpHMargin &&
       catRight > obsLeft - autojumpHMargin
     ) {
@@ -771,13 +773,7 @@ function update(timestamp) {
 }
 
 
-function createBackgroundGradient() {
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  gradient.addColorStop(0, "#0a0a2e");
-  gradient.addColorStop(0.5, "#1a1a4e");
-  gradient.addColorStop(1, "#2d1b69");
-  return gradient;
-}
+
 function draw() {
   // Night sky gradient background
   ctx.fillStyle = bgGradient;
@@ -850,91 +846,19 @@ function draw() {
   });
 }
 
-function gameOver() {
-  gameRunning = false;
-  saveScore(playerName, score);
 
-  document.getElementById("gameOverName").textContent = playerName;
-  document.getElementById("gameOverScore").textContent = `Score: ${score}`;
-  document.getElementById("gameOverDate").textContent = new Date().toLocaleDateString();
 
-  const scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
-  const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
-  const gameOverScoresList = document.getElementById("gameOverScores");
-  gameOverScoresList.innerHTML = "";
-  const medals = ["🥇", "🥈", "🥉"];
-  topScores.forEach((s, i) => {
-    const li = document.createElement("li");
-    const medal = i < 3 ? medals[i] : `${i + 1}.`;
-    li.textContent = `${medal} ${s.name}: ${s.score} (${s.date})`;
-    gameOverScoresList.appendChild(li);
-  });
 
-  gameOverDialog.showModal();
-}
 
-playAgainBtn.addEventListener("click", () => {
-  gameOverDialog.close();
-  startBtn.disabled = false;
-  nameInput.disabled = false;
-  startGame();
-});
 
-gameOverCloseBtn.addEventListener("click", () => {
-  gameOverDialog.close();
-  startBtn.disabled = false;
-  nameInput.disabled = false;
-});
 
-function saveScore(name, finalScore) {
-  const newScore = {
-    name,
-    score: finalScore,
-    date: new Date().toLocaleDateString()
-  };
-  let scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
-  scores.push(newScore);
-  scores.sort((a, b) => b.score - a.score);
-  if (scores.length > 50) scores = scores.slice(0, 50);
-  localStorage.setItem("catGameScores", JSON.stringify(scores));
-  displayScores();
-}
 
-// create a default high score if none exist
-function ensureDefaultHighScore() {
-  const key = "catGameScores";
-  const existing = JSON.parse(localStorage.getItem(key) || "null");
-  if (!existing) {
-    const defaultScores = [
-      {
-        name: "Negruta",
-        score: 500,
-        date: new Date().toLocaleDateString()
-      }
-    ];
-    localStorage.setItem(key, JSON.stringify(defaultScores));
-  }
-}
-function displayScores() {
-  const scoreList = document.getElementById("scoreList");
-  if (!scoreList) return;
-  const scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
-  const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
-  scoreList.innerHTML = "";
-  const medals = ["🥇", "🥈", "🥉"];
-  topScores.forEach((s, i) => {
-    const li = document.createElement("li");
-    const medal = i < 3 ? medals[i] : `${i + 1}.`;
-    const text = document.createTextNode(
-      `${medal} ${s.name}: ${s.score} (${s.date})`
-    );
-    li.appendChild(text);
-    scoreList.appendChild(li);
-  });
-}
 
+
+
+
+/* START GAME */
 let emptyNameAttempts = 0;
-
 nameInput.addEventListener("input", () => {
   emptyNameAttempts = 0;
 });
@@ -976,17 +900,46 @@ async function startGame() {
   lastTime = performance.now();
   update(performance.now());
 }
-
-startBtn.addEventListener("click", startGame);
-
+// button starts game
+startBtn.addEventListener("click", startGame); 
+// enter starts game
 nameInput.addEventListener("keydown", (e) => {
   if (e.code === "Enter") {
     startGame();
   }
 });
 
-// prevent spacebar from scrolling the page while the game is running,
-// but allow normal typing in inputs/textareas and contenteditable elements.
+// allow click
+canvas.addEventListener("mousedown", () => {
+  if (gameRunning && jumpCount < maxJumpsBeforeReset) {
+    velocityY = jumpStrengthVal;
+    jumpCount++;
+  }
+});
+
+// allow touch - support for mobile devices
+canvas.addEventListener(
+  "touchstart",
+  (e) => {
+    e.preventDefault();
+    if (gameRunning && jumpCount < maxJumpsBeforeReset) {
+      velocityY = jumpStrengthVal;
+      jumpCount++;
+    }
+  },
+  { passive: false }
+);
+
+// allow double-clicks - to perform an extra jump (helps automation/double-click input)
+canvas.addEventListener("dblclick", () => {
+  if (!gameRunning) return; // if there's room for another jump, do it
+  if (jumpCount < maxJumpsBeforeReset) {
+    velocityY = jumpStrengthVal;
+    jumpCount++;
+  }
+});
+
+// prevent spacebar from scrolling the page while the game is running, but allow normal typing in inputs/textareas and content editable elements.
 window.addEventListener("keydown", (e) => {
   const isSpace =
     e.code === "Space" ||
@@ -1008,35 +961,97 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-canvas.addEventListener("mousedown", () => {
-  if (gameRunning && jumpCount < maxJumpsBeforeReset) {
-    velocityY = jumpStrengthVal;
-    jumpCount++;
-  }
+
+
+
+
+/* GAME OVER */
+
+function saveScore(name, finalScore) {
+  const newScore = {
+    name,
+    score: finalScore,
+    date: new Date().toLocaleDateString()
+  };
+  let scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
+  scores.push(newScore);
+  scores.sort((a, b) => b.score - a.score);
+  if (scores.length > 50) scores = scores.slice(0, 50);
+  localStorage.setItem("catGameScores", JSON.stringify(scores));
+  displayScores();
+}
+
+function gameOver() {
+  gameRunning = false;
+  saveScore(playerName, score);
+
+  document.getElementById("gameOverName").textContent = playerName;
+  document.getElementById("gameOverScore").textContent = `Score: ${score}`;
+  document.getElementById("gameOverDate").textContent = new Date().toLocaleDateString();
+
+  const scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
+  const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
+  const gameOverScoresList = document.getElementById("gameOverScores");
+  gameOverScoresList.innerHTML = "";
+  const medals = ["🥇", "🥈", "🥉"];
+  topScores.forEach((s, i) => {
+    const li = document.createElement("li");
+    const medal = i < 3 ? medals[i] : `${i + 1}.`;
+    li.textContent = `${medal} ${s.name}: ${s.score} (${s.date})`;
+    gameOverScoresList.appendChild(li);
+  });
+
+  gameOverDialog.showModal();
+}
+playAgainBtn.addEventListener("click", () => {
+  gameOverDialog.close();
+  startBtn.disabled = false;
+  nameInput.disabled = false;
+  startGame();
+});
+gameOverCloseBtn.addEventListener("click", () => {
+  gameOverDialog.close();
+  startBtn.disabled = false;
+  nameInput.disabled = false;
 });
 
-// touch support for mobile devices
-canvas.addEventListener(
-  "touchstart",
-  (e) => {
-    e.preventDefault();
-    if (gameRunning && jumpCount < maxJumpsBeforeReset) {
-      velocityY = jumpStrengthVal;
-      jumpCount++;
-    }
-  },
-  { passive: false }
-);
 
-// allow double-clicks to perform an extra jump (helps automation/double-click input)
-canvas.addEventListener("dblclick", () => {
-  if (!gameRunning) return; // if there's room for another jump, do it
-  if (jumpCount < maxJumpsBeforeReset) {
-    velocityY = jumpStrengthVal;
-    jumpCount++;
+
+
+
+/* ON LOAD */ 
+// create a default high score if none exist
+function ensureDefaultHighScore() {
+  const key = "catGameScores";
+  const existing = JSON.parse(localStorage.getItem(key) || "null");
+  if (!existing) {
+    const defaultScores = [
+      {
+        name: "Negruta",
+        score: 500,
+        date: new Date().toLocaleDateString()
+      }
+    ];
+    localStorage.setItem(key, JSON.stringify(defaultScores));
   }
-});
-
-// Initialize scores display on load
+}
 ensureDefaultHighScore();
+// Initialize scores display on load
+function displayScores() {
+  const scoreList = document.getElementById("scoreList");
+  if (!scoreList) return;
+  const scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
+  const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
+  scoreList.innerHTML = "";
+  const medals = ["🥇", "🥈", "🥉"];
+  topScores.forEach((s, i) => {
+    const li = document.createElement("li");
+    const medal = i < 3 ? medals[i] : `${i + 1}.`;
+    const text = document.createTextNode(
+      `${medal} ${s.name}: ${s.score} (${s.date})`
+    );
+    li.appendChild(text);
+    scoreList.appendChild(li);
+  });
+}
 displayScores();
