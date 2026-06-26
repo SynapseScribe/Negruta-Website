@@ -31,7 +31,7 @@ let jumpCount = 0;
 
 
 /* CAT */
-let CAT_SIZE = 120;
+let CAT_SIZE = 80;
 let CAT_X = 150;
 let CAT_Y = 0;
 
@@ -871,7 +871,7 @@ function resetGame() {
 
 /* HOW TO START */
 // Button starts game
-startBtn.addEventListener("click", startGame); 
+startBtn.addEventListener("click", startGame);
 // Enter starts game 
 nameInput.addEventListener("keydown", (e) => {
   if (e.code === "Enter") {
@@ -882,7 +882,7 @@ nameInput.addEventListener("keydown", (e) => {
 
 // Scale sizes for different display sizes
 let scaleComputed = false;
-let scale, catSize, catX, gravityVal, jumpStrengthVal, initialSpeed, maxSpeed, speedIncrement, collisionHPadding, obstacleHitboxInset, collisionVPadding, obstacleSizes, autojumpVTolerance, autojumpHMargin, grassSize, grassMinSpacing, grassMaxSpacing, collectibleSizes, bgGradient;
+let scale, catSize, catX, gravityVal, jumpStrengthVal, initialSpeed, maxSpeed, speedIncrement, collisionHPadding, obstacleHitboxInset, collisionVPadding, obstacleSizes, autojumpVTolerance, autojumpHMargin, grassSize, grassMinSpacing, grassMaxSpacing, collectibleSizes;
 function computeScale() {
   const renderedW = canvas.clientWidth || BASE_WIDTH;
   const renderedH = canvas.clientHeight || BASE_HEIGHT;
@@ -929,22 +929,22 @@ async function startGame() {
   playerName = nameInput.value.trim();
   startBtn.disabled = true;
   nameInput.disabled = true;
-  if (!scaleComputed) {
-    computeScale();
+  
+  if(!scaleComputed) computeScale();
 
-    const totalObstacles = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
-    const totalCollectibles = COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
-    const grandTotal = totalObstacles + totalCollectibles;
-    const progressObstacles = (count) => {
-      drawLoadingScreen(count, grandTotal);
-    };
-    const progressCollectibles = (count) => {
-      drawLoadingScreen(totalObstacles + count, grandTotal);
-    };
-    drawLoadingScreen(0, grandTotal);
-    await initEmojiCache(progressObstacles);
-    await initCollectibleCache(progressCollectibles);
-  }
+  const totalObstacles = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
+  const totalCollectibles = COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
+  const grandTotal = totalObstacles + totalCollectibles;
+  const progressObstacles = (count) => {
+    drawLoadingScreen(count, grandTotal);
+  };
+  const progressCollectibles = (count) => {
+    drawLoadingScreen(totalObstacles + count, grandTotal);
+  };
+  drawLoadingScreen(0, grandTotal);
+  await initEmojiCache(progressObstacles);
+  await initCollectibleCache(progressCollectibles);
+
   gameRunning = true;
   resetGame();
   lastTime = performance.now();
@@ -1063,7 +1063,7 @@ gameOverCloseBtn.addEventListener("click", () => {
 
 
 // ----------------------------- //
-/* ON LOAD */ 
+/* ON LOAD */
 // ----------------------------- //
 
 
