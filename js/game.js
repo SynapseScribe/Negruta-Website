@@ -122,7 +122,7 @@ function initGrass() {
 let obstacles = [];
 let nextObstacleFrame = 100;
 const OBSTACLE_SIZES = [200, 250, 300];
-const OBSTACLE_TYPES = [
+const OBSTACLE_TYPES_FULL_SET = [
   "🌲",
   "🏠",
   "🏀",
@@ -222,7 +222,8 @@ const OBSTACLE_TYPES = [
   "🔩",
   "⚙️",
   "🦺",
-  "🏳️‍🌈",
+  "🏳️",
+  "🌈",
   "🎈",
   "🕹️",
   "🧳",
@@ -352,6 +353,18 @@ const OBSTACLE_TYPES = [
   "🤾",
   "👜"
 ];
+// shuffle Fisher–Yates
+function shuffleArray(array) {
+  const arr = [...array]; // copy, so original isn't changed
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+// for fast performance during startGame() loadingscreen - cache just a subset of 50 shuffled obstacles (initEmojiCache->drawLoadingScreen)
+const OBSTACLE_TYPES = shuffleArray(OBSTACLE_TYPES_FULL_SET).slice(0, 50);
+
 const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
 
 const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
