@@ -272,6 +272,7 @@ const OBSTACLE_SIZES = [200, 250, 300];
 const COLLECTIBLE_SIZES = [40, 50, 60];
 const grassSizes = [30, 40, 50];
 
+let catSize, catX, gravityVal, jumpStrengthVal, initialSpeed, maxSpeed, speedIncrement, collisionHPadding, obstacleHitboxInset, collisionVPadding, obstacleSizes, autojumpVTolerance, autojumpHMargin, grassSize, grassMinSpacing, grassMaxSpacing, collectibleSizes, bgGradient;
 function computeScale() {
   const renderedW = canvas.clientWidth || BASE_WIDTH;
   const renderedH = canvas.clientHeight || BASE_HEIGHT;
@@ -621,16 +622,6 @@ async function initCollectibleCache(progressCallback) {
 function prerenderCollectible(emoji, size) {
   return collectibleRenderCache.get(`${emoji}_${size}`);
 }
-function rebuildEmojiCaches() {
-  emojiRenderCache.clear();
-  collectibleRenderCache.clear();
-  buildGrassEmojiCache();
-}
-function rebuildEmojiCaches() {
-  emojiRenderCache.clear();
-  collectibleRenderCache.clear();
-  buildGrassEmojiCache();
-}
 function spawnCollectible() {
   const size = collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
   const type = COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
@@ -779,7 +770,7 @@ function update(timestamp) {
   requestAnimationFrame(update);
 }
 
-let bgGradient = createBackgroundGradient();
+
 function createBackgroundGradient() {
   const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, "#0a0a2e");

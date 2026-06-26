@@ -10,3 +10,4 @@ function moveSlide(direction) {
   currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
   container.style.transform = `translateX(-${currentSlide * 100}%)`;
 }
+window.moveSlide = moveSlide;

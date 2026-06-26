@@ -40,7 +40,9 @@ function randInt(min, max) {
     // also ensure window is focused
     try {
       window.focus();
-    } catch (e) {}
+    } catch (e) {
+      console.log("e: " + e);
+    }
   });
 
   // small sequential loop to avoid overlapping
@@ -50,7 +52,9 @@ function randInt(min, max) {
     console.log("Stopping...");
     try {
       await browser.close();
-    } catch (e) {}
+    } catch (e) {
+      console.log("e: " + e);
+    }
     process.exit(0);
   });
 
