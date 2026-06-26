@@ -1,11 +1,12 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d"); // 2D drawing context
 
-const CAT_SIZE = 80;
-const CAT_X = 160;
+const BASE_WIDTH = 800;
+const BASE_HEIGHT = 550;
+let scale = 1;
 
-canvas.width = 800;
-canvas.height = 550;
+canvas.width = BASE_WIDTH;
+canvas.height = BASE_HEIGHT;
 
 const scoreElement = document.getElementById("gameScore");
 const nameInput = document.getElementById("playerNameInput");
@@ -259,6 +260,54 @@ const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jum
 
 const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
 
+// Scaled game constants (computed from scale factor)
+let catSize = CAT_SIZE;
+let catX = CAT_X;
+let gravityVal = gravity;
+let jumpStrengthVal = jumpStrength;
+let initialSpeed = INITIAL_SPEED;
+let maxSpeed = MAX_SPEED;
+let speedIncrement = SPEED_INCREMENT;
+let collisionHPadding = COLLISION_HORIZONTAL_PADDING;
+let obstacleHitboxInset = OBSTACLE_HITBOX_INSET;
+let collisionVPadding = COLLISION_VERTICAL_PADDING;
+let obstacleSizes = [...OBSTACLE_SIZES];
+let autojumpVTolerance = AUTOJUMP_VERTICAL_TOLERANCE;
+let autojumpHMargin = AUTOJUMP_HORIZONTAL_MARGIN;
+let grassSize = GRASS_SIZE;
+let grassMinSpacing = GRASS_MIN_SPACING;
+let grassMaxSpacing = GRASS_MAX_SPACING;
+let collectibleSizes = [...COLLECTIBLE_SIZES];
+
+function computeScale() {
+  const renderedW = canvas.clientWidth || BASE_WIDTH;
+  const renderedH = canvas.clientHeight || BASE_HEIGHT;
+  scale = Math.min(renderedW / BASE_WIDTH, renderedH / BASE_HEIGHT);
+  scale = Math.max(0.375, Math.min(1, scale));
+  canvas.width = Math.round(BASE_WIDTH * scale);
+  canvas.height = Math.round(BASE_HEIGHT * scale);
+
+  catSize = Math.round(CAT_SIZE * scale);
+  catX = Math.round(CAT_X * scale);
+  gravityVal = Math.round(gravity * scale * 10) / 10;
+  jumpStrengthVal = Math.round(jumpStrength * scale * 10) / 10;
+  initialSpeed = Math.round(INITIAL_SPEED * scale * 10) / 10;
+  maxSpeed = Math.round(MAX_SPEED * scale * 10) / 10;
+  speedIncrement = Math.round(SPEED_INCREMENT * scale * 100) / 100;
+  collisionHPadding = Math.round(COLLISION_HORIZONTAL_PADDING * scale);
+  obstacleHitboxInset = Math.round(OBSTACLE_HITBOX_INSET * scale);
+  collisionVPadding = Math.round(COLLISION_VERTICAL_PADDING * scale);
+  obstacleSizes = OBSTACLE_SIZES.map((s) => Math.round(s * scale));
+  autojumpVTolerance = Math.round(AUTOJUMP_VERTICAL_TOLERANCE * scale);
+  autojumpHMargin = Math.round(AUTOJUMP_HORIZONTAL_MARGIN * scale);
+  grassSize = Math.round(GRASS_SIZE * scale);
+  grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
+  grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
+  collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
+
+  bgGradient = createBackgroundGradient();
+}
+
 const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
 
 let gameRunning = false;
@@ -321,14 +370,14 @@ function meow() {
 
 function resetGame() {
   score = 0;
-  CAT_Y = canvas.height - CAT_SIZE / 2; // center of cat is at half the size of cat, initially
+  CAT_Y = canvas.height - catSize / 2;
   velocityY = 0;
   jumpCount = 0;
   obstacles = [];
   collectibles = [];
   frameCount = 0;
   nextObstacleFrame = 100;
-  currentSpeed = INITIAL_SPEED;
+  currentSpeed = initialSpeed;
   initGrass();
   initCelestial();
   scoreElement.innerText = "Score: 0";
@@ -359,9 +408,7 @@ const sizeList = [30, 40, 50]; // limited set
 const GRASS_MIN_SPACING = 50;
 const GRASS_MAX_SPACING = 90;
 function randomGrassGap() {
-  return (
-    GRASS_MIN_SPACING + Math.random() * (GRASS_MAX_SPACING - GRASS_MIN_SPACING)
-  );
+  return grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing);
 }
 
 // cache per emoji+size to speed drawing - for GROUND GRASS
@@ -383,8 +430,8 @@ for (const emoji of GRASS_EMOJIS) {
 
 function initGrass() {
   grassItems = [];
-  let x = -GRASS_SIZE;
-  while (x <= canvas.width + GRASS_SIZE) {
+  let x = -grassSize;
+  while (x <= canvas.width + grassSize) {
     const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
     const size = sizeList[Math.floor(Math.random() * sizeList.length)];
     grassItems.push({ x, emoji, size });
@@ -399,8 +446,8 @@ function initCelestial() {
   for (let i = 0; i < count; i++) {
     celestialObjects.push({
       x: Math.random() * canvas.width,
-      y: Math.random() * (canvas.height - 150) + 50,
-      size: Math.floor(Math.random() * 20) + 7,
+      y: Math.random() * (canvas.height - 150 * scale) + 50 * scale,
+      size: Math.floor((Math.random() * 20 + 7) * scale),
       emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
     });
   }
@@ -416,11 +463,11 @@ function drawLoadingScreen(current, total) {
   ctx.font = '36px "Segoe UI", Arial, sans-serif';
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2 - 40);
-  const barWidth = 400;
-  const barHeight = 24;
+  ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2 - 40 * scale);
+  const barWidth = 400 * scale;
+  const barHeight = 24 * scale;
   const barX = (canvas.width - barWidth) / 2;
-  const barY = canvas.height / 2 + 20;
+  const barY = canvas.height / 2 + 20 * scale;
   ctx.fillStyle = "#333";
   ctx.fillRect(barX, barY, barWidth, barHeight);
   const pct = current / total;
@@ -434,7 +481,7 @@ function drawLoadingScreen(current, total) {
   ctx.fillText(
     `${Math.round(pct * 100)}%`,
     canvas.width / 2,
-    barY + barHeight + 30
+    barY + barHeight + 30 * scale
   );
 }
 
