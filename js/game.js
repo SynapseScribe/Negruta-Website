@@ -1102,4 +1102,15 @@ function displayScores() {
     scoreList.appendChild(li);
   });
 }
+
+// Handle window resize: clear caches and reset scale flag so next startGame recomputes
+window.addEventListener("resize", () => {
+  if (scaleComputed) {
+    scaleComputed = false;
+    emojiRenderCache.clear();
+    collectibleRenderCache.clear();
+    obstacles = [];
+    collectibles = [];
+  }
+});
 displayScores();
