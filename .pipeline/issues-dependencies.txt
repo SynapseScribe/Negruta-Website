@@ -1,10 +1,9 @@
 # Pipeline Issues Dependencies & Recommended Order
 
 ## Execution Order
-4. #55 → Standardize caching mechanism for all game objects (depends on #46)
+
 
 ## Dependencies
-#55 → depends on #46 (offscreen canvas must match dynamic canvas size, auto-regenerate on resize)
 #47 → depends on #46 (strip width tied to canvas width)
 
 
