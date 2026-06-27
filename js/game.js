@@ -39,32 +39,8 @@ let animationFrameId = null;
 let score = 0;
 
 // ----------------------------- //
-/* GRASS */
+/* CACHING */
 // ----------------------------- //
-
-let grassItems = [];
-const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
-const grassSizes = [30, 40, 50];
-const GRASS_MIN_SPACING = 120;
-const GRASS_MAX_SPACING = 200;
-
-const GRASS_EMOJIS = [
-  "🌱",
-  "🌿",
-  "☘️",
-  "🍀",
-  "🌾",
-  "🎍",
-  "🪴",
-  "🌼",
-  "🌻",
-  "🌷",
-  "🥀",
-  "🍂",
-  "🍁",
-  "🌹",
-  "🪻"
-];
 
 // Unified render cache for all emoji objects (obstacles, collectibles, grass, etc.)
 const renderCache = {
@@ -91,6 +67,34 @@ const renderCache = {
     this.map.clear();
   }
 };
+
+// ----------------------------- //
+/* GRASS */
+// ----------------------------- //
+
+let grassItems = [];
+const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
+const grassSizes = [30, 40, 50];
+const GRASS_MIN_SPACING = 120;
+const GRASS_MAX_SPACING = 200;
+
+const GRASS_EMOJIS = [
+  "🌱",
+  "🌿",
+  "☘️",
+  "🍀",
+  "🌾",
+  "🎍",
+  "🪴",
+  "🌼",
+  "🌻",
+  "🌷",
+  "🥀",
+  "🍂",
+  "🍁",
+  "🌹",
+  "🪻"
+];
 
 function randomGrassGap() {
   return Math.floor(
