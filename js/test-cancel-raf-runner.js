@@ -15,11 +15,15 @@ const MIME_TYPES = {
   ".css": "text/css",
   ".png": "image/png",
   ".jpg": "image/jpeg",
-  ".svg": "image/svg+xml",
+  ".svg": "image/svg+xml"
 };
 
 const server = http.createServer((req, res) => {
-  let filePath = path.join(__dirname, "..", req.url === "/" ? "index.html" : req.url);
+  let filePath = path.join(
+    __dirname,
+    "..",
+    req.url === "/" ? "index.html" : req.url
+  );
   const ext = path.extname(filePath);
   const contentType = MIME_TYPES[ext] || "application/octet-stream";
 
@@ -49,7 +53,9 @@ server.listen(PORT, async () => {
     await page.waitForTimeout(2000);
 
     // Verify game is running
-    const gameRunningBefore = await page.evaluate(() => typeof gameRunning !== "undefined" ? gameRunning : "not_found");
+    const gameRunningBefore = await page.evaluate(() =>
+      typeof gameRunning !== "undefined" ? gameRunning : "not_found"
+    );
     console.log(`gameRunning before gameOver: ${gameRunningBefore}`);
 
     // Take a canvas snapshot while game is running
@@ -74,17 +80,24 @@ server.listen(PORT, async () => {
     });
 
     // Wait for dialog
-    await page.waitForSelector("#gameOverDialog", { timeout: 5000, state: "visible" });
+    await page.waitForSelector("#gameOverDialog", {
+      timeout: 5000,
+      state: "visible"
+    });
     console.log("Game over dialog visible");
 
     // Check state after game over
     const afterState = await page.evaluate(() => ({
-      gameRunning: typeof gameRunning !== "undefined" ? gameRunning : "not_found",
-      animationFrameId: typeof animationFrameId !== "undefined" ? animationFrameId : "not_found",
+      gameRunning:
+        typeof gameRunning !== "undefined" ? gameRunning : "not_found",
+      animationFrameId:
+        typeof animationFrameId !== "undefined" ? animationFrameId : "not_found"
     }));
 
     console.log(`gameRunning after gameOver: ${afterState.gameRunning}`);
-    console.log(`animationFrameId after gameOver: ${afterState.animationFrameId}`);
+    console.log(
+      `animationFrameId after gameOver: ${afterState.animationFrameId}`
+    );
 
     // Take two snapshots after game over - should be identical (no animation)
     await page.waitForTimeout(300);
@@ -103,11 +116,14 @@ server.listen(PORT, async () => {
     console.log(`Canvas stopped after gameOver: ${canvasStopped}`);
 
     console.log(`\n=== Results ===`);
-    console.log(`animationFrameId is null: ${afterState.animationFrameId === null}`);
+    console.log(
+      `animationFrameId is null: ${afterState.animationFrameId === null}`
+    );
     console.log(`gameRunning is false: ${afterState.gameRunning === false}`);
     console.log(`Canvas frozen: ${canvasStopped}`);
 
-    const passed = afterState.animationFrameId === null && afterState.gameRunning === false;
+    const passed =
+      afterState.animationFrameId === null && afterState.gameRunning === false;
 
     if (passed) {
       console.log("\nPASSED: Animation loop properly cancelled on game over.");

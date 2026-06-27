@@ -1,16 +1,13 @@
 # Pipeline Issues Dependencies & Recommended Order
 
 ## Execution Order
-2. #49 → Replace splice() in hot path (standalone)
 4. #48 → Cache static background to offscreen canvas (depends on #46)
 5. #47 → Batch grass into pre-rendered ground strips (depends on #46)
 
 ## Dependencies
 #48 → depends on #46 (offscreen canvas must match dynamic canvas size)
 #47 → depends on #46 (strip width tied to canvas width)
-#49 → no dependencies
 
 
 ## Notes
-- #46 must be done before #47 and #48 to avoid rework
-- #49 can be done anytime but are easiest wins first
+
