@@ -66,27 +66,31 @@ const GRASS_EMOJIS = [
   "🪻"
 ];
 
-// cache per emoji+size to speed drawing - for GROUND GRASS
-const emojiCache = new Map();
-
-function buildGrassEmojiCache() {
-  emojiCache.clear();
-  for (const emoji of GRASS_EMOJIS) {
-    for (const s of grassSizes) {
-      const key = `${emoji}_${s}`;
-      const oc = document.createElement("canvas");
-      oc.width = oc.height = s * 2;
-      const cctx = oc.getContext("2d");
-      cctx.font = `${s}px serif`;
-      cctx.textAlign = "center";
-      cctx.textBaseline = "bottom";
-      cctx.clearRect(0, 0, oc.width, oc.height);
-      cctx.fillText(emoji, oc.width / 2, oc.height - 1);
-      emojiCache.set(key, oc);
-    }
+// Unified render cache for all emoji objects (obstacles, collectibles, grass, etc.)
+const renderCache = {
+  map: new Map(),
+  get(emoji, size) {
+    const key = `${emoji}_${size}`;
+    return this.map.get(key);
+  },
+  ensure(emoji, size, baseline = "bottom") {
+    const key = `${emoji}_${size}`;
+    if (this.map.has(key)) return this.map.get(key);
+    const oc = document.createElement("canvas");
+    oc.width = oc.height = size * 2;
+    const cctx = oc.getContext("2d");
+    cctx.font = `${size}px serif`;
+    cctx.textAlign = "center";
+    cctx.textBaseline = baseline;
+    cctx.clearRect(0, 0, oc.width, oc.height);
+    cctx.fillText(emoji, oc.width / 2, oc.height - 1);
+    this.map.set(key, oc);
+    return oc;
+  },
+  clear() {
+    this.map.clear();
   }
-}
-buildGrassEmojiCache();
+};
 
 function randomGrassGap() {
   return Math.floor(
@@ -366,25 +370,13 @@ const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
 const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
 const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
 
-const emojiRenderCache = new Map();
-async function initEmojiCache(progressCallback) {
-  if (emojiRenderCache.size > 0) return;
+async function initObstacleCache(progressCallback) {
+  if (renderCache.map.size > 0) return;
   const total = OBSTACLE_TYPES.length * obstacleSizes.length;
   let count = 0;
   for (const emoji of OBSTACLE_TYPES) {
     for (const size of obstacleSizes) {
-      const key = `${emoji}_${size}`;
-      const padding = Math.ceil(size * 0.25);
-      const w = size + padding * 2;
-      const oc = document.createElement("canvas");
-      oc.width = oc.height = w;
-      const c = oc.getContext("2d");
-      c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-      c.textAlign = "center";
-      c.textBaseline = "middle";
-      c.clearRect(0, 0, w, w);
-      c.fillText(emoji, w / 2, w / 2);
-      emojiRenderCache.set(key, oc);
+      renderCache.ensure(emoji, size);
       count++;
       if (count % 10 === 0) {
         progressCallback(count, total);
@@ -393,16 +385,13 @@ async function initEmojiCache(progressCallback) {
     }
   }
 }
-function prerenderEmoji(emoji, size) {
-  return emojiRenderCache.get(`${emoji}_${size}`);
-}
 function spawnObstacle() {
   const OBSTACLE_VERTICAL_OFFSET = Math.floor(60 * scale);
 
   const size = obstacleSizes[Math.floor(Math.random() * obstacleSizes.length)];
   const type =
     OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
-  const img = prerenderEmoji(type, size); // cheap if cached
+  const img = renderCache.get(type, size); // cheap if cached
   obstacles.push({
     x: canvas.width,
     y: canvas.height - size + OBSTACLE_VERTICAL_OFFSET,
@@ -469,25 +458,12 @@ const COLLECTIBLE_SCORES = {
 };
 const DEFAULT_COLLECTIBLE_SCORE = 5;
 
-const collectibleRenderCache = new Map();
 async function initCollectibleCache(progressCallback) {
-  if (collectibleRenderCache.size > 0) return;
   const total = COLLECTIBLE_TYPES.length * collectibleSizes.length;
   let count = 0;
   for (const emoji of COLLECTIBLE_TYPES) {
     for (const size of collectibleSizes) {
-      const key = `${emoji}_${size}`;
-      const padding = Math.ceil(size * 0.25);
-      const w = size + padding * 2;
-      const oc = document.createElement("canvas");
-      oc.width = oc.height = w;
-      const c = oc.getContext("2d");
-      c.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji", Arial`;
-      c.textAlign = "center";
-      c.textBaseline = "middle";
-      c.clearRect(0, 0, w, w);
-      c.fillText(emoji, w / 2, w / 2);
-      collectibleRenderCache.set(key, oc);
+      renderCache.ensure(emoji, size);
       count++;
       if (count % 10 === 0) {
         progressCallback(count, total);
@@ -495,9 +471,6 @@ async function initCollectibleCache(progressCallback) {
       }
     }
   }
-}
-function prerenderCollectible(emoji, size) {
-  return collectibleRenderCache.get(`${emoji}_${size}`);
 }
 function spawnCollectible() {
   const size =
@@ -508,7 +481,7 @@ function spawnCollectible() {
     canvas.height -
     Math.floor(350 * scale) +
     Math.random() * Math.floor(180 * scale);
-  const img = prerenderCollectible(type, size);
+  const img = renderCache.get(type, size);
   collectibles.push({
     x: canvas.width,
     y,
@@ -613,7 +586,7 @@ function createBackgroundGradient() {
   gradient.addColorStop(1, "#2d1b69");
   return gradient;
 }
-// Draw: createBackgroundGradient(), moon, celestial, speed counter, cat, grass [emojiCache], obstacles [prerenderEmoji], collectibles [prerenderCollectible]
+// Draw: createBackgroundGradient(), moon, celestial, speed counter, cat, grass [renderCache], obstacles [renderCache], collectibles [renderCache]
 function draw() {
   // Draw Night sky gradient background
   ctx.fillStyle = createBackgroundGradient();
@@ -657,8 +630,7 @@ function draw() {
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
   for (const item of grassItems) {
-    const key = `${item.emoji}_${item.size}`;
-    const img = emojiCache.get(key);
+    const img = renderCache.get(item.emoji, item.size);
     if (!img) continue;
     const y = canvas.height; // bottom of canvas
     ctx.drawImage(img, item.x - img.width / 2, y - img.height);
@@ -666,7 +638,7 @@ function draw() {
 
   // Draw Obstacles (centered on collision box center)
   obstacles.forEach((obs) => {
-    const img = obs.img || prerenderEmoji(obs.type, obs.height);
+    const img = obs.img || renderCache.get(obs.type, obs.height);
     // center/position as you want (example aligns bottom center like before)
     ctx.drawImage(
       img,
@@ -679,7 +651,7 @@ function draw() {
 
   // Draw Collectibles
   collectibles.forEach((coll) => {
-    const img = coll.img || prerenderCollectible(coll.type, coll.height);
+    const img = coll.img || renderCache.get(coll.type, coll.height);
     const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
     const dy = coll.y + coll.height - img.height; // align bottom
     ctx.drawImage(img, dx, dy, img.width, img.height);
@@ -949,14 +921,13 @@ async function startGame() {
   const needsReload = !scaleComputed;
   if (needsReload) computeScale();
   if (needsReload) {
-    emojiRenderCache.clear();
-    collectibleRenderCache.clear();
+    renderCache.clear();
   }
 
   if (needsReload) {
-    const totalObstacles = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
+    const totalObstacles = OBSTACLE_TYPES.length * obstacleSizes.length;
     const totalCollectibles =
-      COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
+      COLLECTIBLE_TYPES.length * collectibleSizes.length;
     const grandTotal = totalObstacles + totalCollectibles;
     const progressObstacles = (count) => {
       drawLoadingScreen(count, grandTotal);
@@ -965,7 +936,7 @@ async function startGame() {
       drawLoadingScreen(totalObstacles + count, grandTotal);
     };
     drawLoadingScreen(0, grandTotal);
-    await initEmojiCache(progressObstacles);
+    await initObstacleCache(progressObstacles);
     await initCollectibleCache(progressCollectibles);
   }
 
@@ -1130,8 +1101,7 @@ function displayScores() {
 window.addEventListener("resize", () => {
   if (scaleComputed && !gameRunning) {
     scaleComputed = false;
-    emojiRenderCache.clear();
-    collectibleRenderCache.clear();
+    renderCache.clear();
     obstacles = [];
     collectibles = [];
   }
