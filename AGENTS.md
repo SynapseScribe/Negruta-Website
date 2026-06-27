@@ -43,7 +43,7 @@
   7.4 Capture details: ask user for specifics (scope, behavior, edge cases, design preferences). Write to `<#>/00-spec.md`, where `<#>` is the next number of the issue that will be created in github. Use `question` tool for this.
   7.5 Store issue `<#>` in `.pipeline/active/<#>/`. Stages: investigate → plan → build → verify, then close. After each stage, write to `<#>/NN-stage.md`.
   7.6 Add the contents of `00-spec.md` to the github issue's body (issues already created). If multiple issues were identified, analyze them one by one, creating the `00-spec.md` and adding it to the issue's body, before going for the next (to keep the context focused).
-  7.7 Go through the stages, one by one, in order. After completing each stage, write the details to the corresponding file: `01-investigate.md`, `02-plan.md`, `03-build.md`, `04-verify.md`.
+  7.7 Go through the stages, one by one, in order. After completing each stage, write the details to the corresponding file: `01-investigate.md`, `02-plan.md`, `03-build.md`, `04-verify.md` and an extra `05-summary.md`.
   7.8 Investigate: check affected HTML/CSS/JS files, browser compatibility, responsive impact.
   7.9 Plan: list exact files, changes, visual impact, mobile/desktop considerations.
   7.10 Build: implement, commit with clear messages.
