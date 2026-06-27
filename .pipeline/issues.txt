@@ -1,6 +1,6 @@
 50 - [Pipeline][BUG] Cancel animation loop on game over instead of letting it spin - OPEN
 49 - [Pipeline][BUG] Replace splice() in hot path with more efficient array removal - OPEN
-55 - [Pipeline][FEATURE] Standardize caching mechanism for all game objects via offscreen canvas - OPEN
+55 - [Pipeline][FEATURE] Standardize caching mechanism for all game objects via offscreen canvas - OPEN (PR #56)
 48 - [Pipeline][FEATURE] Cache static background (gradient, moon, celestial) to offscreen canvas - CLOSED
 47 - [Pipeline][FEATURE] Batch grass rendering into pre-rendered ground strips - OPEN
 46 - [Pipeline][FEATURE] Adapt canvas resolution to device pixel ratio and screen size - OPEN
