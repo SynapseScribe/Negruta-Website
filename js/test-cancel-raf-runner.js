@@ -1,9 +1,12 @@
 // Test that animation loop stops after game over
-// Run with: node js/test-cancel-raf-runner.cjs
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
-const { firefox } = require("playwright");
+// Run with: node js/test-cancel-raf-runner.js
+import http from "http";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { firefox } from "playwright";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = 8898;
 const MIME_TYPES = {
