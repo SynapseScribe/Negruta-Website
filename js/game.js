@@ -472,6 +472,20 @@ async function initCollectibleCache(progressCallback) {
     }
   }
 }
+async function initGrassCache(progressCallback) {
+  const total = GRASS_EMOJIS.length * grassSizes.length;
+  let count = 0;
+  for (const emoji of GRASS_EMOJIS) {
+    for (const size of grassSizes) {
+      renderCache.ensure(emoji, size);
+      count++;
+      if (count % 10 === 0) {
+        progressCallback(count, total);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+  }
+}
 function spawnCollectible() {
   const size =
     collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
@@ -928,16 +942,21 @@ async function startGame() {
     const totalObstacles = OBSTACLE_TYPES.length * obstacleSizes.length;
     const totalCollectibles =
       COLLECTIBLE_TYPES.length * collectibleSizes.length;
-    const grandTotal = totalObstacles + totalCollectibles;
+    const totalGrass = GRASS_EMOJIS.length * grassSizes.length;
+    const grandTotal = totalObstacles + totalCollectibles + totalGrass;
     const progressObstacles = (count) => {
       drawLoadingScreen(count, grandTotal);
     };
     const progressCollectibles = (count) => {
       drawLoadingScreen(totalObstacles + count, grandTotal);
     };
+    const progressGrass = (count) => {
+      drawLoadingScreen(totalObstacles + totalCollectibles + count, grandTotal);
+    };
     drawLoadingScreen(0, grandTotal);
     await initObstacleCache(progressObstacles);
     await initCollectibleCache(progressCollectibles);
+    await initGrassCache(progressGrass);
   }
 
   gameRunning = true;
