@@ -34,6 +34,7 @@ export default [
         Date: "readonly",
         JSON: "readonly",
         requestAnimationFrame: "readonly",
+        cancelAnimationFrame: "readonly",
         HTMLElement: "readonly",
         Node: "readonly",
         Text: "readonly",
