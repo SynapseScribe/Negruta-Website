@@ -13,7 +13,7 @@
   2.4 Use `webfetch` and `websearch` tools when required to access the Internet for online resources, documentation, search results.
   2.5 Use `question` tool for asking follow-up questions, but only if really required.
   2.6 Don't use `Glob` tool, it's broken. Use `Read` or `pwsh` commands instead.
-  2.7 Use `set-content` instead of write tool (which is currently bugged in opencode), (eg.: `Set-Content -Path "file.txt" -Value "content here" -NoNewline`)
+  2.7 Use `edit` tool or pwsh command `set-content` instead of write tool (which is currently bugged in opencode), (eg.: `Set-Content -Path "file.txt" -Value "content here" -NoNewline`)
 
 
 - EDITING
