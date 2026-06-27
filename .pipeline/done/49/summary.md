@@ -1,0 +1,1 @@
+## Summary of changes\n\n**File changed:** js/game.js\n\nReplaced 3 splice calls in the hot update() loop with O(1) swap-and-pop pattern:\n- Obstacles off-screen removal\n- Collectibles collision removal\n- Collectibles off-screen removal\n\nNo visual impact, purely internal optimization. Lint and format pass clean.
