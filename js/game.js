@@ -860,6 +860,8 @@ function resetGame() {
   jumpCount = 0;
   obstacles = [];
   collectibles = [];
+  celestialObjects = [];
+  celestialObjects = [];
   frameCount = 0;
   nextObstacleFrame = 100;
   currentSpeed = initialSpeed;
@@ -909,6 +911,7 @@ function computeScale() {
   grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
   grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
   collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
+  scaleComputed = true;
 }
 
 
@@ -932,6 +935,8 @@ async function startGame() {
   nameInput.disabled = true;
   
   if(!scaleComputed) computeScale();
+  emojiRenderCache.clear();
+  collectibleRenderCache.clear();
 
   const totalObstacles = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
   const totalCollectibles = COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
@@ -1106,9 +1111,9 @@ function displayScores() {
   });
 }
 
-// Handle window resize: clear caches and reset scale flag so next startGame recomputes
+// Handle window resize: mark scale as stale so next startGame recomputes
 window.addEventListener("resize", () => {
-  if (scaleComputed) {
+  if (scaleComputed && !gameRunning) {
     scaleComputed = false;
     emojiRenderCache.clear();
     collectibleRenderCache.clear();
