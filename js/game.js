@@ -1,4 +1,3 @@
-
 /* GET ELEMENTS */
 const scoreElement = document.getElementById("gameScore");
 const nameInput = document.getElementById("playerNameInput");
@@ -15,7 +14,6 @@ const BASE_HEIGHT = 550;
 
 let frameCount = 0;
 
-
 /* MOVEMENT */
 const gravity = 1;
 const jumpStrength = -20;
@@ -29,12 +27,10 @@ let velocityY = 0;
 let rightmostX = 0;
 let jumpCount = 0;
 
-
 /* CAT */
 let CAT_SIZE = 80;
 let CAT_X = 150;
 let CAT_Y = 0;
-
 
 /* GAME */
 let playerName = "";
@@ -42,12 +38,9 @@ let gameRunning = false;
 let animationFrameId = null;
 let score = 0;
 
-
-
 // ----------------------------- //
 /* GRASS */
 // ----------------------------- //
-
 
 let grassItems = [];
 const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
@@ -101,7 +94,7 @@ function randomGrassGap() {
   );
 }
 
-// calls: randomGrassGap() 
+// calls: randomGrassGap()
 function initGrass() {
   grassItems = [];
   let x = -grassSize;
@@ -113,7 +106,6 @@ function initGrass() {
   }
   rightmostX = grassItems[grassItems.length - 1].x;
 }
-
 
 // ----------------------------- //
 /* OBSTACLES */
@@ -408,7 +400,8 @@ function spawnObstacle() {
   const OBSTACLE_VERTICAL_OFFSET = Math.floor(60 * scale);
 
   const size = obstacleSizes[Math.floor(Math.random() * obstacleSizes.length)];
-  const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+  const type =
+    OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
   const img = prerenderEmoji(type, size); // cheap if cached
   obstacles.push({
     x: canvas.width,
@@ -419,7 +412,6 @@ function spawnObstacle() {
     img // store the offscreen canvas
   });
 }
-
 
 // ----------------------------- //
 /* COLLECTIBLES */
@@ -508,8 +500,10 @@ function prerenderCollectible(emoji, size) {
   return collectibleRenderCache.get(`${emoji}_${size}`);
 }
 function spawnCollectible() {
-  const size = collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
-  const type = COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
+  const size =
+    collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
+  const type =
+    COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
   const y =
     canvas.height -
     Math.floor(350 * scale) +
@@ -525,11 +519,9 @@ function spawnCollectible() {
   });
 }
 
-
 // ----------------------------- //
 /* AUDIO */
 // ----------------------------- //
-
 
 /* MEOWS */
 const meowSounds = [
@@ -575,11 +567,9 @@ function meow() {
   audio.play().catch((e) => console.log("Audio play failed:", e));
 }
 
-
 // ----------------------------- //
 /* RENDERING */
 // ----------------------------- //
-
 
 /* DRAW */
 
@@ -614,7 +604,6 @@ function drawLoadingScreen(current, total) {
     barY + barHeight + 30 * scale
   );
 }
-
 
 // Generate Night Sky background gradient
 function createBackgroundGradient() {
@@ -697,9 +686,8 @@ function draw() {
   });
 }
 
-
 /* UPDATE FRAME MOVEMENT */
-// gravity, floor collision, obstacle movement + collsion + meow(), Collectibles movement + collision, grass scrolling + randomGrassGap, spawnObstacle(), spawnCollectible(), draw(), 
+// gravity, floor collision, obstacle movement + collsion + meow(), Collectibles movement + collision, grass scrolling + randomGrassGap, spawnObstacle(), spawnCollectible(), draw(),
 let lastTime = 0;
 function update(timestamp) {
   if (!gameRunning) return;
@@ -721,7 +709,6 @@ function update(timestamp) {
   const catTop = CAT_Y - catSize / 2;
   const catBottom = CAT_Y + catSize / 2;
 
-
   // Floor collision
   if (catBottom > canvas.height) {
     CAT_Y = canvas.height - catSize / 2;
@@ -736,7 +723,8 @@ function update(timestamp) {
     const obsTop = obstacles[i].y;
     const obsBottom = obstacles[i].y + obstacles[i].height;
     const obsLeft = obstacles[i].x + Math.floor(10 * scale);
-    const obsRight = obstacles[i].x + obstacles[i].width - Math.floor(10 * scale);
+    const obsRight =
+      obstacles[i].x + obstacles[i].width - Math.floor(10 * scale);
 
     // Auto-jump when cat is about to land on top of obstacle
     if (
@@ -767,7 +755,10 @@ function update(timestamp) {
       return;
     }
     if (obstacles[i].x + obstacles[i].width < 0) {
-      obstacles.splice(i, 1);
+      const lastObs = obstacles.length - 1;
+      if (i < lastObs) obstacles[i] = obstacles[lastObs];
+      obstacles.pop();
+      i--;
       score++;
       scoreElement.innerText = `Score: ${score}`;
     }
@@ -778,19 +769,28 @@ function update(timestamp) {
     collectibles[i].x -= currentSpeed * dt;
 
     if (
-      catLeft <= collectibles[i].x + collectibles[i].width - Math.floor(15 * scale) &&
+      catLeft <=
+        collectibles[i].x + collectibles[i].width - Math.floor(15 * scale) &&
       catRight >= collectibles[i].x - Math.floor(40 * scale) &&
-      catTop <= collectibles[i].y + collectibles[i].height - Math.floor(15 * scale) &&
+      catTop <=
+        collectibles[i].y + collectibles[i].height - Math.floor(15 * scale) &&
       catBottom >= collectibles[i].y - Math.floor(40 * scale)
     ) {
-      score += COLLECTIBLE_SCORES[collectibles[i].type] ?? DEFAULT_COLLECTIBLE_SCORE;
+      const collType = collectibles[i].type;
+      const lastColl = collectibles.length - 1;
+      if (i < lastColl) collectibles[i] = collectibles[lastColl];
+      collectibles.pop();
+      i--;
+      score += COLLECTIBLE_SCORES[collType] ?? DEFAULT_COLLECTIBLE_SCORE;
       scoreElement.innerText = `Score: ${score}`;
-      collectibles.splice(i, 1);
       continue;
     }
 
     if (collectibles[i].x + collectibles[i].width < 0) {
-      collectibles.splice(i, 1);
+      const lastColl = collectibles.length - 1;
+      if (i < lastColl) collectibles[i] = collectibles[lastColl];
+      collectibles.pop();
+      i--;
     }
   }
 
@@ -801,7 +801,8 @@ function update(timestamp) {
     if (item.x < -grassSize) {
       item.x = rightmostX + randomGrassGap();
       rightmostX = item.x;
-      item.emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+      item.emoji =
+        GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
       item.size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
     }
   }
@@ -814,7 +815,8 @@ function update(timestamp) {
       Math.floor(60 * scale),
       Math.floor(680 * scale) - score
     );
-    nextObstacleFrame = frameCount + minGap + Math.floor(Math.random() * Math.floor(120 * scale));
+    nextObstacleFrame =
+      frameCount + minGap + Math.floor(Math.random() * Math.floor(120 * scale));
   }
   if (frameCount % Math.floor(150 * scale) === 0) {
     spawnCollectible();
@@ -824,18 +826,15 @@ function update(timestamp) {
   animationFrameId = requestAnimationFrame(update);
 }
 
-
 // ----------------------------- //
 /* GAME START */
 // ----------------------------- //
-
 
 // On 2 attempts to enter empty name, autocomplete to "Anon"
 let emptyNameAttempts = 0;
 nameInput.addEventListener("input", () => {
   emptyNameAttempts = 0;
 });
-
 
 /* RESET GAME */
 // Initialize celestials
@@ -870,22 +869,36 @@ function resetGame() {
   scoreElement.innerText = "Score: 0";
 }
 
-
-
 /* HOW TO START */
 // Button starts game
 startBtn.addEventListener("click", startGame);
-// Enter starts game 
+// Enter starts game
 nameInput.addEventListener("keydown", (e) => {
   if (e.code === "Enter") {
     startGame();
   }
 });
 
-
 // Scale sizes for different display sizes
 let scaleComputed = false;
-let scale, catSize, catX, gravityVal, jumpStrengthVal, initialSpeed, maxSpeed, speedIncrement, collisionHPadding, obstacleHitboxInset, collisionVPadding, obstacleSizes, autojumpVTolerance, autojumpHMargin, grassSize, grassMinSpacing, grassMaxSpacing, collectibleSizes;
+let scale,
+  catSize,
+  catX,
+  gravityVal,
+  jumpStrengthVal,
+  initialSpeed,
+  maxSpeed,
+  speedIncrement,
+  collisionHPadding,
+  obstacleHitboxInset,
+  collisionVPadding,
+  obstacleSizes,
+  autojumpVTolerance,
+  autojumpHMargin,
+  grassSize,
+  grassMinSpacing,
+  grassMaxSpacing,
+  collectibleSizes;
 function computeScale() {
   const renderedW = canvas.clientWidth || BASE_WIDTH;
   const renderedH = canvas.clientHeight || BASE_HEIGHT;
@@ -913,7 +926,6 @@ function computeScale() {
   collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
   scaleComputed = true;
 }
-
 
 /* START GAME */
 // calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
@@ -943,7 +955,8 @@ async function startGame() {
 
   if (needsReload) {
     const totalObstacles = OBSTACLE_TYPES.length * OBSTACLE_SIZES.length;
-    const totalCollectibles = COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
+    const totalCollectibles =
+      COLLECTIBLE_TYPES.length * COLLECTIBLE_SIZES.length;
     const grandTotal = totalObstacles + totalCollectibles;
     const progressObstacles = (count) => {
       drawLoadingScreen(count, grandTotal);
@@ -961,7 +974,6 @@ async function startGame() {
   lastTime = performance.now();
   update(performance.now());
 }
-
 
 /* HOW TO PLAY */
 // allow click
@@ -1005,7 +1017,9 @@ window.addEventListener("keydown", (e) => {
 
   const target = e.target;
   const tag = target && target.tagName;
-  const isEditable = target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA");
+  const isEditable =
+    target &&
+    (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA");
   if (isEditable) return;
 
   if (gameRunning) {
@@ -1016,12 +1030,9 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-
-
 // ----------------------------- //
 /* GAME OVER */
 // ----------------------------- //
-
 
 function saveScore(name, finalScore) {
   const newScore = {
@@ -1046,7 +1057,8 @@ function gameOver() {
 
   document.getElementById("gameOverName").textContent = playerName;
   document.getElementById("gameOverScore").textContent = `Score: ${score}`;
-  document.getElementById("gameOverDate").textContent = new Date().toLocaleDateString();
+  document.getElementById("gameOverDate").textContent =
+    new Date().toLocaleDateString();
 
   const scores = JSON.parse(localStorage.getItem("catGameScores") || "[]");
   const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 5);
@@ -1074,11 +1086,9 @@ gameOverCloseBtn.addEventListener("click", () => {
   nameInput.disabled = false;
 });
 
-
 // ----------------------------- //
 /* ON LOAD */
 // ----------------------------- //
-
 
 // create a default high score if none exist
 function ensureDefaultHighScore() {
