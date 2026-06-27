@@ -39,6 +39,7 @@ let CAT_Y = 0;
 /* GAME */
 let playerName = "";
 let gameRunning = false;
+let animationFrameId = null;
 let score = 0;
 
 
@@ -820,7 +821,7 @@ function update(timestamp) {
   }
 
   draw();
-  requestAnimationFrame(update);
+  animationFrameId = requestAnimationFrame(update);
 }
 
 
@@ -1028,6 +1029,8 @@ function saveScore(name, finalScore) {
 
 // saveScore(), gameOverDialog [playAgainBtn + gameOverCloseBtn]
 function gameOver() {
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  animationFrameId = null;
   gameRunning = false;
   saveScore(playerName, score);
 
