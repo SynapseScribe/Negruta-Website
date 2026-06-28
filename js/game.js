@@ -104,7 +104,7 @@ function randomGrassGap() {
 
 // calls: randomGrassGap()
 function initGrassStrips() {
-  const stripW = Math.round(1600 * scale);
+  const stripW = Math.round(3200 * scale);
   grassStripWidth = stripW;
   grassStripCanvas = document.createElement("canvas");
   grassStripCanvas.width = stripW;
