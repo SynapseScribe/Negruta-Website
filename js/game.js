@@ -113,8 +113,9 @@ function initGrassStrips() {
   sctx.clearRect(0, 0, stripW, canvas.height);
   sctx.textAlign = "center";
   sctx.textBaseline = "bottom";
-  let x = 0;
-  while (x < stripW) {
+  const margin = Math.max(...grassSizes) * scale;
+  let x = margin;
+  while (x < stripW - margin) {
     const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
     const size =
       grassSizes[Math.floor(Math.random() * grassSizes.length)] * scale;
