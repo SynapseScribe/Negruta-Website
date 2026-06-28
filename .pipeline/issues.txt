@@ -2,7 +2,7 @@
 50 - [Pipeline][BUG] Cancel animation loop on game over instead of letting it spin - CLOSED
 49 - [Pipeline][BUG] Replace splice() in hot path with more efficient array removal - CLOSED
 48 - [Pipeline][FEATURE] Cache static background (gradient, moon, celestial) to offscreen canvas - CLOSED
-47 - [Pipeline][FEATURE] Batch grass rendering into pre-rendered ground strips - OPEN
+47 - [Pipeline][FEATURE] Batch grass rendering into pre-rendered ground strips - CLOSED
 46 - [Pipeline][FEATURE] Adapt canvas resolution to device pixel ratio and screen size - CLOSED
 41 - [Pipeline] Replace alert() with inline error for game name validation - CLOSED
 40 - [Pipeline] Replace alert() with dialog overlay for game over screen - CLOSED
