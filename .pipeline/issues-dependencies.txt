@@ -4,7 +4,6 @@
 
 
 ## Dependencies
-#47 → depends on #46 (strip width tied to canvas width)
 #59 → depends on #47, #48 (builds on grass strip + cached moon/celestial)
 
 
