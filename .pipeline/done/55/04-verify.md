@@ -1,10 +1,12 @@
 # Issue #55 - Verify Stage
 
 ## Lint Results
+
 - `npm run lint` passes with no errors in game.js
 - Only pre-existing errors in test-cancel-raf-runner.js (unrelated to our changes)
 
 ## Code Verification
+
 - [x] `renderCache` object properly defined with `map`, `get()`, `ensure()`, `clear()` methods
 - [x] All obstacle rendering uses `renderCache.get(obs.type, obs.height)`
 - [x] All collectible rendering uses `renderCache.get(coll.type, coll.height)`
@@ -17,6 +19,7 @@
 - [x] `initObstacleCache` and `initCollectibleCache` use `renderCache.ensure()` for preloading
 
 ## Functionality
+
 - Cache preloads during loading screen with progress callbacks
 - Runtime rendering falls back to `renderCache.get()` which returns cached offscreen canvas
 - Cache cleared appropriately on window resize and game restart

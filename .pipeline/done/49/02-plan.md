@@ -13,7 +13,9 @@ Since the loops iterate backwards and draw order doesn't matter, swapping the re
 3. **Collectibles off-screen** (line ~795): Same swap-and-pop pattern
 
 ## Visual Impact
+
 - None — draw order is unchanged visually since items are positioned by coordinates, not array index
 
 ## Mobile/Desktop
+
 - No impact — purely internal optimization
