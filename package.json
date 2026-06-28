@@ -1,0 +1,16 @@
+{
+  "name": "negruta-project",
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "type": "module",
+  "devDependencies": {
+    "@awmottaz/prettier-plugin-void-html": "^2.1.0",
+    "eslint": "^10.5.0",
+    "prettier": "^3.8.3"
+  },
+  "dependencies": {
+    "playwright": "^1.61.0"
+  }
+}
