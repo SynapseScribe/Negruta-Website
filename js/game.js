@@ -24,7 +24,6 @@ const SPEED_INCREMENT = 0.1;
 
 let currentSpeed = INITIAL_SPEED;
 let velocityY = 0;
-let rightmostX = 0;
 let jumpCount = 0;
 
 /* CAT */
@@ -72,8 +71,9 @@ const renderCache = {
 /* GRASS */
 // ----------------------------- //
 
-let grassItems = [];
-const GRASS_SIZE = Math.floor(CAT_SIZE / 1.5);
+let grassStripCanvas = null;
+let grassOffset = 0;
+let grassStripWidth = 0;
 const grassSizes = [30, 40, 50];
 const GRASS_MIN_SPACING = 120;
 const GRASS_MAX_SPACING = 200;
@@ -103,16 +103,27 @@ function randomGrassGap() {
 }
 
 // calls: randomGrassGap()
-function initGrass() {
-  grassItems = [];
-  let x = -grassSize;
-  while (x <= canvas.width + grassSize) {
+function initGrassStrips() {
+  const stripW = Math.round(1600 * scale);
+  grassStripWidth = stripW;
+  grassStripCanvas = document.createElement("canvas");
+  grassStripCanvas.width = stripW;
+  grassStripCanvas.height = canvas.height;
+  const sctx = grassStripCanvas.getContext("2d");
+  sctx.clearRect(0, 0, stripW, canvas.height);
+  sctx.textAlign = "center";
+  sctx.textBaseline = "bottom";
+  let x = 0;
+  while (x < stripW) {
     const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
-    const size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
-    grassItems.push({ x, emoji, size });
+    const size =
+      grassSizes[Math.floor(Math.random() * grassSizes.length)] * scale;
+    const img = renderCache.get(emoji, Math.round(size));
+    if (img) {
+      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height);
+    }
     x += randomGrassGap();
   }
-  rightmostX = grassItems[grassItems.length - 1].x;
 }
 
 // ----------------------------- //
@@ -644,14 +655,10 @@ function draw() {
   ctx.fillText("🐈‍⬛", 0, 0);
   ctx.restore();
 
-  // Draw Grass - in draw loop use drawImage (fast)
-  ctx.textAlign = "center";
-  ctx.textBaseline = "bottom";
-  for (const item of grassItems) {
-    const img = renderCache.get(item.emoji, item.size);
-    if (!img) continue;
-    const y = canvas.height; // bottom of canvas
-    ctx.drawImage(img, item.x - img.width / 2, y - img.height);
+  // Draw Grass - pre-rendered scrolling strips (2 draw calls instead of 15-20)
+  if (grassStripCanvas) {
+    ctx.drawImage(grassStripCanvas, -grassOffset, 0);
+    ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
   }
 
   // Draw Obstacles (centered on collision box center)
@@ -784,17 +791,10 @@ function update(timestamp) {
     }
   }
 
-  // Grass scrolling
-  rightmostX -= currentSpeed * dt;
-  for (const item of grassItems) {
-    item.x -= currentSpeed * dt;
-    if (item.x < -grassSize) {
-      item.x = rightmostX + randomGrassGap();
-      rightmostX = item.x;
-      item.emoji =
-        GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
-      item.size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
-    }
+  // Grass scrolling - update offset for pre-rendered strips
+  grassOffset -= currentSpeed * dt;
+  if (grassOffset <= -grassStripWidth) {
+    grassOffset += grassStripWidth + grassStripWidth;
   }
 
   // Spawn obstacles and collectibles
@@ -841,7 +841,7 @@ function initCelestial() {
     });
   }
 }
-// Calls: initGrass(), initCelestial()
+// Calls: initGrassStrips(), initCelestial()
 function resetGame() {
   score = 0;
   CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
@@ -854,7 +854,8 @@ function resetGame() {
   frameCount = 0;
   nextObstacleFrame = 100;
   currentSpeed = initialSpeed;
-  initGrass();
+  initGrassStrips();
+  grassOffset = 0;
   initCelestial();
   scoreElement.innerText = "Score: 0";
 }
@@ -885,7 +886,6 @@ let scale,
   obstacleSizes,
   autojumpVTolerance,
   autojumpHMargin,
-  grassSize,
   grassMinSpacing,
   grassMaxSpacing,
   collectibleSizes;
@@ -910,7 +910,6 @@ function computeScale() {
   obstacleSizes = OBSTACLE_SIZES.map((s) => Math.round(s * scale));
   autojumpVTolerance = Math.round(AUTOJUMP_VERTICAL_TOLERANCE * scale);
   autojumpHMargin = Math.round(AUTOJUMP_HORIZONTAL_MARGIN * scale);
-  grassSize = Math.round(GRASS_SIZE * scale);
   grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
   grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
   collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
@@ -1127,6 +1126,7 @@ window.addEventListener("resize", () => {
     renderCache.clear();
     obstacles = [];
     collectibles = [];
+    grassStripCanvas = null;
   }
 });
 displayScores();
