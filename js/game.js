@@ -792,9 +792,9 @@ function update(timestamp) {
   }
 
   // Grass scrolling - update offset for pre-rendered strips
-  grassOffset -= currentSpeed * dt;
-  if (grassOffset <= -grassStripWidth) {
-    grassOffset += grassStripWidth + grassStripWidth;
+  grassOffset += currentSpeed * dt;
+  if (grassOffset >= grassStripWidth) {
+    grassOffset -= grassStripWidth;
   }
 
   // Spawn obstacles and collectibles
