@@ -74,7 +74,7 @@ const renderCache = {
 const GROUND_HEIGHT_RATIO = 0.25;
 const HORIZON_WAVE_AMPLITUDE = 12;
 
-// Draw undulating ground with green transition zone (distant trees)
+// Draw undulating ground with green transition zone (distant foliage)
 function drawUndulatingGround() {
   const baseY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
   const stripHeight = 1;
@@ -148,9 +148,9 @@ const GRASS_EMOJIS = [
   "🌹",
   "🪻"
 ];
-const grassSizes = [30, 40, 50];
-const GRASS_MIN_SPACING = 50;
-const GRASS_MAX_SPACING = 100;
+const grassSizes = [40, 50];
+const GRASS_MIN_SPACING = 40;
+const GRASS_MAX_SPACING = 70;
 const FG_GRASS_SPEED_RATIO = 1;
 let grassStripCanvas = null;
 let grassOffset = 0;
@@ -161,19 +161,30 @@ const BG_GRASS_EMOJIS = ["🌿", "☘️", "🍀"];
 const bgGrassSizes = [20, 30];
 const BG_GRASS_MIN_SPACING = 50;
 const BG_GRASS_MAX_SPACING = 100;
-const BG_GRASS_SPEED_RATIO = 0.7;
+const BG_GRASS_SPEED_RATIO = 0.6;
 let bgGrassStripCanvas = null;
 let bgGrassOffset = 0;
 let bgGrassStripWidth = 0;
 
-// 3rd layer - background trees
-const TREE_EMOJIS = ["🌳", "🌲", "🌴"];
-const treeSizes = [60, 80, 100];
+// 3rd layer - trees
+const TREE_EMOJIS = ["🌴"];
+const treeSizes = [70, 80, 90];
 const TREE_SPEED_RATIO = 0.35;
 let treeStripCanvas = null;
 let treeOffset = 0;
 let treeStripWidth = 0;
 
+// 4th layer - background trees
+const BG_TREE_EMOJIS = ["🌳", "🌲"];
+const bgTreeSizes = [50, 60, 70];
+const BG_TREE_SPEED_RATIO = 0.15;
+let bgTreeStripCanvas = null;
+let bgTreeOffset = 0;
+let bgTreeStripWidth = 0;
+
+
+
+// First strip (grass)
 function randomGrassGap() {
   return Math.floor(
     grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
@@ -205,6 +216,7 @@ function initGrassStrips() {
   }
 }
 
+// Bg Grass
 // calls: renderCache.get()
 function initBgGrassStrips() {
   const stripW = Math.round(3200 * scale);
@@ -234,8 +246,9 @@ function initBgGrassStrips() {
   }
 }
 
+// First trees
 // calls: renderCache.get()
-function initTreeStrips() {
+function initTreeStrips(heightFactor) {
   const stripW = Math.round(3200 * scale);
   treeStripWidth = stripW;
   treeStripCanvas = document.createElement("canvas");
@@ -253,11 +266,39 @@ function initTreeStrips() {
       treeSizes[Math.floor(Math.random() * treeSizes.length)] * scale;
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
-      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * 1.05);
+      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * heightFactor);
+    }
+    x += Math.floor(stripW * Math.random() * 0.03);
+  }
+}
+
+// Bg trees
+// calls: renderCache.get()
+function initBgTreeStrips(heightFactor) {
+  const stripW = Math.round(3200 * scale);
+  bgTreeStripWidth = stripW;
+  bgTreeStripCanvas = document.createElement("canvas");
+  bgTreeStripCanvas.width = stripW;
+  bgTreeStripCanvas.height = canvas.height;
+  const sctx = bgTreeStripCanvas.getContext("2d");
+  sctx.clearRect(0, 0, stripW, canvas.height);
+  sctx.textAlign = "center";
+  sctx.textBaseline = "bottom";
+  const margin = Math.max(...treeSizes) * scale;
+  let x = margin;
+  while (x < stripW - margin) {
+    const emoji = BG_TREE_EMOJIS[Math.floor(Math.random() * BG_TREE_EMOJIS.length)];
+    const size =
+      bgTreeSizes[Math.floor(Math.random() * bgTreeSizes.length)] * scale;
+    const img = renderCache.get(emoji, Math.round(size));
+    if (img) {
+      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * heightFactor);
     }
     x += Math.floor(stripW * Math.random() * 0.04);
   }
 }
+
+
 
 async function initGrassCache(progressCallback) {
   const total = GRASS_EMOJIS.length * grassSizes.length;
@@ -302,6 +343,21 @@ async function initTreeCache(progressCallback) {
   }
 }
 
+async function initBgTreeCache(progressCallback) {
+  const total = BG_TREE_EMOJIS.length * bgTreeSizes.length;
+  let count = 0;
+  for (const emoji of BG_TREE_EMOJIS) {
+    for (const size of bgTreeSizes) {
+      renderCache.ensure(emoji, size);
+      count++;
+      if (count % 10 === 0) {
+        progressCallback(count, total);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+  }
+}
+
 let moonX = 0;
 const MOON_SPEED_RATIO = 0.04;
 // calls: renderCache.get()
@@ -316,7 +372,7 @@ function initMoon() {
 /* OBSTACLES */
 let obstacles = [];
 let nextObstacleFrame = 100;
-const OBSTACLE_SIZES = [200, 250, 300];
+const OBSTACLE_SIZES = [250, 300];
 const OBSTACLE_TYPES_FULL_SET = [
   "🌲",
   "🏠",
@@ -743,54 +799,17 @@ function meow() {
 /* GAME START */
 // ----------------------------- //
 
+
+/* HOW TO START */
+
 // On 2 attempts to enter empty name, autocomplete to "Anon"
 let emptyNameAttempts = 0;
 nameInput.addEventListener("input", () => {
   emptyNameAttempts = 0;
 });
 
-/* RESET GAME */
-// Initialize celestials
-let celestialObjects = [];
-function initCelestial() {
-  const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
-  const count = Math.floor(Math.random() * 20) + 11;
-  const skyHeight = canvas.height * (1 - GROUND_HEIGHT_RATIO);
-  for (let i = 0; i < count; i++) {
-    celestialObjects.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * (skyHeight - 150 * scale) + 50 * scale,
-      size: Math.floor((Math.random() * 20 + 7) * scale),
-      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
-    });
-  }
-}
 
-// Calls: initGrassStrips(), initBgGrassStrips(), initTreeStrips(), initMoon(), initCelestial()
-function resetGame() {
-  score = 0;
-  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
-  velocityY = 0;
-  jumpCount = 0;
-  obstacles = [];
-  collectibles = [];
-  frameCount = 0;
-  nextObstacleFrame = 100;
-  currentSpeed = initialSpeed;
-  initGrassStrips();
-  grassOffset = 0;
-  initBgGrassStrips();
-  bgGrassOffset = 0;
-  initTreeStrips();
-  treeOffset = 0;
-  initMoon();
-  moonX = canvas.width * 0.75;
-  celestialObjects = [];
-  initCelestial();
-  scoreElement.innerText = "Score: 0";
-}
 
-/* HOW TO START */
 // Button starts game
 startBtn.addEventListener("click", startGame);
 // Enter starts game
@@ -846,7 +865,61 @@ function computeScale() {
   scaleComputed = true;
 }
 
+
+
+
 /* START GAME */
+
+
+// RESET GAME
+let celestialObjects = [];
+function initCelestial() {
+  const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
+  const count = Math.floor(Math.random() * 20) + 11;
+  const skyHeight = canvas.height * (1 - GROUND_HEIGHT_RATIO);
+  for (let i = 0; i < count; i++) {
+    celestialObjects.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * (skyHeight - 150 * scale) + 50 * scale,
+      size: Math.floor((Math.random() * 20 + 7) * scale),
+      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
+    });
+  }
+}
+// Calls: initGrassStrips(), initBgGrassStrips(), initTreeStrips(), initBgTreeStrips(), initMoon(), initCelestial()
+function resetGame() {
+  score = 0;
+  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
+  velocityY = 0;
+  jumpCount = 0;
+  obstacles = [];
+  collectibles = [];
+  frameCount = 0;
+  nextObstacleFrame = 100;
+  currentSpeed = initialSpeed;
+  
+  grassOffset = 0;
+  initGrassStrips();
+  
+  bgGrassOffset = 0;
+  initBgGrassStrips();
+  
+  treeOffset = 0;
+  initTreeStrips(1.2);
+  
+  bgTreeOffset = 0;
+  initBgTreeStrips(1.8);
+    
+  initMoon();
+  moonX = canvas.width * 0.75;
+  
+  celestialObjects = [];
+  initCelestial();
+  
+  scoreElement.innerText = "Score: 0";
+}
+
+
 // calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
 async function startGame() {
   if (nameInput.value.trim() === "") {
@@ -878,12 +951,14 @@ async function startGame() {
     const totalGrass = GRASS_EMOJIS.length * grassSizes.length;
     const totalBgGrass = BG_GRASS_EMOJIS.length * bgGrassSizes.length;
     const totalTrees = TREE_EMOJIS.length * treeSizes.length;
+	const totalBgTrees = BG_TREE_EMOJIS.length * bgTreeSizes.length;
     const grandTotal =
       totalObstacles +
       totalCollectibles +
       totalGrass +
       totalBgGrass +
-      totalTrees;
+      totalTrees +
+	  totalBgTrees;
     const progressObstacles = (count) => {
       drawLoadingScreen(count, grandTotal);
     };
@@ -905,12 +980,19 @@ async function startGame() {
         grandTotal
       );
     };
+    const progressBgTrees = (count) => {
+      drawLoadingScreen(
+        totalObstacles + totalCollectibles + totalGrass + totalBgGrass + totalTrees + count,
+        grandTotal
+      );
+    };
     drawLoadingScreen(0, grandTotal);
     await initObstacleCache(progressObstacles);
     await initCollectibleCache(progressCollectibles);
     await initGrassCache(progressGrass);
     await initBgGrassCache(progressBgGrass);
     await initTreeCache(progressTrees);
+	await initBgTreeCache(progressBgTrees);
   }
 
   gameRunning = true;
@@ -1049,7 +1131,14 @@ function draw() {
   ctx.font = `${moonSize}px serif`;
   ctx.fillText("🌖", moonX, canvas.height * 0.25);
 
-  // Draw Trees - pre-rendered scrolling strips (2 draw calls)
+
+   // Draw Background Trees - pre-rendered scrolling strips (2 draw calls)
+  if (bgTreeStripCanvas) {
+    ctx.drawImage(bgTreeStripCanvas, -bgTreeOffset, 0);
+    ctx.drawImage(bgTreeStripCanvas, bgTreeStripWidth - bgTreeOffset, 0);
+  }
+  
+   // Draw Trees - pre-rendered scrolling strips (2 draw calls)
   if (treeStripCanvas) {
     ctx.drawImage(treeStripCanvas, -treeOffset, 0);
     ctx.drawImage(treeStripCanvas, treeStripWidth - treeOffset, 0);
@@ -1060,6 +1149,26 @@ function draw() {
     ctx.drawImage(bgGrassStripCanvas, -bgGrassOffset, 0);
     ctx.drawImage(bgGrassStripCanvas, bgGrassStripWidth - bgGrassOffset, 0);
   }
+
+
+  // Draw Collectibles
+  collectibles.forEach((coll) => {
+    const img = coll.img || renderCache.get(coll.type, coll.height);
+    const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
+    const dy = coll.y + coll.height - img.height; // align bottom
+    ctx.drawImage(img, dx, dy, img.width, img.height);
+  });
+
+
+  // Draw Cat (Black Cat Emoji) - Flipped Horizontally
+  ctx.save();
+  ctx.translate(CAT_X, CAT_Y);
+  ctx.scale(-1, 1);
+  ctx.font = `${CAT_SIZE}px Arial`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🐈‍⬛", 0, 0);
+  ctx.restore();
 
   // Draw Obstacles (centered on collision box center)
   obstacles.forEach((obs) => {
@@ -1074,29 +1183,13 @@ function draw() {
     );
   });
 
-  // Draw Cat (Black Cat Emoji) - Flipped Horizontally
-  ctx.save();
-  ctx.translate(CAT_X, CAT_Y);
-  ctx.scale(-1, 1);
-  ctx.font = `${CAT_SIZE}px Arial`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("🐈‍⬛", 0, 0);
-  ctx.restore();
-
-  // Draw Collectibles
-  collectibles.forEach((coll) => {
-    const img = coll.img || renderCache.get(coll.type, coll.height);
-    const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
-    const dy = coll.y + coll.height - img.height; // align bottom
-    ctx.drawImage(img, dx, dy, img.width, img.height);
-  });
 
   // Draw Foreground Grass - pre-rendered scrolling strips (2 draw calls)
   if (grassStripCanvas) {
     ctx.drawImage(grassStripCanvas, -grassOffset, 0);
     ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
   }
+
 
   // Draw Speed counter (top-right)
   ctx.fillStyle = "#d4af37";
@@ -1229,6 +1322,12 @@ function update(timestamp) {
   treeOffset += currentSpeed * TREE_SPEED_RATIO * dt;
   if (treeOffset >= treeStripWidth) {
     treeOffset -= treeStripWidth;
+  }
+  
+   // Background Tree scrolling (far even slower parallax)
+  bgTreeOffset += currentSpeed * BG_TREE_SPEED_RATIO * dt;
+  if (bgTreeOffset >= bgTreeStripWidth) {
+    bgTreeOffset -= bgTreeStripWidth;
   }
 
   // Moon scrolling (slowest parallax)
