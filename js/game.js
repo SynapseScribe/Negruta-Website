@@ -71,7 +71,6 @@ const renderCache = {
 /* PARALLAX BACKGROUND */
 // ----------------------------- //
 
-
 // 1st layer - foreground grass
 const GRASS_EMOJIS = [
   "🌱",
@@ -98,7 +97,6 @@ let grassStripCanvas = null;
 let grassOffset = 0;
 let grassStripWidth = 0;
 
-
 // 2nd layer - background grass
 const BG_GRASS_EMOJIS = ["🌿", "☘️", "🍀"];
 const bgGrassSizes = [20, 30];
@@ -116,8 +114,6 @@ const TREE_SPEED_RATIO = 0.35;
 let treeStripCanvas = null;
 let treeOffset = 0;
 let treeStripWidth = 0;
-
-
 
 function randomGrassGap() {
   return Math.floor(
@@ -164,14 +160,18 @@ function initBgGrassStrips() {
   const margin = Math.max(...bgGrassSizes) * scale;
   let x = margin;
   while (x < stripW - margin) {
-    const emoji = BG_GRASS_EMOJIS[Math.floor(Math.random() * BG_GRASS_EMOJIS.length)];
+    const emoji =
+      BG_GRASS_EMOJIS[Math.floor(Math.random() * BG_GRASS_EMOJIS.length)];
     const size =
       bgGrassSizes[Math.floor(Math.random() * bgGrassSizes.length)] * scale;
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
       sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * 1.3);
     }
-    x += Math.floor(BG_GRASS_MIN_SPACING + Math.random() * (BG_GRASS_MAX_SPACING - BG_GRASS_MIN_SPACING));
+    x += Math.floor(
+      BG_GRASS_MIN_SPACING +
+        Math.random() * (BG_GRASS_MAX_SPACING - BG_GRASS_MIN_SPACING)
+    );
   }
 }
 
@@ -199,7 +199,6 @@ function initTreeStrips() {
     x += Math.floor(stripW * Math.random() * 0.04);
   }
 }
-
 
 async function initGrassCache(progressCallback) {
   const total = GRASS_EMOJIS.length * grassSizes.length;
@@ -681,7 +680,6 @@ function meow() {
   audio.play().catch((e) => console.log("Audio play failed:", e));
 }
 
-
 // ----------------------------- //
 /* GAME START */
 // ----------------------------- //
@@ -820,7 +818,12 @@ async function startGame() {
     const totalGrass = GRASS_EMOJIS.length * grassSizes.length;
     const totalBgGrass = BG_GRASS_EMOJIS.length * bgGrassSizes.length;
     const totalTrees = TREE_EMOJIS.length * treeSizes.length;
-    const grandTotal = totalObstacles + totalCollectibles + totalGrass + totalBgGrass + totalTrees;
+    const grandTotal =
+      totalObstacles +
+      totalCollectibles +
+      totalGrass +
+      totalBgGrass +
+      totalTrees;
     const progressObstacles = (count) => {
       drawLoadingScreen(count, grandTotal);
     };
@@ -831,10 +834,16 @@ async function startGame() {
       drawLoadingScreen(totalObstacles + totalCollectibles + count, grandTotal);
     };
     const progressBgGrass = (count) => {
-      drawLoadingScreen(totalObstacles + totalCollectibles + totalGrass + count, grandTotal);
+      drawLoadingScreen(
+        totalObstacles + totalCollectibles + totalGrass + count,
+        grandTotal
+      );
     };
     const progressTrees = (count) => {
-      drawLoadingScreen(totalObstacles + totalCollectibles + totalGrass + totalBgGrass + count, grandTotal);
+      drawLoadingScreen(
+        totalObstacles + totalCollectibles + totalGrass + totalBgGrass + count,
+        grandTotal
+      );
     };
     drawLoadingScreen(0, grandTotal);
     await initObstacleCache(progressObstacles);
@@ -904,8 +913,6 @@ window.addEventListener("keydown", (e) => {
     jumpCount++;
   }
 });
-
-
 
 // ----------------------------- //
 /* DURING GAME PLAY */
@@ -1184,8 +1191,6 @@ function update(timestamp) {
   draw();
   animationFrameId = requestAnimationFrame(update);
 }
-
-
 
 // ----------------------------- //
 /* GAME OVER */
