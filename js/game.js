@@ -71,6 +71,8 @@ const renderCache = {
 /* PARALLAX BACKGROUND */
 // ----------------------------- //
 
+const GROUND_HEIGHT_RATIO = 0.25;
+
 // 1st layer - foreground grass
 const GRASS_EMOJIS = [
   "🌱",
@@ -952,20 +954,37 @@ function drawLoadingScreen(current, total) {
   );
 }
 
-// Generate Night Sky background gradient
-function createBackgroundGradient() {
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+// Generate Night Sky background gradient (sky portion only)
+function createSkyGradient() {
+  const groundY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
+  const gradient = ctx.createLinearGradient(0, 0, 0, groundY);
   gradient.addColorStop(0, "#0a0a2e");
   gradient.addColorStop(0.5, "#1a1a4e");
   gradient.addColorStop(1, "#2d1b69");
   return gradient;
 }
 
-// Draw: createBackgroundGradient(), moon, celestial, speed counter, cat, grass [renderCache], obstacles [renderCache], collectibles [renderCache]
+// Generate Ground/Dirt background gradient (bottom portion)
+function createGroundGradient() {
+  const groundY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
+  const gradient = ctx.createLinearGradient(0, groundY, 0, canvas.height);
+  gradient.addColorStop(0, "#5c3a21");
+  gradient.addColorStop(0.4, "#4a2e1b");
+  gradient.addColorStop(1, "#3a2215");
+  return gradient;
+}
+
+// Draw: createSkyGradient(), createGroundGradient(), moon, celestial, speed counter, cat, grass [renderCache], obstacles [renderCache], collectibles [renderCache]
 function draw() {
-  // Draw Night sky gradient background
-  ctx.fillStyle = createBackgroundGradient();
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const groundY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
+
+  // Draw sky gradient (top portion)
+  ctx.fillStyle = createSkyGradient();
+  ctx.fillRect(0, 0, canvas.width, groundY);
+
+  // Draw dirt ground gradient (bottom portion)
+  ctx.fillStyle = createGroundGradient();
+  ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
 
   // Draw parallax layers back to front: moon -> celestial -> trees -> bg-grass -> fg-grass
   ctx.textAlign = "center";
