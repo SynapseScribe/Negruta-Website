@@ -1,5 +1,4 @@
 /* GET ELEMENTS */
-const scoreElement = document.getElementById("gameScore");
 const nameInput = document.getElementById("playerNameInput");
 const startBtn = document.getElementById("startGameBtn");
 const gameOverDialog = document.getElementById("gameOverDialog");
@@ -14,6 +13,14 @@ const BASE_WIDTH = 800;
 const BASE_HEIGHT = 550;
 
 let frameCount = 0;
+
+/* CANVAS-DRAWN PRE-GAME UI */
+let nameFieldX, nameFieldY, nameFieldW, nameFieldH;
+let startBtnX, startBtnY, startBtnW, startBtnH;
+let currentName = "";
+let nameFieldFocused = false;
+let shakeOffset = 0;
+let shakeStartTime = 0;
 
 /* MOVEMENT */
 const gravity = 1;
@@ -822,13 +829,55 @@ function meow() {
 
 // On 2 attempts to enter empty name, autocomplete to "Anon"
 let emptyNameAttempts = 0;
+
+// Focus/blur handling for hidden input -> canvas display sync
+nameInput.addEventListener("focus", () => {
+  nameFieldFocused = true;
+});
+nameInput.addEventListener("blur", () => {
+  nameFieldFocused = false;
+  currentName = nameInput.value.trim();
+});
 nameInput.addEventListener("input", () => {
   emptyNameAttempts = 0;
+  shakeStartTime = 0;
+  shakeOffset = 0;
+  currentName = nameInput.value;
 });
 
-// Button starts game
-startBtn.addEventListener("click", startGame);
-// Enter starts game
+// Canvas click handler for pre-game UI
+canvas.addEventListener("mousedown", (e) => {
+  if (gameRunning) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // Check if clicked on name field
+  if (
+    x >= nameFieldX &&
+    x <= nameFieldX + nameFieldW &&
+    y >= nameFieldY &&
+    y <= nameFieldY + nameFieldH
+  ) {
+    nameInput.focus();
+    nameFieldFocused = true;
+    return;
+  }
+
+  // Check if clicked on start button
+  if (
+    x >= startBtnX &&
+    x <= startBtnX + startBtnW &&
+    y >= startBtnY &&
+    y <= startBtnY + startBtnH
+  ) {
+    startGame();
+    return;
+  }
+});
+
+// Enter key starts game from hidden input (still captures keyboard focus)
 nameInput.addEventListener("keydown", (e) => {
   if (e.code === "Enter") {
     startGame();
@@ -878,7 +927,132 @@ function computeScale() {
   grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
   grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
   collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
+
+  // Compute canvas-drawn pre-game UI geometry
+  nameFieldW = Math.round(280 * scale);
+  nameFieldH = Math.round(40 * scale);
+  nameFieldX = Math.round(((BASE_WIDTH - 280) / 2) * scale);
+  nameFieldY = Math.round(150 * scale);
+
+  startBtnW = Math.round(160 * scale);
+  startBtnH = Math.round(45 * scale);
+  startBtnX = Math.round(((BASE_WIDTH - 160) / 2) * scale);
+  startBtnY = Math.round(210 * scale);
+
   scaleComputed = true;
+}
+
+/* DRAW PRE-GAME UI */
+function drawPreGameUI() {
+  if (!scaleComputed) computeScale();
+
+  // Update shake offset (300ms shake)
+  if (shakeStartTime > 0) {
+    const elapsed = Date.now() - shakeStartTime;
+    if (elapsed < 300) {
+      shakeOffset = Math.sin((elapsed / 300) * Math.PI * 4) * 6 * scale;
+    } else {
+      shakeOffset = 0;
+      shakeStartTime = 0;
+    }
+  }
+
+  // Draw title "Negruta's Adventures"
+  ctx.save();
+  const titleFontSize = Math.round(32 * scale);
+  ctx.font = `bold ${titleFontSize}px 'Segoe UI', sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#d4af37";
+  ctx.fillText(
+    "Negruta's Adventures",
+    canvas.width / 2,
+    nameFieldY - 50 * scale
+  );
+
+  // Draw subtitle "Jump over obstacles and collect treats!"
+  const subtitleFontSize = Math.round(16 * scale);
+  ctx.font = `${subtitleFontSize}px 'Segoe UI', sans-serif`;
+  ctx.fillStyle = "#b8972e";
+  ctx.fillText(
+    "Jump over obstacles and collect treats!",
+    canvas.width / 2,
+    nameFieldY - 25 * scale
+  );
+
+  // Draw name field background
+  const fx = nameFieldX + shakeOffset;
+  ctx.fillStyle = "#1a1a2e";
+  roundRect(ctx, fx, nameFieldY, nameFieldW, nameFieldH, 8 * scale);
+  ctx.fill();
+
+  // Draw name field border (gold if focused, dim otherwise)
+  ctx.strokeStyle = nameFieldFocused ? "#d4af37" : "#555";
+  ctx.lineWidth = 2 * scale;
+  roundRect(ctx, fx, nameFieldY, nameFieldW, nameFieldH, 8 * scale);
+  ctx.stroke();
+
+  // Draw placeholder or current name text
+  const inputTextFontSize = Math.round(16 * scale);
+  ctx.font = `${inputTextFontSize}px 'Segoe UI', sans-serif`;
+  ctx.textAlign = "left";
+  if (currentName) {
+    ctx.fillStyle = "#fff";
+    ctx.fillText(
+      currentName,
+      fx + 8 * scale,
+      nameFieldY + nameFieldH / 2 + inputTextFontSize / 3
+    );
+  } else if (!nameFieldFocused) {
+    ctx.fillStyle = "#666";
+    ctx.fillText(
+      "Enter your name",
+      fx + 8 * scale,
+      nameFieldY + nameFieldH / 2 + inputTextFontSize / 3
+    );
+  }
+
+  // Draw start button background
+  ctx.fillStyle = "#d4af37";
+  roundRect(ctx, startBtnX, startBtnY, startBtnW, startBtnH, 8 * scale);
+  ctx.fill();
+
+  // Draw start button text
+  const btnTextFontSize = Math.round(18 * scale);
+  ctx.font = `bold ${btnTextFontSize}px 'Segoe UI', sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#000";
+  ctx.fillText(
+    "Start Game",
+    canvas.width / 2,
+    startBtnY + startBtnH / 2 + btnTextFontSize / 3
+  );
+
+  // Draw instructions below button
+  const instrFontSize = Math.round(14 * scale);
+  ctx.font = `${instrFontSize}px 'Segoe UI', sans-serif`;
+  ctx.fillStyle = "#888";
+  ctx.fillText(
+    "Click or tap to jump • Spacebar to jump",
+    canvas.width / 2,
+    startBtnY + startBtnH + 30 * scale
+  );
+
+  ctx.restore();
+}
+
+// Helper: rounded rectangle path
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
 }
 
 /* START GAME */
@@ -927,27 +1101,25 @@ function resetGame() {
 
   celestialObjects = [];
   initCelestial();
-
-  scoreElement.innerText = "Score: 0";
 }
 
 // calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
 async function startGame() {
-  if (nameInput.value.trim() === "") {
+  currentName = nameInput.value.trim();
+
+  if (currentName === "") {
     emptyNameAttempts++;
     if (emptyNameAttempts >= 2) {
       nameInput.value = "Anon";
+      currentName = "Anon";
       emptyNameAttempts = 0;
     } else {
       nameInput.focus();
-      nameInput.offsetHeight;
-      nameInput.style.animation = "inputShake 0.4s ease";
+      shakeStartTime = Date.now();
       return;
     }
   }
-  playerName = nameInput.value.trim();
-  startBtn.disabled = true;
-  nameInput.disabled = true;
+  playerName = currentName;
 
   const needsReload = !scaleComputed;
   if (needsReload) computeScale();
@@ -1031,6 +1203,36 @@ canvas.addEventListener(
   "touchstart",
   (e) => {
     e.preventDefault();
+
+    if (!gameRunning) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.touches[0].clientX - rect.left;
+      const y = e.touches[0].clientY - rect.top;
+
+      // Check if tapped on name field
+      if (
+        x >= nameFieldX &&
+        x <= nameFieldX + nameFieldW &&
+        y >= nameFieldY &&
+        y <= nameFieldY + nameFieldH
+      ) {
+        nameInput.focus();
+        nameFieldFocused = true;
+        return;
+      }
+
+      // Check if tapped on start button
+      if (
+        x >= startBtnX &&
+        x <= startBtnX + startBtnW &&
+        y >= startBtnY &&
+        y <= startBtnY + startBtnH
+      ) {
+        startGame();
+        return;
+      }
+    }
+
     if (gameRunning && jumpCount < maxJumpsBeforeReset) {
       velocityY = jumpStrengthVal;
       jumpCount++;
@@ -1202,18 +1404,23 @@ function draw() {
     ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
   }
 
-  // Draw Speed counter (top-right)
+  // Draw Score + Speed counter (top-left)
   ctx.fillStyle = "#d4af37";
   ctx.font = "bold 18px Arial";
-  ctx.textAlign = "right";
-  ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, canvas.width - 15, 25);
+  ctx.textAlign = "left";
+  ctx.fillText(`Score: ${score}`, 15, 25);
+  ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, 15, 48);
 }
 
 /* UPDATE FRAME MOVEMENT */
 // gravity, floor collision, obstacle movement + collsion + meow(), Collectibles movement + collision, grass scrolling + randomGrassGap, spawnObstacle(), spawnCollectible(), draw(),
 let lastTime = 0;
 function update(timestamp) {
-  if (!gameRunning) return;
+  if (!gameRunning) {
+    drawPreGameUI();
+    requestAnimationFrame(update);
+    return;
+  }
 
   const dt = timestamp ? (timestamp - lastTime) / 16.67 : 1; // normalize to ~60fps
   lastTime = timestamp || 0;
@@ -1283,7 +1490,6 @@ function update(timestamp) {
       obstacles.pop();
       i--;
       score++;
-      scoreElement.innerText = `Score: ${score}`;
     }
   }
 
@@ -1305,7 +1511,6 @@ function update(timestamp) {
       collectibles.pop();
       i--;
       score += COLLECTIBLE_SCORES[collType] ?? DEFAULT_COLLECTIBLE_SCORE;
-      scoreElement.innerText = `Score: ${score}`;
       continue;
     }
 
@@ -1382,6 +1587,9 @@ function saveScore(name, finalScore) {
   if (scores.length > 50) scores = scores.slice(0, 50);
   localStorage.setItem("catGameScores", JSON.stringify(scores));
   displayScores();
+
+  // Start animation loop for pre-game UI
+  requestAnimationFrame(update);
 }
 
 // saveScore(), gameOverDialog [playAgainBtn + gameOverCloseBtn]

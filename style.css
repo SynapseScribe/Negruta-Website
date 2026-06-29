@@ -419,27 +419,6 @@ footer {
   max-width: 100%;
   height: auto;
 }
-.game-controls {
-  display: flex;
-  gap: 1rem;
-}
-#playerNameInput,
-#startGameBtn {
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #d4af37;
-}
-#startGameBtn {
-  background-color: #d4af37;
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-}
-.game-info {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #d4af37;
-}
 .canvas-wrapper {
   position: relative;
   display: inline-block;
@@ -496,6 +475,15 @@ footer {
 .score-board li:nth-child(4),
 .score-board li:nth-child(5) {
   font-size: 0.9rem;
+}
+
+/* Hidden pre-game UI - rendered on canvas instead */
+#name-input,
+#start-btn {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Game Over Dialog */
@@ -793,10 +781,6 @@ footer {
   }
 
   .orange-cat-container {
-    flex-direction: column;
-  }
-
-  .game-controls {
     flex-direction: column;
   }
 
