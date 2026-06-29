@@ -1,3 +1,4 @@
+61 - [Pipeline][FEATURE] Full-screen functionality for the game - OPEN
 59 - [Pipeline][FEATURE] Parallax scrolling layers for grass, trees, and moon - CLOSED
 55 - [Pipeline][FEATURE] Standardize caching mechanism for all game objects via offscreen canvas - CLOSED
 50 - [Pipeline][BUG] Cancel animation loop on game over instead of letting it spin - CLOSED

@@ -212,7 +212,10 @@ Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporti
             >
             <button type="button" id="startGameBtn">Start Game</button>
           </div>
-          <canvas id="gameCanvas" width="800" height="550"></canvas>
+          <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="800" height="550"></canvas>
+            <button type="button" id="fullscreenBtn">⛶</button>
+          </div>
           <div class="game-info">
             <p id="gameScore">Score: 0</p>
           </div>

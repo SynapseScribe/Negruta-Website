@@ -6,6 +6,7 @@ const gameOverDialog = document.getElementById("gameOverDialog");
 const playAgainBtn = document.getElementById("playAgainBtn");
 const gameOverCloseBtn = document.getElementById("gameOverCloseBtn");
 const canvas = document.getElementById("gameCanvas");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 /* CANVAS */
 const ctx = canvas.getContext("2d"); // 2D drawing context
@@ -82,7 +83,10 @@ function drawUndulatingGround() {
   const segWidth = canvas.width / segments;
 
   function getHorizonY(x) {
-    return baseY + Math.sin((x / canvas.width) * Math.PI * segments) * HORIZON_WAVE_AMPLITUDE;
+    return (
+      baseY +
+      Math.sin((x / canvas.width) * Math.PI * segments) * HORIZON_WAVE_AMPLITUDE
+    );
   }
 
   // Draw green transition strip (distant foliage)
@@ -93,16 +97,31 @@ function drawUndulatingGround() {
   for (let i = 1; i <= segments; i++) {
     const x = i * segWidth;
     const prevX = (i - 1) * segWidth;
-    ctx.quadraticCurveTo((prevX + x) / 2, getHorizonY((prevX + x) / 2), x, getHorizonY(x));
+    ctx.quadraticCurveTo(
+      (prevX + x) / 2,
+      getHorizonY((prevX + x) / 2),
+      x,
+      getHorizonY(x)
+    );
   }
   for (let i = segments; i >= 1; i--) {
     const x = i * segWidth;
     const prevX = (i - 1) * segWidth;
-    ctx.quadraticCurveTo((prevX + x) / 2, getHorizonY((prevX + x) / 2) + stripHeight, x, getHorizonY(x) + stripHeight);
+    ctx.quadraticCurveTo(
+      (prevX + x) / 2,
+      getHorizonY((prevX + x) / 2) + stripHeight,
+      x,
+      getHorizonY(x) + stripHeight
+    );
   }
   ctx.lineTo(0, getHorizonY(0) + stripHeight);
   ctx.closePath();
-  const greenGrad = ctx.createLinearGradient(0, baseY - HORIZON_WAVE_AMPLITUDE, 0, baseY + stripHeight + HORIZON_WAVE_AMPLITUDE);
+  const greenGrad = ctx.createLinearGradient(
+    0,
+    baseY - HORIZON_WAVE_AMPLITUDE,
+    0,
+    baseY + stripHeight + HORIZON_WAVE_AMPLITUDE
+  );
   greenGrad.addColorStop(0, "#1a4d1a");
   greenGrad.addColorStop(0.3, "#2e6b2e");
   greenGrad.addColorStop(0.7, "#3d7a3d");
@@ -118,11 +137,21 @@ function drawUndulatingGround() {
   for (let i = 1; i <= segments; i++) {
     const x = i * segWidth;
     const prevX = (i - 1) * segWidth;
-    ctx.quadraticCurveTo((prevX + x) / 2, getHorizonY((prevX + x) / 2), x, getHorizonY(x));
+    ctx.quadraticCurveTo(
+      (prevX + x) / 2,
+      getHorizonY((prevX + x) / 2),
+      x,
+      getHorizonY(x)
+    );
   }
   ctx.lineTo(canvas.width, canvas.height);
   ctx.closePath();
-  const dirtGrad = ctx.createLinearGradient(0, baseY + stripHeight, 0, canvas.height);
+  const dirtGrad = ctx.createLinearGradient(
+    0,
+    baseY + stripHeight,
+    0,
+    canvas.height
+  );
   dirtGrad.addColorStop(0, "#5c3a21");
   dirtGrad.addColorStop(0.4, "#4a2e1b");
   dirtGrad.addColorStop(1, "#3a2215");
@@ -141,15 +170,7 @@ let grassOffset = 0;
 let grassStripWidth = 0;
 
 // 2nd layer - background grass
-const BG_GRASS_EMOJIS =  [
-  "🌼",
-  "🌻",
-  "🌷",
-  "🌹",
-  "🪻",
-  "☘️",
-  "🍀"
-];
+const BG_GRASS_EMOJIS = ["🌼", "🌻", "🌷", "🌹", "🪻", "☘️", "🍀"];
 //   "🍂",  "🍁",  "🥀",
 const bgGrassSizes = [20, 30];
 const BG_GRASS_MIN_SPACING = 40;
@@ -174,8 +195,6 @@ const BG_TREE_SPEED_RATIO = 0.1;
 let bgTreeStripCanvas = null;
 let bgTreeOffset = 0;
 let bgTreeStripWidth = 0;
-
-
 
 // First strip (grass)
 function randomGrassGap() {
@@ -259,7 +278,11 @@ function initTreeStrips(heightFactor) {
       treeSizes[Math.floor(Math.random() * treeSizes.length)] * scale;
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
-      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * heightFactor);
+      sctx.drawImage(
+        img,
+        x - img.width / 2,
+        canvas.height - img.height * heightFactor
+      );
     }
     x += Math.floor(stripW * Math.random() * 0.05);
   }
@@ -280,18 +303,21 @@ function initBgTreeStrips(heightFactor) {
   const margin = Math.max(...treeSizes) * scale;
   let x = margin;
   while (x < stripW - margin) {
-    const emoji = BG_TREE_EMOJIS[Math.floor(Math.random() * BG_TREE_EMOJIS.length)];
+    const emoji =
+      BG_TREE_EMOJIS[Math.floor(Math.random() * BG_TREE_EMOJIS.length)];
     const size =
       bgTreeSizes[Math.floor(Math.random() * bgTreeSizes.length)] * scale;
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
-      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * heightFactor);
+      sctx.drawImage(
+        img,
+        x - img.width / 2,
+        canvas.height - img.height * heightFactor
+      );
     }
     x += Math.floor(stripW * Math.random() * 0.02);
   }
 }
-
-
 
 async function initGrassCache(progressCallback) {
   const total = GRASS_EMOJIS.length * grassSizes.length;
@@ -792,7 +818,6 @@ function meow() {
 /* GAME START */
 // ----------------------------- //
 
-
 /* HOW TO START */
 
 // On 2 attempts to enter empty name, autocomplete to "Anon"
@@ -800,8 +825,6 @@ let emptyNameAttempts = 0;
 nameInput.addEventListener("input", () => {
   emptyNameAttempts = 0;
 });
-
-
 
 // Button starts game
 startBtn.addEventListener("click", startGame);
@@ -858,11 +881,7 @@ function computeScale() {
   scaleComputed = true;
 }
 
-
-
-
 /* START GAME */
-
 
 // RESET GAME
 let celestialObjects = [];
@@ -890,28 +909,27 @@ function resetGame() {
   frameCount = 0;
   nextObstacleFrame = 100;
   currentSpeed = initialSpeed;
-  
+
   grassOffset = 0;
   initGrassStrips();
-  
+
   bgGrassOffset = 0;
   initBgGrassStrips();
-  
+
   treeOffset = 0;
   initTreeStrips(1.2);
-  
+
   bgTreeOffset = 0;
   initBgTreeStrips(1.8);
-    
+
   initMoon();
   moonX = canvas.width * 0.75;
-  
+
   celestialObjects = [];
   initCelestial();
-  
+
   scoreElement.innerText = "Score: 0";
 }
-
 
 // calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
 async function startGame() {
@@ -944,14 +962,14 @@ async function startGame() {
     const totalGrass = GRASS_EMOJIS.length * grassSizes.length;
     const totalBgGrass = BG_GRASS_EMOJIS.length * bgGrassSizes.length;
     const totalTrees = TREE_EMOJIS.length * treeSizes.length;
-	const totalBgTrees = BG_TREE_EMOJIS.length * bgTreeSizes.length;
+    const totalBgTrees = BG_TREE_EMOJIS.length * bgTreeSizes.length;
     const grandTotal =
       totalObstacles +
       totalCollectibles +
       totalGrass +
       totalBgGrass +
       totalTrees +
-	  totalBgTrees;
+      totalBgTrees;
     const progressObstacles = (count) => {
       drawLoadingScreen(count, grandTotal);
     };
@@ -975,7 +993,12 @@ async function startGame() {
     };
     const progressBgTrees = (count) => {
       drawLoadingScreen(
-        totalObstacles + totalCollectibles + totalGrass + totalBgGrass + totalTrees + count,
+        totalObstacles +
+          totalCollectibles +
+          totalGrass +
+          totalBgGrass +
+          totalTrees +
+          count,
         grandTotal
       );
     };
@@ -985,7 +1008,7 @@ async function startGame() {
     await initGrassCache(progressGrass);
     await initBgGrassCache(progressBgGrass);
     await initTreeCache(progressTrees);
-	await initBgTreeCache(progressBgTrees);
+    await initBgTreeCache(progressBgTrees);
   }
 
   gameRunning = true;
@@ -1124,14 +1147,13 @@ function draw() {
   ctx.font = `${moonSize}px serif`;
   ctx.fillText("🌖", moonX, canvas.height * 0.25);
 
-
-   // Draw Background Trees - pre-rendered scrolling strips (2 draw calls)
+  // Draw Background Trees - pre-rendered scrolling strips (2 draw calls)
   if (bgTreeStripCanvas) {
     ctx.drawImage(bgTreeStripCanvas, -bgTreeOffset, 0);
     ctx.drawImage(bgTreeStripCanvas, bgTreeStripWidth - bgTreeOffset, 0);
   }
-  
-   // Draw Trees - pre-rendered scrolling strips (2 draw calls)
+
+  // Draw Trees - pre-rendered scrolling strips (2 draw calls)
   if (treeStripCanvas) {
     ctx.drawImage(treeStripCanvas, -treeOffset, 0);
     ctx.drawImage(treeStripCanvas, treeStripWidth - treeOffset, 0);
@@ -1143,7 +1165,6 @@ function draw() {
     ctx.drawImage(bgGrassStripCanvas, bgGrassStripWidth - bgGrassOffset, 0);
   }
 
-
   // Draw Collectibles
   collectibles.forEach((coll) => {
     const img = coll.img || renderCache.get(coll.type, coll.height);
@@ -1151,7 +1172,6 @@ function draw() {
     const dy = coll.y + coll.height - img.height; // align bottom
     ctx.drawImage(img, dx, dy, img.width, img.height);
   });
-
 
   // Draw Cat (Black Cat Emoji) - Flipped Horizontally
   ctx.save();
@@ -1176,13 +1196,11 @@ function draw() {
     );
   });
 
-
   // Draw Foreground Grass - pre-rendered scrolling strips (2 draw calls)
   if (grassStripCanvas) {
     ctx.drawImage(grassStripCanvas, -grassOffset, 0);
     ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
   }
-
 
   // Draw Speed counter (top-right)
   ctx.fillStyle = "#d4af37";
@@ -1316,8 +1334,8 @@ function update(timestamp) {
   if (treeOffset >= treeStripWidth) {
     treeOffset -= treeStripWidth;
   }
-  
-   // Background Tree scrolling (far even slower parallax)
+
+  // Background Tree scrolling (far even slower parallax)
   bgTreeOffset += currentSpeed * BG_TREE_SPEED_RATIO * dt;
   if (bgTreeOffset >= bgTreeStripWidth) {
     bgTreeOffset -= bgTreeStripWidth;
@@ -1454,4 +1472,94 @@ window.addEventListener("resize", () => {
     grassStripCanvas = null;
   }
 });
+
+// Fullscreen toggle for game canvas
+if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
+  function toggleFullscreen() {
+    if (document.fullscreenElement === canvas) {
+      document.exitFullscreen();
+    } else {
+      if (canvas.requestFullscreen) canvas.requestFullscreen();
+      else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+    }
+  }
+
+  fullscreenBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleFullscreen();
+  });
+
+  document.addEventListener("fullscreenchange", () => {
+    if (document.fullscreenElement === canvas) {
+      fullscreenBtn.textContent = "⎌";
+      computeScale();
+      renderCache.clear();
+      obstacles = [];
+      collectibles = [];
+      grassStripCanvas = null;
+      bgGrassStripCanvas = null;
+      treeStripCanvas = null;
+      bgTreeStripCanvas = null;
+      if (gameRunning) resetGame();
+    } else {
+      fullscreenBtn.textContent = "⛶";
+      if (gameRunning) {
+        computeScale();
+        renderCache.clear();
+        obstacles = [];
+        collectibles = [];
+        grassStripCanvas = null;
+        bgGrassStripCanvas = null;
+        treeStripCanvas = null;
+        bgTreeStripCanvas = null;
+        resetGame();
+      } else {
+        scaleComputed = false;
+        renderCache.clear();
+        obstacles = [];
+        collectibles = [];
+        grassStripCanvas = null;
+      }
+    }
+  });
+
+  if (canvas.webkitRequestFullscreen) {
+    document.addEventListener("webkitfullscreenchange", () => {
+      if (document.webkitFullscreenElement === canvas) {
+        fullscreenBtn.textContent = "⎌";
+        computeScale();
+        renderCache.clear();
+        obstacles = [];
+        collectibles = [];
+        grassStripCanvas = null;
+        bgGrassStripCanvas = null;
+        treeStripCanvas = null;
+        bgTreeStripCanvas = null;
+        if (gameRunning) resetGame();
+      } else {
+        fullscreenBtn.textContent = "⛶";
+        if (gameRunning) {
+          computeScale();
+          renderCache.clear();
+          obstacles = [];
+          collectibles = [];
+          grassStripCanvas = null;
+          bgGrassStripCanvas = null;
+          treeStripCanvas = null;
+          bgTreeStripCanvas = null;
+          resetGame();
+        } else {
+          scaleComputed = false;
+          renderCache.clear();
+          obstacles = [];
+          collectibles = [];
+          grassStripCanvas = null;
+        }
+      }
+    });
+  }
+} else {
+  fullscreenBtn.style.display = "none";
+}
+
 displayScores();

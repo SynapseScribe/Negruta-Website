@@ -440,6 +440,28 @@ footer {
   font-weight: bold;
   color: #d4af37;
 }
+.canvas-wrapper {
+  position: relative;
+  display: inline-block;
+}
+#fullscreenBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  border: 1px solid #d4af37;
+  background-color: #d4af37;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  z-index: 10;
+  transition: opacity 0.2s;
+}
+#fullscreenBtn:hover {
+  background-color: #e6c44d;
+}
 .score-board {
   margin-top: 1rem;
   text-align: center;
