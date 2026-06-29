@@ -68,16 +68,11 @@ const renderCache = {
 };
 
 // ----------------------------- //
-/* GRASS */
+/* PARALLAX BACKGROUND */
 // ----------------------------- //
 
-let grassStripCanvas = null;
-let grassOffset = 0;
-let grassStripWidth = 0;
-const grassSizes = [30, 40, 50];
-const GRASS_MIN_SPACING = 120;
-const GRASS_MAX_SPACING = 200;
 
+// 1st layer - foreground grass
 const GRASS_EMOJIS = [
   "🌱",
   "🌿",
@@ -95,6 +90,34 @@ const GRASS_EMOJIS = [
   "🌹",
   "🪻"
 ];
+const grassSizes = [30, 40, 50];
+const GRASS_MIN_SPACING = 50;
+const GRASS_MAX_SPACING = 100;
+const FG_GRASS_SPEED_RATIO = 1;
+let grassStripCanvas = null;
+let grassOffset = 0;
+let grassStripWidth = 0;
+
+
+// 2nd layer - background grass
+const BG_GRASS_EMOJIS = ["🌿", "☘️", "🍀"];
+const bgGrassSizes = [20, 30];
+const BG_GRASS_MIN_SPACING = 50;
+const BG_GRASS_MAX_SPACING = 100;
+const BG_GRASS_SPEED_RATIO = 0.7;
+let bgGrassStripCanvas = null;
+let bgGrassOffset = 0;
+let bgGrassStripWidth = 0;
+
+// 3rd layer - background trees
+const TREE_EMOJIS = ["🌳", "🌲", "🌴"];
+const treeSizes = [60, 80, 100];
+const TREE_SPEED_RATIO = 0.35;
+let treeStripCanvas = null;
+let treeOffset = 0;
+let treeStripWidth = 0;
+
+
 
 function randomGrassGap() {
   return Math.floor(
@@ -125,6 +148,107 @@ function initGrassStrips() {
     }
     x += randomGrassGap();
   }
+}
+
+// calls: renderCache.get()
+function initBgGrassStrips() {
+  const stripW = Math.round(3200 * scale);
+  bgGrassStripWidth = stripW;
+  bgGrassStripCanvas = document.createElement("canvas");
+  bgGrassStripCanvas.width = stripW;
+  bgGrassStripCanvas.height = canvas.height;
+  const sctx = bgGrassStripCanvas.getContext("2d");
+  sctx.clearRect(0, 0, stripW, canvas.height);
+  sctx.textAlign = "center";
+  sctx.textBaseline = "bottom";
+  const margin = Math.max(...bgGrassSizes) * scale;
+  let x = margin;
+  while (x < stripW - margin) {
+    const emoji = BG_GRASS_EMOJIS[Math.floor(Math.random() * BG_GRASS_EMOJIS.length)];
+    const size =
+      bgGrassSizes[Math.floor(Math.random() * bgGrassSizes.length)] * scale;
+    const img = renderCache.get(emoji, Math.round(size));
+    if (img) {
+      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * 1.3);
+    }
+    x += Math.floor(BG_GRASS_MIN_SPACING + Math.random() * (BG_GRASS_MAX_SPACING - BG_GRASS_MIN_SPACING));
+  }
+}
+
+// calls: renderCache.get()
+function initTreeStrips() {
+  const stripW = Math.round(3200 * scale);
+  treeStripWidth = stripW;
+  treeStripCanvas = document.createElement("canvas");
+  treeStripCanvas.width = stripW;
+  treeStripCanvas.height = canvas.height;
+  const sctx = treeStripCanvas.getContext("2d");
+  sctx.clearRect(0, 0, stripW, canvas.height);
+  sctx.textAlign = "center";
+  sctx.textBaseline = "bottom";
+  const margin = Math.max(...treeSizes) * scale;
+  let x = margin;
+  while (x < stripW - margin) {
+    const emoji = TREE_EMOJIS[Math.floor(Math.random() * TREE_EMOJIS.length)];
+    const size =
+      treeSizes[Math.floor(Math.random() * treeSizes.length)] * scale;
+    const img = renderCache.get(emoji, Math.round(size));
+    if (img) {
+      sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * 1.05);
+    }
+    x += Math.floor(stripW * Math.random() * 0.04);
+  }
+}
+
+
+async function initGrassCache(progressCallback) {
+  const total = GRASS_EMOJIS.length * grassSizes.length;
+  let count = 0;
+  for (const emoji of GRASS_EMOJIS) {
+    for (const size of grassSizes) {
+      renderCache.ensure(emoji, size);
+      count++;
+      if (count % 10 === 0) {
+        progressCallback(count, total);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+  }
+}
+async function initBgGrassCache(progressCallback) {
+  const total = BG_GRASS_EMOJIS.length * bgGrassSizes.length;
+  let count = 0;
+  for (const emoji of BG_GRASS_EMOJIS) {
+    for (const size of bgGrassSizes) {
+      renderCache.ensure(emoji, size);
+      count++;
+      if (count % 10 === 0) {
+        progressCallback(count, total);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+  }
+}
+async function initTreeCache(progressCallback) {
+  const total = TREE_EMOJIS.length * treeSizes.length;
+  let count = 0;
+  for (const emoji of TREE_EMOJIS) {
+    for (const size of treeSizes) {
+      renderCache.ensure(emoji, size);
+      count++;
+      if (count % 10 === 0) {
+        progressCallback(count, total);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+  }
+}
+
+let moonX = 0;
+const MOON_SPEED_RATIO = 0.04;
+// calls: renderCache.get()
+function initMoon() {
+  moonX = canvas.width * 0.75;
 }
 
 // ----------------------------- //
@@ -488,20 +612,7 @@ async function initCollectibleCache(progressCallback) {
     }
   }
 }
-async function initGrassCache(progressCallback) {
-  const total = GRASS_EMOJIS.length * grassSizes.length;
-  let count = 0;
-  for (const emoji of GRASS_EMOJIS) {
-    for (const size of grassSizes) {
-      renderCache.ensure(emoji, size);
-      count++;
-      if (count % 10 === 0) {
-        progressCallback(count, total);
-        await new Promise((r) => setTimeout(r, 0));
-      }
-    }
-  }
-}
+
 function spawnCollectible() {
   const size =
     collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
@@ -570,8 +681,234 @@ function meow() {
   audio.play().catch((e) => console.log("Audio play failed:", e));
 }
 
+
 // ----------------------------- //
-/* RENDERING */
+/* GAME START */
+// ----------------------------- //
+
+// On 2 attempts to enter empty name, autocomplete to "Anon"
+let emptyNameAttempts = 0;
+nameInput.addEventListener("input", () => {
+  emptyNameAttempts = 0;
+});
+
+/* RESET GAME */
+// Initialize celestials
+let celestialObjects = [];
+function initCelestial() {
+  const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
+  const count = Math.floor(Math.random() * 20) + 11;
+  for (let i = 0; i < count; i++) {
+    celestialObjects.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * (canvas.height - 150 * scale) + 50 * scale,
+      size: Math.floor((Math.random() * 20 + 7) * scale),
+      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
+    });
+  }
+}
+
+// Calls: initGrassStrips(), initBgGrassStrips(), initTreeStrips(), initMoon(), initCelestial()
+function resetGame() {
+  score = 0;
+  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
+  velocityY = 0;
+  jumpCount = 0;
+  obstacles = [];
+  collectibles = [];
+  frameCount = 0;
+  nextObstacleFrame = 100;
+  currentSpeed = initialSpeed;
+  initGrassStrips();
+  grassOffset = 0;
+  initBgGrassStrips();
+  bgGrassOffset = 0;
+  initTreeStrips();
+  treeOffset = 0;
+  initMoon();
+  moonX = canvas.width * 0.75;
+  celestialObjects = [];
+  initCelestial();
+  scoreElement.innerText = "Score: 0";
+}
+
+/* HOW TO START */
+// Button starts game
+startBtn.addEventListener("click", startGame);
+// Enter starts game
+nameInput.addEventListener("keydown", (e) => {
+  if (e.code === "Enter") {
+    startGame();
+  }
+});
+
+// Scale sizes for different display sizes
+let scaleComputed = false;
+let scale,
+  catSize,
+  catX,
+  gravityVal,
+  jumpStrengthVal,
+  initialSpeed,
+  maxSpeed,
+  speedIncrement,
+  collisionHPadding,
+  obstacleHitboxInset,
+  collisionVPadding,
+  obstacleSizes,
+  autojumpVTolerance,
+  autojumpHMargin,
+  grassMinSpacing,
+  grassMaxSpacing,
+  collectibleSizes;
+function computeScale() {
+  const renderedW = canvas.clientWidth || BASE_WIDTH;
+  const renderedH = canvas.clientHeight || BASE_HEIGHT;
+  scale = Math.min(renderedW / BASE_WIDTH, renderedH / BASE_HEIGHT);
+
+  canvas.width = Math.round(BASE_WIDTH * scale);
+  canvas.height = Math.round(BASE_HEIGHT * scale);
+
+  catSize = Math.round(CAT_SIZE * scale);
+  catX = Math.round(CAT_X * scale);
+  gravityVal = Math.round(gravity * scale * 10) / 10;
+  jumpStrengthVal = Math.round(jumpStrength * scale * 10) / 10;
+  initialSpeed = Math.round(INITIAL_SPEED * scale * 10) / 10;
+  maxSpeed = Math.round(MAX_SPEED * scale * 10) / 10;
+  speedIncrement = Math.round(SPEED_INCREMENT * scale * 100) / 100;
+  collisionHPadding = Math.round(COLLISION_HORIZONTAL_PADDING * scale);
+  obstacleHitboxInset = Math.round(OBSTACLE_HITBOX_INSET * scale);
+  collisionVPadding = Math.round(COLLISION_VERTICAL_PADDING * scale);
+  obstacleSizes = OBSTACLE_SIZES.map((s) => Math.round(s * scale));
+  autojumpVTolerance = Math.round(AUTOJUMP_VERTICAL_TOLERANCE * scale);
+  autojumpHMargin = Math.round(AUTOJUMP_HORIZONTAL_MARGIN * scale);
+  grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
+  grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
+  collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
+  scaleComputed = true;
+}
+
+/* START GAME */
+// calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
+async function startGame() {
+  if (nameInput.value.trim() === "") {
+    emptyNameAttempts++;
+    if (emptyNameAttempts >= 2) {
+      nameInput.value = "Anon";
+      emptyNameAttempts = 0;
+    } else {
+      nameInput.focus();
+      nameInput.offsetHeight;
+      nameInput.style.animation = "inputShake 0.4s ease";
+      return;
+    }
+  }
+  playerName = nameInput.value.trim();
+  startBtn.disabled = true;
+  nameInput.disabled = true;
+
+  const needsReload = !scaleComputed;
+  if (needsReload) computeScale();
+  if (needsReload) {
+    renderCache.clear();
+  }
+
+  if (needsReload) {
+    const totalObstacles = OBSTACLE_TYPES.length * obstacleSizes.length;
+    const totalCollectibles =
+      COLLECTIBLE_TYPES.length * collectibleSizes.length;
+    const totalGrass = GRASS_EMOJIS.length * grassSizes.length;
+    const totalBgGrass = BG_GRASS_EMOJIS.length * bgGrassSizes.length;
+    const totalTrees = TREE_EMOJIS.length * treeSizes.length;
+    const grandTotal = totalObstacles + totalCollectibles + totalGrass + totalBgGrass + totalTrees;
+    const progressObstacles = (count) => {
+      drawLoadingScreen(count, grandTotal);
+    };
+    const progressCollectibles = (count) => {
+      drawLoadingScreen(totalObstacles + count, grandTotal);
+    };
+    const progressGrass = (count) => {
+      drawLoadingScreen(totalObstacles + totalCollectibles + count, grandTotal);
+    };
+    const progressBgGrass = (count) => {
+      drawLoadingScreen(totalObstacles + totalCollectibles + totalGrass + count, grandTotal);
+    };
+    const progressTrees = (count) => {
+      drawLoadingScreen(totalObstacles + totalCollectibles + totalGrass + totalBgGrass + count, grandTotal);
+    };
+    drawLoadingScreen(0, grandTotal);
+    await initObstacleCache(progressObstacles);
+    await initCollectibleCache(progressCollectibles);
+    await initGrassCache(progressGrass);
+    await initBgGrassCache(progressBgGrass);
+    await initTreeCache(progressTrees);
+  }
+
+  gameRunning = true;
+  resetGame();
+  lastTime = performance.now();
+  update(performance.now());
+}
+
+/* HOW TO PLAY */
+// allow click
+canvas.addEventListener("mousedown", () => {
+  if (gameRunning && jumpCount < maxJumpsBeforeReset) {
+    velocityY = jumpStrengthVal;
+    jumpCount++;
+  }
+});
+
+// allow touch - support for mobile devices
+canvas.addEventListener(
+  "touchstart",
+  (e) => {
+    e.preventDefault();
+    if (gameRunning && jumpCount < maxJumpsBeforeReset) {
+      velocityY = jumpStrengthVal;
+      jumpCount++;
+    }
+  },
+  { passive: false }
+);
+
+// allow double-clicks - to perform an extra jump (helps automation/double-click input)
+canvas.addEventListener("dblclick", () => {
+  if (!gameRunning) return; // if there's room for another jump, do it
+  if (jumpCount < maxJumpsBeforeReset) {
+    velocityY = jumpStrengthVal;
+    jumpCount++;
+  }
+});
+
+// prevent spacebar from scrolling the page while the game is running, but allow normal typing in inputs/textareas and content editable elements.
+window.addEventListener("keydown", (e) => {
+  const isSpace =
+    e.code === "Space" ||
+    e.key === " " ||
+    e.key === "Spacebar" ||
+    e.keyCode === 32;
+  if (!isSpace) return;
+
+  const target = e.target;
+  const tag = target && target.tagName;
+  const isEditable =
+    target &&
+    (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA");
+  if (isEditable) return;
+
+  if (gameRunning) {
+    e.preventDefault(); // stop page from scrolling
+    if (jumpCount >= maxJumpsBeforeReset) return;
+    velocityY = jumpStrengthVal;
+    jumpCount++;
+  }
+});
+
+
+
+// ----------------------------- //
+/* DURING GAME PLAY */
 // ----------------------------- //
 
 /* DRAW */
@@ -616,22 +953,23 @@ function createBackgroundGradient() {
   gradient.addColorStop(1, "#2d1b69");
   return gradient;
 }
+
 // Draw: createBackgroundGradient(), moon, celestial, speed counter, cat, grass [renderCache], obstacles [renderCache], collectibles [renderCache]
 function draw() {
   // Draw Night sky gradient background
   ctx.fillStyle = createBackgroundGradient();
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw moon (top right, below speed text)
-  ctx.font = "80px Arial";
+  // Draw parallax layers back to front: moon -> celestial -> trees -> bg-grass -> fg-grass
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("🌖", canvas.width - 150, 120);
+  const moonSize = Math.round(80 * scale);
+  ctx.font = `${moonSize}px serif`;
+  ctx.fillText("🌖", moonX, canvas.height * 0.25);
 
   // Draw celestial objects (back layer)
   ctx.save();
   ctx.globalAlpha = 0.2;
-  ctx.filter = "blur(0.5px)";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   celestialObjects.forEach((obj) => {
@@ -640,23 +978,19 @@ function draw() {
   });
   ctx.restore();
 
-  // Draw Speed counter (top-right)
-  ctx.fillStyle = "#d4af37";
-  ctx.font = "bold 18px Arial";
-  ctx.textAlign = "right";
-  ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, canvas.width - 15, 25);
+  // Draw Trees - pre-rendered scrolling strips (2 draw calls)
+  if (treeStripCanvas) {
+    ctx.drawImage(treeStripCanvas, -treeOffset, 0);
+    ctx.drawImage(treeStripCanvas, treeStripWidth - treeOffset, 0);
+  }
 
-  // Draw Cat (Black Cat Emoji) - Flipped Horizontally
-  ctx.save();
-  ctx.translate(CAT_X, CAT_Y);
-  ctx.scale(-1, 1);
-  ctx.font = `${CAT_SIZE}px Arial`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("🐈‍⬛", 0, 0);
-  ctx.restore();
+  // Draw Background Grass - pre-rendered scrolling strips (2 draw calls)
+  if (bgGrassStripCanvas) {
+    ctx.drawImage(bgGrassStripCanvas, -bgGrassOffset, 0);
+    ctx.drawImage(bgGrassStripCanvas, bgGrassStripWidth - bgGrassOffset, 0);
+  }
 
-  // Draw Grass - pre-rendered scrolling strips (2 draw calls instead of 15-20)
+  // Draw Foreground Grass - pre-rendered scrolling strips (2 draw calls)
   if (grassStripCanvas) {
     ctx.drawImage(grassStripCanvas, -grassOffset, 0);
     ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
@@ -682,6 +1016,22 @@ function draw() {
     const dy = coll.y + coll.height - img.height; // align bottom
     ctx.drawImage(img, dx, dy, img.width, img.height);
   });
+
+  // Draw Cat (Black Cat Emoji) - Flipped Horizontally
+  ctx.save();
+  ctx.translate(CAT_X, CAT_Y);
+  ctx.scale(-1, 1);
+  ctx.font = `${CAT_SIZE}px Arial`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🐈‍⬛", 0, 0);
+  ctx.restore();
+
+  // Draw Speed counter (top-right)
+  ctx.fillStyle = "#d4af37";
+  ctx.font = "bold 18px Arial";
+  ctx.textAlign = "right";
+  ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, canvas.width - 15, 25);
 }
 
 /* UPDATE FRAME MOVEMENT */
@@ -793,9 +1143,27 @@ function update(timestamp) {
   }
 
   // Grass scrolling - update offset for pre-rendered strips
-  grassOffset += currentSpeed * dt;
+  grassOffset += currentSpeed * FG_GRASS_SPEED_RATIO * dt;
   if (grassOffset >= grassStripWidth) {
     grassOffset -= grassStripWidth;
+  }
+
+  // Background grass scrolling (slower parallax)
+  bgGrassOffset += currentSpeed * BG_GRASS_SPEED_RATIO * dt;
+  if (bgGrassOffset >= bgGrassStripWidth) {
+    bgGrassOffset -= bgGrassStripWidth;
+  }
+
+  // Tree scrolling (even slower parallax)
+  treeOffset += currentSpeed * TREE_SPEED_RATIO * dt;
+  if (treeOffset >= treeStripWidth) {
+    treeOffset -= treeStripWidth;
+  }
+
+  // Moon scrolling (slowest parallax)
+  moonX -= currentSpeed * MOON_SPEED_RATIO * dt;
+  if (moonX < -80 * scale) {
+    moonX = canvas.width + 80 * scale;
   }
 
   // Spawn obstacles and collectibles
@@ -817,212 +1185,7 @@ function update(timestamp) {
   animationFrameId = requestAnimationFrame(update);
 }
 
-// ----------------------------- //
-/* GAME START */
-// ----------------------------- //
 
-// On 2 attempts to enter empty name, autocomplete to "Anon"
-let emptyNameAttempts = 0;
-nameInput.addEventListener("input", () => {
-  emptyNameAttempts = 0;
-});
-
-/* RESET GAME */
-// Initialize celestials
-let celestialObjects = [];
-function initCelestial() {
-  const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
-  const count = Math.floor(Math.random() * 20) + 11;
-  for (let i = 0; i < count; i++) {
-    celestialObjects.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * (canvas.height - 150 * scale) + 50 * scale,
-      size: Math.floor((Math.random() * 20 + 7) * scale),
-      emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
-    });
-  }
-}
-// Calls: initGrassStrips(), initCelestial()
-function resetGame() {
-  score = 0;
-  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
-  velocityY = 0;
-  jumpCount = 0;
-  obstacles = [];
-  collectibles = [];
-  celestialObjects = [];
-  celestialObjects = [];
-  frameCount = 0;
-  nextObstacleFrame = 100;
-  currentSpeed = initialSpeed;
-  initGrassStrips();
-  grassOffset = 0;
-  initCelestial();
-  scoreElement.innerText = "Score: 0";
-}
-
-/* HOW TO START */
-// Button starts game
-startBtn.addEventListener("click", startGame);
-// Enter starts game
-nameInput.addEventListener("keydown", (e) => {
-  if (e.code === "Enter") {
-    startGame();
-  }
-});
-
-// Scale sizes for different display sizes
-let scaleComputed = false;
-let scale,
-  catSize,
-  catX,
-  gravityVal,
-  jumpStrengthVal,
-  initialSpeed,
-  maxSpeed,
-  speedIncrement,
-  collisionHPadding,
-  obstacleHitboxInset,
-  collisionVPadding,
-  obstacleSizes,
-  autojumpVTolerance,
-  autojumpHMargin,
-  grassMinSpacing,
-  grassMaxSpacing,
-  collectibleSizes;
-function computeScale() {
-  const renderedW = canvas.clientWidth || BASE_WIDTH;
-  const renderedH = canvas.clientHeight || BASE_HEIGHT;
-  scale = Math.min(renderedW / BASE_WIDTH, renderedH / BASE_HEIGHT);
-
-  canvas.width = Math.round(BASE_WIDTH * scale);
-  canvas.height = Math.round(BASE_HEIGHT * scale);
-
-  catSize = Math.round(CAT_SIZE * scale);
-  catX = Math.round(CAT_X * scale);
-  gravityVal = Math.round(gravity * scale * 10) / 10;
-  jumpStrengthVal = Math.round(jumpStrength * scale * 10) / 10;
-  initialSpeed = Math.round(INITIAL_SPEED * scale * 10) / 10;
-  maxSpeed = Math.round(MAX_SPEED * scale * 10) / 10;
-  speedIncrement = Math.round(SPEED_INCREMENT * scale * 100) / 100;
-  collisionHPadding = Math.round(COLLISION_HORIZONTAL_PADDING * scale);
-  obstacleHitboxInset = Math.round(OBSTACLE_HITBOX_INSET * scale);
-  collisionVPadding = Math.round(COLLISION_VERTICAL_PADDING * scale);
-  obstacleSizes = OBSTACLE_SIZES.map((s) => Math.round(s * scale));
-  autojumpVTolerance = Math.round(AUTOJUMP_VERTICAL_TOLERANCE * scale);
-  autojumpHMargin = Math.round(AUTOJUMP_HORIZONTAL_MARGIN * scale);
-  grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
-  grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
-  collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
-  scaleComputed = true;
-}
-
-/* START GAME */
-// calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
-async function startGame() {
-  if (nameInput.value.trim() === "") {
-    emptyNameAttempts++;
-    if (emptyNameAttempts >= 2) {
-      nameInput.value = "Anon";
-      emptyNameAttempts = 0;
-    } else {
-      nameInput.focus();
-      nameInput.offsetHeight;
-      nameInput.style.animation = "inputShake 0.4s ease";
-      return;
-    }
-  }
-  playerName = nameInput.value.trim();
-  startBtn.disabled = true;
-  nameInput.disabled = true;
-
-  const needsReload = !scaleComputed;
-  if (needsReload) computeScale();
-  if (needsReload) {
-    renderCache.clear();
-  }
-
-  if (needsReload) {
-    const totalObstacles = OBSTACLE_TYPES.length * obstacleSizes.length;
-    const totalCollectibles =
-      COLLECTIBLE_TYPES.length * collectibleSizes.length;
-    const totalGrass = GRASS_EMOJIS.length * grassSizes.length;
-    const grandTotal = totalObstacles + totalCollectibles + totalGrass;
-    const progressObstacles = (count) => {
-      drawLoadingScreen(count, grandTotal);
-    };
-    const progressCollectibles = (count) => {
-      drawLoadingScreen(totalObstacles + count, grandTotal);
-    };
-    const progressGrass = (count) => {
-      drawLoadingScreen(totalObstacles + totalCollectibles + count, grandTotal);
-    };
-    drawLoadingScreen(0, grandTotal);
-    await initObstacleCache(progressObstacles);
-    await initCollectibleCache(progressCollectibles);
-    await initGrassCache(progressGrass);
-  }
-
-  gameRunning = true;
-  resetGame();
-  lastTime = performance.now();
-  update(performance.now());
-}
-
-/* HOW TO PLAY */
-// allow click
-canvas.addEventListener("mousedown", () => {
-  if (gameRunning && jumpCount < maxJumpsBeforeReset) {
-    velocityY = jumpStrengthVal;
-    jumpCount++;
-  }
-});
-
-// allow touch - support for mobile devices
-canvas.addEventListener(
-  "touchstart",
-  (e) => {
-    e.preventDefault();
-    if (gameRunning && jumpCount < maxJumpsBeforeReset) {
-      velocityY = jumpStrengthVal;
-      jumpCount++;
-    }
-  },
-  { passive: false }
-);
-
-// allow double-clicks - to perform an extra jump (helps automation/double-click input)
-canvas.addEventListener("dblclick", () => {
-  if (!gameRunning) return; // if there's room for another jump, do it
-  if (jumpCount < maxJumpsBeforeReset) {
-    velocityY = jumpStrengthVal;
-    jumpCount++;
-  }
-});
-
-// prevent spacebar from scrolling the page while the game is running, but allow normal typing in inputs/textareas and content editable elements.
-window.addEventListener("keydown", (e) => {
-  const isSpace =
-    e.code === "Space" ||
-    e.key === " " ||
-    e.key === "Spacebar" ||
-    e.keyCode === 32;
-  if (!isSpace) return;
-
-  const target = e.target;
-  const tag = target && target.tagName;
-  const isEditable =
-    target &&
-    (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA");
-  if (isEditable) return;
-
-  if (gameRunning) {
-    e.preventDefault(); // stop page from scrolling
-    if (jumpCount >= maxJumpsBeforeReset) return;
-    velocityY = jumpStrengthVal;
-    jumpCount++;
-  }
-});
 
 // ----------------------------- //
 /* GAME OVER */
