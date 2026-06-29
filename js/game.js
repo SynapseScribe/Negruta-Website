@@ -131,36 +131,29 @@ function drawUndulatingGround() {
 }
 
 // 1st layer - foreground grass
-const GRASS_EMOJIS = [
-  "🌱",
-  "🌿",
-  "☘️",
-  "🍀",
-  "🌾",
-  "🎍",
-  "🪴",
-  "🌼",
-  "🌻",
-  "🌷",
-  "🥀",
-  "🍂",
-  "🍁",
-  "🌹",
-  "🪻"
-];
-const grassSizes = [40, 50];
+const GRASS_EMOJIS = ["🌿", "🎍", "🪴", "🌾", "🌱"];
+const grassSizes = [30, 40];
 const GRASS_MIN_SPACING = 40;
 const GRASS_MAX_SPACING = 70;
-const FG_GRASS_SPEED_RATIO = 1;
+const FG_GRASS_SPEED_RATIO = 1.4;
 let grassStripCanvas = null;
 let grassOffset = 0;
 let grassStripWidth = 0;
 
 // 2nd layer - background grass
-const BG_GRASS_EMOJIS = ["🌿", "☘️", "🍀"];
+const BG_GRASS_EMOJIS =  [
+  "🌼",
+  "🌻",
+  "🌷",
+  "🌹",
+  "🪻",
+  "☘️",
+  "🍀"
+];
+//   "🍂",  "🍁",  "🥀",
 const bgGrassSizes = [20, 30];
-const BG_GRASS_MIN_SPACING = 50;
-const BG_GRASS_MAX_SPACING = 100;
+const BG_GRASS_MIN_SPACING = 40;
+const BG_GRASS_MAX_SPACING = 80;
 const BG_GRASS_SPEED_RATIO = 0.6;
 let bgGrassStripCanvas = null;
 let bgGrassOffset = 0;
@@ -169,7 +162,7 @@ let bgGrassStripWidth = 0;
 // 3rd layer - trees
 const TREE_EMOJIS = ["🌴"];
 const treeSizes = [70, 80, 90];
-const TREE_SPEED_RATIO = 0.35;
+const TREE_SPEED_RATIO = 0.3;
 let treeStripCanvas = null;
 let treeOffset = 0;
 let treeStripWidth = 0;
@@ -177,7 +170,7 @@ let treeStripWidth = 0;
 // 4th layer - background trees
 const BG_TREE_EMOJIS = ["🌳", "🌲"];
 const bgTreeSizes = [50, 60, 70];
-const BG_TREE_SPEED_RATIO = 0.15;
+const BG_TREE_SPEED_RATIO = 0.1;
 let bgTreeStripCanvas = null;
 let bgTreeOffset = 0;
 let bgTreeStripWidth = 0;
@@ -268,7 +261,7 @@ function initTreeStrips(heightFactor) {
     if (img) {
       sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * heightFactor);
     }
-    x += Math.floor(stripW * Math.random() * 0.03);
+    x += Math.floor(stripW * Math.random() * 0.05);
   }
 }
 
@@ -294,7 +287,7 @@ function initBgTreeStrips(heightFactor) {
     if (img) {
       sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * heightFactor);
     }
-    x += Math.floor(stripW * Math.random() * 0.04);
+    x += Math.floor(stripW * Math.random() * 0.02);
   }
 }
 
@@ -359,7 +352,7 @@ async function initBgTreeCache(progressCallback) {
 }
 
 let moonX = 0;
-const MOON_SPEED_RATIO = 0.04;
+const MOON_SPEED_RATIO = 0.03;
 // calls: renderCache.get()
 function initMoon() {
   moonX = canvas.width * 0.75;
