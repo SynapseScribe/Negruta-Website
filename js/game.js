@@ -72,6 +72,63 @@ const renderCache = {
 // ----------------------------- //
 
 const GROUND_HEIGHT_RATIO = 0.25;
+const HORIZON_WAVE_AMPLITUDE = 12;
+
+// Draw undulating ground with green transition zone (distant trees)
+function drawUndulatingGround() {
+  const baseY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
+  const stripHeight = 1;
+  const segments = 8;
+  const segWidth = canvas.width / segments;
+
+  function getHorizonY(x) {
+    return baseY + Math.sin((x / canvas.width) * Math.PI * segments) * HORIZON_WAVE_AMPLITUDE;
+  }
+
+  // Draw green transition strip (distant foliage)
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(0, getHorizonY(0));
+  for (let i = 1; i <= segments; i++) {
+    const x = i * segWidth;
+    const prevX = (i - 1) * segWidth;
+    ctx.quadraticCurveTo((prevX + x) / 2, getHorizonY((prevX + x) / 2), x, getHorizonY(x));
+  }
+  for (let i = segments; i >= 1; i--) {
+    const x = i * segWidth;
+    const prevX = (i - 1) * segWidth;
+    ctx.quadraticCurveTo((prevX + x) / 2, getHorizonY((prevX + x) / 2) + stripHeight, x, getHorizonY(x) + stripHeight);
+  }
+  ctx.lineTo(0, getHorizonY(0) + stripHeight);
+  ctx.closePath();
+  const greenGrad = ctx.createLinearGradient(0, baseY - HORIZON_WAVE_AMPLITUDE, 0, baseY + stripHeight + HORIZON_WAVE_AMPLITUDE);
+  greenGrad.addColorStop(0, "#1a4d1a");
+  greenGrad.addColorStop(0.3, "#2e6b2e");
+  greenGrad.addColorStop(0.7, "#3d7a3d");
+  greenGrad.addColorStop(1, "#5c3a21");
+  ctx.fillStyle = greenGrad;
+  ctx.fill();
+  ctx.restore();
+
+  // Draw dirt ground fill (below horizon)
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height);
+  ctx.lineTo(0, getHorizonY(0));
+  for (let i = 1; i <= segments; i++) {
+    const x = i * segWidth;
+    const prevX = (i - 1) * segWidth;
+    ctx.quadraticCurveTo((prevX + x) / 2, getHorizonY((prevX + x) / 2), x, getHorizonY(x));
+  }
+  ctx.lineTo(canvas.width, canvas.height);
+  ctx.closePath();
+  const dirtGrad = ctx.createLinearGradient(0, baseY + stripHeight, 0, canvas.height);
+  dirtGrad.addColorStop(0, "#5c3a21");
+  dirtGrad.addColorStop(0.4, "#4a2e1b");
+  dirtGrad.addColorStop(1, "#3a2215");
+  ctx.fillStyle = dirtGrad;
+  ctx.fill();
+}
 
 // 1st layer - foreground grass
 const GRASS_EMOJIS = [
@@ -698,10 +755,11 @@ let celestialObjects = [];
 function initCelestial() {
   const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
   const count = Math.floor(Math.random() * 20) + 11;
+  const skyHeight = canvas.height * (1 - GROUND_HEIGHT_RATIO);
   for (let i = 0; i < count; i++) {
     celestialObjects.push({
       x: Math.random() * canvas.width,
-      y: Math.random() * (canvas.height - 150 * scale) + 50 * scale,
+      y: Math.random() * (skyHeight - 150 * scale) + 50 * scale,
       size: Math.floor((Math.random() * 20 + 7) * scale),
       emoji: CELESTIAL_TYPES[Math.floor(Math.random() * CELESTIAL_TYPES.length)]
     });
@@ -954,45 +1012,25 @@ function drawLoadingScreen(current, total) {
   );
 }
 
-// Generate Night Sky background gradient (sky portion only)
+// Generate Night Sky background gradient (full canvas, ground drawn on top)
 function createSkyGradient() {
-  const groundY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
-  const gradient = ctx.createLinearGradient(0, 0, 0, groundY);
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, "#0a0a2e");
   gradient.addColorStop(0.5, "#1a1a4e");
   gradient.addColorStop(1, "#2d1b69");
   return gradient;
 }
 
-// Generate Ground/Dirt background gradient (bottom portion)
-function createGroundGradient() {
-  const groundY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
-  const gradient = ctx.createLinearGradient(0, groundY, 0, canvas.height);
-  gradient.addColorStop(0, "#5c3a21");
-  gradient.addColorStop(0.4, "#4a2e1b");
-  gradient.addColorStop(1, "#3a2215");
-  return gradient;
-}
-
-// Draw: createSkyGradient(), createGroundGradient(), moon, celestial, speed counter, cat, grass [renderCache], obstacles [renderCache], collectibles [renderCache]
+// Draw: createSkyGradient(), drawUndulatingGround(), celestial, moon, trees, bg-grass, obstacles, fg-grass, collectibles, cat [renderCache]
 function draw() {
-  const groundY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
-
-  // Draw sky gradient (top portion)
+  // Draw sky gradient across full canvas (ground drawn on top)
   ctx.fillStyle = createSkyGradient();
-  ctx.fillRect(0, 0, canvas.width, groundY);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw dirt ground gradient (bottom portion)
-  ctx.fillStyle = createGroundGradient();
-  ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+  // Draw undulating ground with green transition zone
+  drawUndulatingGround();
 
-  // Draw parallax layers back to front: moon -> celestial -> trees -> bg-grass -> fg-grass
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  const moonSize = Math.round(80 * scale);
-  ctx.font = `${moonSize}px serif`;
-  ctx.fillText("🌖", moonX, canvas.height * 0.25);
-
+  // Draw parallax layers back to front: celestial -> moon -> trees -> bg-grass -> obstacles -> cat -> collectibles -> fg-grass
   // Draw celestial objects (back layer)
   ctx.save();
   ctx.globalAlpha = 0.2;
@@ -1004,6 +1042,13 @@ function draw() {
   });
   ctx.restore();
 
+  // Draw Moon
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const moonSize = Math.round(80 * scale);
+  ctx.font = `${moonSize}px serif`;
+  ctx.fillText("🌖", moonX, canvas.height * 0.25);
+
   // Draw Trees - pre-rendered scrolling strips (2 draw calls)
   if (treeStripCanvas) {
     ctx.drawImage(treeStripCanvas, -treeOffset, 0);
@@ -1014,12 +1059,6 @@ function draw() {
   if (bgGrassStripCanvas) {
     ctx.drawImage(bgGrassStripCanvas, -bgGrassOffset, 0);
     ctx.drawImage(bgGrassStripCanvas, bgGrassStripWidth - bgGrassOffset, 0);
-  }
-
-  // Draw Foreground Grass - pre-rendered scrolling strips (2 draw calls)
-  if (grassStripCanvas) {
-    ctx.drawImage(grassStripCanvas, -grassOffset, 0);
-    ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
   }
 
   // Draw Obstacles (centered on collision box center)
@@ -1035,14 +1074,6 @@ function draw() {
     );
   });
 
-  // Draw Collectibles
-  collectibles.forEach((coll) => {
-    const img = coll.img || renderCache.get(coll.type, coll.height);
-    const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
-    const dy = coll.y + coll.height - img.height; // align bottom
-    ctx.drawImage(img, dx, dy, img.width, img.height);
-  });
-
   // Draw Cat (Black Cat Emoji) - Flipped Horizontally
   ctx.save();
   ctx.translate(CAT_X, CAT_Y);
@@ -1052,6 +1083,20 @@ function draw() {
   ctx.textBaseline = "middle";
   ctx.fillText("🐈‍⬛", 0, 0);
   ctx.restore();
+
+  // Draw Collectibles
+  collectibles.forEach((coll) => {
+    const img = coll.img || renderCache.get(coll.type, coll.height);
+    const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
+    const dy = coll.y + coll.height - img.height; // align bottom
+    ctx.drawImage(img, dx, dy, img.width, img.height);
+  });
+
+  // Draw Foreground Grass - pre-rendered scrolling strips (2 draw calls)
+  if (grassStripCanvas) {
+    ctx.drawImage(grassStripCanvas, -grassOffset, 0);
+    ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
+  }
 
   // Draw Speed counter (top-right)
   ctx.fillStyle = "#d4af37";
