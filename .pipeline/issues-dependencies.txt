@@ -4,7 +4,7 @@
 
 
 ## Dependencies
-#59 → depends on #47, #48 (builds on grass strip + cached moon/celestial)
+
 
 
 ## Notes

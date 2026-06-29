@@ -55,8 +55,8 @@
   7.16 When asked to `abort issue <#>. reason: <xyz>` -> move issue folder from active state to done (`.pipeline/done/<#>/`) -> close the issue as not planned or duplicate (if so) on github, and any existing related pull request (Do not merge the pr in this case) -> add a comment with the `reason <xyz>` -> then push to master (the movement of the md file)
   7.17 When asked to `work on issue <#>` (eg. issue #10), check the files inside `.pipeline/active/<#>/` instead of reading the github issue itself (which holds the same information). We store the initial issue details and the stages comments in files to query them more easilly locally instead of checking github issue itself every time. When asked to work on the next issue, check `.pipeline/active/<#>` for the lowest issue number which has a `00-spec.md` file.
   7.18 Never delete the branches (kept for history purpose).
-  7.19 Check .pipeline/issues-dependencies.txt when working on issues, and update it on issue open/closure as long as it impacts the other issues dependent on it.
-  7.20 Check .pipeline/issues.txt when working on issues to quickly check if duplicate, and update it on issue open or closure (Closed / Closed as duplicate / Closed as not planned). This will contain one issue per line: <#> (issue number) - Title - Status (same as output of `gh issue list --state all --json number,title,state --jq '.[] | "\(.number) - \(.title) - \(.state)"'`)
+  7.19 Check `.pipeline/issues-dependencies.txt` when working on issues, and update it on issue open/closure as long as it impacts the other issues dependent on it.
+  7.20 Check `.pipeline/issues.txt` when working on issues to quickly check if duplicate, and update it on issue open or closure (Completed ok (Closed) / Closed as duplicate / Closed as not planned). This will contain one issue per line: <#> (issue number) - Title - Status (same as output of `gh issue list --state all --json number,title,state --jq '.[] | "\(.number) - \(.title) - \(.state)"'`)
 
 - SELF-IMPROVEMENT RULES
   8.1 review existing rules in this file, keep them in memory during discussion.
