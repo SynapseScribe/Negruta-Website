@@ -2,25 +2,21 @@
 
 ## What was done
 
-Added a full-screen toggle button to the cat game canvas, allowing players to expand the game to fill their entire screen. Moved score display from HTML into the canvas for cleaner UI. Converted pre-game UI (name field + start button) from DOM elements to canvas-drawn rendering, improving visual consistency across screen sizes and fullscreen mode.
+Moved pre-game UI (name field + start button) from canvas-drawn rendering to visible HTML elements, improving accessibility, keyboard navigation, and mobile touch support while maintaining visual consistency with the game's gold/dark theme.
 
 ## Files changed
 
-- **`index.html`**: Wrapped canvas in `.canvas-wrapper` div, added fullscreen button (⛶ icon) positioned top-right, removed `<div class="game-info">Score: 0</div>` element
-- **`style.css`**: Added styles for wrapper (relative positioning), button (gold theme, hover effect, absolute positioning), and hidden pre-game DOM elements. Removed `.game-info` CSS rules.
-- **`js/game.js`**: Added element reference, `toggleFullscreen()` function, click handler with stopPropagation, `fullscreenchange`/`webkitfullscreenchange` event listeners for scale recomputation and cache clearing on enter/exit. Removed `scoreElement` variable and all DOM-based score updates. Score now drawn on canvas in top-left corner above Speed counter. Added `drawPreGameUI()` function for canvas-drawn pre-game UI with sky gradient, grass background, name field (with blinking cursor), and start button. Canvas click handler detects taps on name/start areas using coordinate hit-testing. Touch support added for mobile. Animation loop starts immediately on page load to render pre-game UI.
+- **`index.html`**: Moved pre-game UI elements (`#playerNameInput`, `#startGameBtn`) from hidden (off-screen) to visible inside `.canvas-wrapper`. Removed inline hiding styles.
+- **`style.css`**: Added styles for `.pre-game-input` (centered, gold border, dark background, focus glow), `.pre-game-btn` (gold theme, hover effect), `.canvas-wrapper.game-active` state (fades UI during gameplay), and `@keyframes inputShake` animation.
+- **`js/game.js`**: Removed ~100 lines of canvas-drawn UI code including `roundRect()` helper. Simplified event handlers by removing coordinate-based hit-testing. Added CSS class manipulation for shake animation and game-active state. Added touch support for pre-game input on mobile.
 
 ## Key design decisions
 
-- Button icon changes: ⛶ (enter fullscreen) → ⎌ (exit fullscreen)
-- Game resets when entering or exiting fullscreen to ensure proper scaling
-- All render caches cleared on state change
-- Safari webkit-prefixed API supported separately
-- Button hidden if browser lacks Fullscreen API support
-- Score display moved from HTML element to canvas drawing for cleaner UI and better fullscreen compatibility
-- Pre-game UI drawn directly on canvas instead of DOM elements: ensures consistent appearance across screen sizes, works seamlessly in fullscreen mode, eliminates layout shift issues
-- Hidden DOM elements (`#name-input`, `#start-btn`) kept for keyboard focus but visually hidden via CSS
-- Canvas click handler uses coordinate-based hit testing to detect taps on name field and start button areas
+- Pre-game UI uses native HTML elements instead of canvas drawing: better accessibility, keyboard navigation, and mobile touch support
+- Visual consistency maintained through gold/dark theme matching the game's aesthetic
+- Game-active state fades pre-game UI to 30% opacity during gameplay, restores on hover for quick access
+- Shake animation moved from JS-based offset calculation to CSS class toggle for cleaner code
+- Fullscreen functionality preserved from issue #59 - no changes made to existing fullscreen code
 
 ## PR
 

@@ -204,23 +204,18 @@ Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporti
       <section class="cat-game" id="cat-game">
         <h3>Negruta's Adventures</h3>
         <div class="game-container">
-          <!-- Hidden elements for actual text input (drawn on canvas) -->
-          <input
-            type="text"
-            id="playerNameInput"
-            style="position: absolute; left: -9999px"
-            placeholder="Enter your name"
-          >
-          <button
-            type="button"
-            id="startGameBtn"
-            style="position: absolute; left: -9999px"
-          >
-            Start Game
-          </button>
           <div class="canvas-wrapper">
             <canvas id="gameCanvas" width="800" height="550"></canvas>
             <button type="button" id="fullscreenBtn">⛶</button>
+            <input
+              type="text"
+              id="playerNameInput"
+              class="pre-game-input"
+              placeholder="Enter your name"
+            >
+            <button type="button" id="startGameBtn" class="pre-game-btn">
+              Start Game
+            </button>
           </div>
 
           <div class="score-board">

@@ -165,7 +165,8 @@ function drawUndulatingGround() {
 
 // 1st layer - foreground grass
 const GRASS_EMOJIS = ["🌿", "🎍", "🪴", "🌾", "🌱"];
-const grassSizes = [30, 40];
+const GRASS_BASE_SIZES = [30, 40];
+let grassSizes;
 const GRASS_MIN_SPACING = 40;
 const GRASS_MAX_SPACING = 70;
 const FG_GRASS_SPEED_RATIO = 1.4;
@@ -176,7 +177,8 @@ let grassStripWidth = 0;
 // 2nd layer - background grass
 const BG_GRASS_EMOJIS = ["🌼", "🌻", "🌷", "🌹", "🪻", "☘️", "🍀"];
 //   "🍂",  "🍁",  "🥀",
-const bgGrassSizes = [20, 30];
+const BG_GRASS_BASE_SIZES = [20, 30];
+let bgGrassSizes;
 const BG_GRASS_MIN_SPACING = 40;
 const BG_GRASS_MAX_SPACING = 80;
 const BG_GRASS_SPEED_RATIO = 0.6;
@@ -186,7 +188,8 @@ let bgGrassStripWidth = 0;
 
 // 3rd layer - trees
 const TREE_EMOJIS = ["🌴"];
-const treeSizes = [70, 80, 90];
+const TREE_BASE_SIZES = [70, 80, 90];
+let treeSizes;
 const TREE_SPEED_RATIO = 0.3;
 let treeStripCanvas = null;
 let treeOffset = 0;
@@ -194,7 +197,8 @@ let treeStripWidth = 0;
 
 // 4th layer - background trees
 const BG_TREE_EMOJIS = ["🌳", "🌲"];
-const bgTreeSizes = [50, 60, 70];
+const BG_TREE_BASE_SIZES = [50, 60, 70];
+let bgTreeSizes;
 const BG_TREE_SPEED_RATIO = 0.1;
 let bgTreeStripCanvas = null;
 let bgTreeOffset = 0;
@@ -218,12 +222,11 @@ function initGrassStrips() {
   sctx.clearRect(0, 0, stripW, canvas.height);
   sctx.textAlign = "center";
   sctx.textBaseline = "bottom";
-  const margin = Math.max(...grassSizes) * scale;
+  const margin = Math.max(...grassSizes);
   let x = margin;
   while (x < stripW - margin) {
     const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
-    const size =
-      grassSizes[Math.floor(Math.random() * grassSizes.length)] * scale;
+    const size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
       sctx.drawImage(img, x - img.width / 2, canvas.height - img.height);
@@ -244,13 +247,12 @@ function initBgGrassStrips() {
   sctx.clearRect(0, 0, stripW, canvas.height);
   sctx.textAlign = "center";
   sctx.textBaseline = "bottom";
-  const margin = Math.max(...bgGrassSizes) * scale;
+  const margin = Math.max(...bgGrassSizes);
   let x = margin;
   while (x < stripW - margin) {
     const emoji =
       BG_GRASS_EMOJIS[Math.floor(Math.random() * BG_GRASS_EMOJIS.length)];
-    const size =
-      bgGrassSizes[Math.floor(Math.random() * bgGrassSizes.length)] * scale;
+    const size = bgGrassSizes[Math.floor(Math.random() * bgGrassSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
       sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * 1.3);
@@ -274,12 +276,11 @@ function initTreeStrips(heightFactor) {
   sctx.clearRect(0, 0, stripW, canvas.height);
   sctx.textAlign = "center";
   sctx.textBaseline = "bottom";
-  const margin = Math.max(...treeSizes) * scale;
+  const margin = Math.max(...treeSizes);
   let x = margin;
   while (x < stripW - margin) {
     const emoji = TREE_EMOJIS[Math.floor(Math.random() * TREE_EMOJIS.length)];
-    const size =
-      treeSizes[Math.floor(Math.random() * treeSizes.length)] * scale;
+    const size = treeSizes[Math.floor(Math.random() * treeSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
       sctx.drawImage(
@@ -304,13 +305,12 @@ function initBgTreeStrips(heightFactor) {
   sctx.clearRect(0, 0, stripW, canvas.height);
   sctx.textAlign = "center";
   sctx.textBaseline = "bottom";
-  const margin = Math.max(...treeSizes) * scale;
+  const margin = Math.max(...bgTreeSizes);
   let x = margin;
   while (x < stripW - margin) {
     const emoji =
       BG_TREE_EMOJIS[Math.floor(Math.random() * BG_TREE_EMOJIS.length)];
-    const size =
-      bgTreeSizes[Math.floor(Math.random() * bgTreeSizes.length)] * scale;
+    const size = bgTreeSizes[Math.floor(Math.random() * bgTreeSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
       sctx.drawImage(
@@ -911,6 +911,10 @@ function computeScale() {
   grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
   grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
   collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
+  grassSizes = GRASS_BASE_SIZES.map((s) => Math.round(s * scale));
+  bgGrassSizes = BG_GRASS_BASE_SIZES.map((s) => Math.round(s * scale));
+  treeSizes = TREE_BASE_SIZES.map((s) => Math.round(s * scale));
+  bgTreeSizes = BG_TREE_BASE_SIZES.map((s) => Math.round(s * scale));
 
   // Compute canvas-drawn pre-game UI geometry
   nameFieldY = Math.round(150 * scale);
@@ -929,7 +933,7 @@ function drawPreGameUI() {
   // Draw title "Negruta's Adventures"
   ctx.save();
   const titleFontSize = Math.round(32 * scale);
-  ctx.font = `bold ${titleFontSize}px 'Segoe UI', sans-serif`;
+  ctx.font = `bold ${titleFontSize}px "Orbitron", sans-serif`;
   ctx.textAlign = "center";
   ctx.fillStyle = "#d4af37";
   ctx.fillText(
@@ -1249,6 +1253,7 @@ function draw() {
   // Draw Collectibles
   collectibles.forEach((coll) => {
     const img = coll.img || renderCache.get(coll.type, coll.height);
+    if (!img) return;
     const dx = coll.x - img.width / 2 + coll.width / 2; // center horizontally
     const dy = coll.y + coll.height - img.height; // align bottom
     ctx.drawImage(img, dx, dy, img.width, img.height);
@@ -1267,6 +1272,7 @@ function draw() {
   // Draw Obstacles (centered on collision box center)
   obstacles.forEach((obs) => {
     const img = obs.img || renderCache.get(obs.type, obs.height);
+    if (!img) return;
     // center/position as you want (example aligns bottom center like before)
     ctx.drawImage(
       img,
@@ -1579,18 +1585,18 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
   document.addEventListener("fullscreenchange", () => {
     if (document.fullscreenElement === canvas) {
       fullscreenBtn.textContent = "⎌";
-      computeScale();
-      renderCache.clear();
-      obstacles = [];
-      collectibles = [];
-      grassStripCanvas = null;
-      bgGrassStripCanvas = null;
-      treeStripCanvas = null;
-      bgTreeStripCanvas = null;
-      if (gameRunning) resetGame();
-    } else {
-      fullscreenBtn.textContent = "⛶";
       if (gameRunning) {
+        cancelAnimationFrame(animationFrameId);
+        scaleComputed = false;
+        renderCache.clear();
+        obstacles = [];
+        collectibles = [];
+        grassStripCanvas = null;
+        bgGrassStripCanvas = null;
+        treeStripCanvas = null;
+        bgTreeStripCanvas = null;
+        startGame();
+      } else {
         computeScale();
         renderCache.clear();
         obstacles = [];
@@ -1599,7 +1605,20 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
         bgGrassStripCanvas = null;
         treeStripCanvas = null;
         bgTreeStripCanvas = null;
-        resetGame();
+      }
+    } else {
+      fullscreenBtn.textContent = "⛶";
+      if (gameRunning) {
+        cancelAnimationFrame(animationFrameId);
+        scaleComputed = false;
+        renderCache.clear();
+        obstacles = [];
+        collectibles = [];
+        grassStripCanvas = null;
+        bgGrassStripCanvas = null;
+        treeStripCanvas = null;
+        bgTreeStripCanvas = null;
+        startGame();
       } else {
         scaleComputed = false;
         renderCache.clear();
@@ -1614,18 +1633,18 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
     document.addEventListener("webkitfullscreenchange", () => {
       if (document.webkitFullscreenElement === canvas) {
         fullscreenBtn.textContent = "⎌";
-        computeScale();
-        renderCache.clear();
-        obstacles = [];
-        collectibles = [];
-        grassStripCanvas = null;
-        bgGrassStripCanvas = null;
-        treeStripCanvas = null;
-        bgTreeStripCanvas = null;
-        if (gameRunning) resetGame();
-      } else {
-        fullscreenBtn.textContent = "⛶";
         if (gameRunning) {
+          cancelAnimationFrame(animationFrameId);
+          scaleComputed = false;
+          renderCache.clear();
+          obstacles = [];
+          collectibles = [];
+          grassStripCanvas = null;
+          bgGrassStripCanvas = null;
+          treeStripCanvas = null;
+          bgTreeStripCanvas = null;
+          startGame();
+        } else {
           computeScale();
           renderCache.clear();
           obstacles = [];
@@ -1634,7 +1653,20 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
           bgGrassStripCanvas = null;
           treeStripCanvas = null;
           bgTreeStripCanvas = null;
-          resetGame();
+        }
+      } else {
+        fullscreenBtn.textContent = "⛶";
+        if (gameRunning) {
+          cancelAnimationFrame(animationFrameId);
+          scaleComputed = false;
+          renderCache.clear();
+          obstacles = [];
+          collectibles = [];
+          grassStripCanvas = null;
+          bgGrassStripCanvas = null;
+          treeStripCanvas = null;
+          bgTreeStripCanvas = null;
+          startGame();
         } else {
           scaleComputed = false;
           renderCache.clear();
