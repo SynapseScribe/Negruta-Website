@@ -441,6 +441,74 @@ footer {
 #fullscreenBtn:hover {
   background-color: #e6c44d;
 }
+.pre-game-input,
+.pre-game-btn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}
+.pre-game-input {
+  top: 2rem;
+  width: 60%;
+  max-width: 280px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 2px solid #d4af37;
+  background-color: #1a1a2e;
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+.pre-game-input:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+.pre-game-btn {
+  top: 4.5rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #d4af37;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.pre-game-btn:hover {
+  background-color: #e6c44d;
+}
+.canvas-wrapper.game-active .pre-game-input,
+.canvas-wrapper.game-active .pre-game-btn {
+  opacity: 0.3;
+}
+.canvas-wrapper.game-active .pre-game-input:hover,
+.canvas-wrapper.game-active .pre-game-btn:hover {
+  opacity: 1;
+}
+@keyframes inputShake {
+  0%,
+  100% {
+    transform: translateX(-50%) translate(0, 0);
+  }
+  20% {
+    transform: translateX(-50%) translate(-6px, 0);
+  }
+  40% {
+    transform: translateX(-50%) translate(6px, 0);
+  }
+  60% {
+    transform: translateX(-50%) translate(-4px, 0);
+  }
+  80% {
+    transform: translateX(-50%) translate(4px, 0);
+  }
+}
+.pre-game-input.shake {
+  animation: inputShake 0.3s ease;
+}
 .score-board {
   margin-top: 1rem;
   text-align: center;
