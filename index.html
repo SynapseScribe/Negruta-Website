@@ -204,18 +204,20 @@ Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporti
       <section class="cat-game" id="cat-game">
         <h3>Negruta's Adventures</h3>
         <div class="game-container">
-          <div class="game-controls">
+          <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="800" height="550"></canvas>
+            <button type="button" id="fullscreenBtn">⛶</button>
             <input
               type="text"
               id="playerNameInput"
+              class="pre-game-input"
               placeholder="Enter your name"
             >
-            <button type="button" id="startGameBtn">Start Game</button>
+            <button type="button" id="startGameBtn" class="pre-game-btn">
+              Start Game
+            </button>
           </div>
-          <canvas id="gameCanvas" width="800" height="550"></canvas>
-          <div class="game-info">
-            <p id="gameScore">Score: 0</p>
-          </div>
+
           <div class="score-board">
             <h4>🏆🎖️🏅High Scores🏅🎖️🍾</h4>
             <ul id="scoreList"></ul>
