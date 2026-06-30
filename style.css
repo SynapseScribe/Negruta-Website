@@ -490,20 +490,19 @@ footer {
 }
 @keyframes inputShake {
   0%,
+  25%,
+  75%,
   100% {
     transform: translateX(-50%) translate(0, 0);
   }
-  20% {
+  12.5% {
     transform: translateX(-50%) translate(-6px, 0);
   }
-  40% {
+  37.5% {
     transform: translateX(-50%) translate(6px, 0);
   }
-  60% {
+  62.5% {
     transform: translateX(-50%) translate(-4px, 0);
-  }
-  80% {
-    transform: translateX(-50%) translate(4px, 0);
   }
 }
 .pre-game-input.shake {
