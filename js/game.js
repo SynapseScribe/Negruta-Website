@@ -870,6 +870,7 @@ startBtn.addEventListener(
 
 // Scale sizes for different display sizes
 let scaleComputed = false;
+let cachesBuilt = false;
 let scale,
   catSize,
   catX,
@@ -930,7 +931,11 @@ function drawPreGameUI() {
   canvasWrapper.classList.remove("game-active");
   if (!scaleComputed) computeScale();
 
-  // Draw title "Negruta's Adventures"
+  // Clear and draw static background
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawStaticBackground();
+
+  // Draw title "Negruta's Adventures" (below HTML input + button)
   ctx.save();
   const titleFontSize = Math.round(32 * scale);
   ctx.font = `bold ${titleFontSize}px "Orbitron", sans-serif`;
@@ -939,27 +944,27 @@ function drawPreGameUI() {
   ctx.fillText(
     "Negruta's Adventures",
     canvas.width / 2,
-    nameFieldY - 50 * scale
+    startBtnY + startBtnH + 15 * scale
   );
 
-  // Draw subtitle "Jump over obstacles and collect treats!"
+  // Draw subtitle below title
   const subtitleFontSize = Math.round(16 * scale);
   ctx.font = `${subtitleFontSize}px 'Segoe UI', sans-serif`;
   ctx.fillStyle = "#b8972e";
   ctx.fillText(
     "Jump over obstacles and collect treats!",
     canvas.width / 2,
-    nameFieldY - 25 * scale
+    startBtnY + startBtnH + 45 * scale
   );
 
-  // Draw instructions below button area
+  // Draw instructions below subtitle
   const instrFontSize = Math.round(14 * scale);
   ctx.font = `${instrFontSize}px 'Segoe UI', sans-serif`;
   ctx.fillStyle = "#888";
   ctx.fillText(
     "Click or tap to jump • Spacebar to jump",
     canvas.width / 2,
-    startBtnY + startBtnH + 30 * scale
+    startBtnY + startBtnH + 75 * scale
   );
 
   ctx.restore();
@@ -1032,13 +1037,13 @@ async function startGame() {
   }
   playerName = currentName;
 
-  const needsReload = !scaleComputed;
-  if (needsReload) computeScale();
-  if (needsReload) {
+  if (!scaleComputed) computeScale();
+  if (!cachesBuilt || !scaleComputed) {
     renderCache.clear();
+    cachesBuilt = false;
   }
 
-  if (needsReload) {
+  if (!cachesBuilt) {
     const totalObstacles = OBSTACLE_TYPES.length * obstacleSizes.length;
     const totalCollectibles =
       COLLECTIBLE_TYPES.length * collectibleSizes.length;
@@ -1093,6 +1098,7 @@ async function startGame() {
     await initTreeCache(progressTrees);
     await initBgTreeCache(progressBgTrees);
   }
+  cachesBuilt = true;
 
   gameRunning = true;
   canvasWrapper.classList.add("game-active");
@@ -1193,6 +1199,13 @@ function drawLoadingScreen(current, total) {
     canvas.width / 2,
     barY + barHeight + 30 * scale
   );
+}
+
+// Draw static background: sky gradient + undulating ground (no animated elements)
+function drawStaticBackground() {
+  ctx.fillStyle = createSkyGradient();
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawUndulatingGround();
 }
 
 // Generate Night Sky background gradient (full canvas, ground drawn on top)
@@ -1472,6 +1485,7 @@ function saveScore(name, finalScore) {
   if (scores.length > 50) scores = scores.slice(0, 50);
   localStorage.setItem("catGameScores", JSON.stringify(scores));
   displayScores();
+  drawPreGameUI();
 
   // Start animation loop for pre-game UI
   requestAnimationFrame(update);
@@ -1513,6 +1527,9 @@ gameOverCloseBtn.addEventListener("click", () => {
   gameOverDialog.close();
   startBtn.disabled = false;
   nameInput.disabled = false;
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  animationFrameId = null;
+  drawPreGameUI();
 });
 
 // ----------------------------- //
@@ -1559,10 +1576,12 @@ function displayScores() {
 window.addEventListener("resize", () => {
   if (scaleComputed && !gameRunning) {
     scaleComputed = false;
+    cachesBuilt = false;
     renderCache.clear();
     obstacles = [];
     collectibles = [];
     grassStripCanvas = null;
+    drawPreGameUI();
   }
 });
 
@@ -1588,6 +1607,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
       if (gameRunning) {
         cancelAnimationFrame(animationFrameId);
         scaleComputed = false;
+        cachesBuilt = false;
         renderCache.clear();
         obstacles = [];
         collectibles = [];
@@ -1598,6 +1618,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
         startGame();
       } else {
         computeScale();
+        cachesBuilt = false;
         renderCache.clear();
         obstacles = [];
         collectibles = [];
@@ -1611,6 +1632,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
       if (gameRunning) {
         cancelAnimationFrame(animationFrameId);
         scaleComputed = false;
+        cachesBuilt = false;
         renderCache.clear();
         obstacles = [];
         collectibles = [];
@@ -1621,6 +1643,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
         startGame();
       } else {
         scaleComputed = false;
+        cachesBuilt = false;
         renderCache.clear();
         obstacles = [];
         collectibles = [];
@@ -1636,6 +1659,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
+          cachesBuilt = false;
           renderCache.clear();
           obstacles = [];
           collectibles = [];
@@ -1646,6 +1670,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
           startGame();
         } else {
           computeScale();
+          cachesBuilt = false;
           renderCache.clear();
           obstacles = [];
           collectibles = [];
@@ -1659,6 +1684,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
+          cachesBuilt = false;
           renderCache.clear();
           obstacles = [];
           collectibles = [];
@@ -1669,6 +1695,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
           startGame();
         } else {
           scaleComputed = false;
+          cachesBuilt = false;
           renderCache.clear();
           obstacles = [];
           collectibles = [];
@@ -1682,3 +1709,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
 }
 
 displayScores();
+
+// Draw pre-game UI on page load (static, no animation loop)
+computeScale();
+drawPreGameUI();

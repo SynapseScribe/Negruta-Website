@@ -450,7 +450,7 @@ footer {
   transition: opacity 0.3s ease;
 }
 .pre-game-input {
-  top: 2rem;
+  top: 5rem;
   width: 60%;
   max-width: 280px;
   padding: 0.5rem 0.75rem;
@@ -467,7 +467,7 @@ footer {
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
 }
 .pre-game-btn {
-  top: 4.5rem;
+  top: 8rem;
   padding: 0.6rem 1.5rem;
   border-radius: 8px;
   border: none;
