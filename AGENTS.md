@@ -1,26 +1,28 @@
 - RULES
   1.0 All rules in this file are absolute. Treat them seriously and keep them in mind.
-  1.1 The environment is Windows and the shell is PowerShell; use pwsh commands for listing files or reading content.
-  1.2 Do not use unix/linux commands (env is windows), such as: grep, ripgrep. But can use other tools that are compatible and already installed: gh, git, playwright-cli, other pwsh tools. gh is already authenticated.
+  1.1 The environment is Windows and the shell is PowerShell (v7)
+  1.2 Do not use specific unix/linux commands (env is windows), such as: grep, ripgrep. But can use other tools that are platform-independent and already installed: gh, git, playwright-cli, other pwsh tools. gh is already authenticated.
   1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
-  1.4 Avoid redundant tool calls within a single response.
   1.5 The reply must always start with "Bn coae coae. Let's roll.", only once per reply (it's just my preffered appellative)
 
-- TOOL SELECTION
-  2.1 You may also use `Get-ChildItem` for file pattern matching.
-  2.2 Use `Read` for file content.
-  2.3 When verifying syntax of structural elements (e.g., HTML tags), use `Get-Content`, because `Read` output appears ambiguous or potentially truncated. You can also use for example: Select-String.
+- TOOL/SUBAGENT SELECTION
+  2.1 You may use pwsh commands to complement the tools. Eg. You may also use `Get-ChildItem` for file pattern matching or listing files, `Get-Content` for reading and verifying syntax of structural elements (eg, HTML tags) or `Select-String`.
+  2.2 You may use `Read` for file content.
+  2.3 You may use `Glob` tool, but keep in mind there's a limit of 100 results (truncated, unordered).
   2.4 Use `webfetch` and `websearch` tools when required to access the Internet for online resources, documentation, search results.
-  2.5 Use `question` tool for asking follow-up questions, but only if really required.
-  2.6 Don't use `Glob` tool, it's broken. Use `Read` or `pwsh` commands instead.
-  2.7 Use `edit` tool or pwsh command `set-content` instead of write tool (which is currently bugged in opencode), (eg.: `Set-Content -Path "file.txt" -Value "content here" -NoNewline`)
+  2.5 Use `question` tool for asking follow-up questions, when required.
+  2.6 Use `edit` tool or pwsh command `set-content` or `write` tool, (eg.: `Set-Content -Path "file.txt" -Value "content here" -NoNewline`)
+  2.7 Avoid redundant tool calls within a single response.
+  2.8 Use `Explore` subagent to explore codebase (quickly find files by patterns, search code for keywords, or answer questions about the codebase)
+  2.9 Use `General` subagent for researching complex questions and executing multi-step tasks. Has full tool access (except todo), so it can make file changes when needed. Use this to run multiple units of work in parallel.
+
 
 - EDITING
-  3.1 To check line endings in PowerShell: `(Get-Content -Raw "filename") -match "`r"`3.2 Before editing, make sure the line endings are unix style (LF). If not, convert line endings to Unix style:`(Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename`. Or use dos2unix (already installed - as windows version)
-  3.3 When using edit tool, If `oldString` is not found, re-Read the file and try a more precise substring.
-  3.4 When using edit tool, always use small, unique substrings for `oldString` to avoid whitespace/line ending mismatches. If too large or has tab/space issues, break into smaller matches.
-  3.5 Present a summary of planned changes at the start of a task, then proceed; ask again only if the scope changes unexpectedly.
-  3.6 For indentation, always use spaces, instead of tabs. If you find any file using tabs, fix it to use spaces.
+  3.1 To confirm unix style (LF) line ending in pwsh: (Get-Content -Raw "filename") -match "(?<!`r)`n"
+  3.2 Before editing, make sure the line endings are unix style (LF). If not, convert line endings to Unix style:use dos2unix (already installed - as windows version) OR (Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename.
+  3.3 When using edit tool, always use small, unique precise substrings for `oldString` to avoid whitespace/line ending mismatches. If too large or has tab/space issues, break into smaller matches.
+  3.4 Present a summary of planned changes at the start of a task, then proceed; ask again only if the scope changes unexpectedly.
+  3.5 For indentation, always use spaces, instead of tabs.
 
 - TASK MANAGEMENT
   4.1 Use `todowrite` for any task involving multiple steps.
