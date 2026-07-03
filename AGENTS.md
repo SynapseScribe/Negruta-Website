@@ -1,18 +1,3 @@
-- GRAPHIFY
-
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
-
-When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
-
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
-
-
-
 - USER RULES
   1.0 All rules in this file are absolute. Treat them seriously and keep them in mind.
   1.1 The environment is Windows and the shell is PowerShell (v7)
@@ -77,11 +62,20 @@ Rules:
 
 - SELF-IMPROVEMENT RULES
   8.1 review existing rules in this file, keep them in memory during discussion.
-  8.2 create/update knowledge in the SELF-TOUGHT section below, whenever you learned something out of the ordinary that could help in the future (eg. how to use a specific tool after failing multiple times). This is the only section where you (the AI model) are allowed to modify/create lines in this file (AGENTS.md). Start the lines with 9.x, where x is incremented.
+  8.2 create/update knowledge in this section, whenever you learned something out of the ordinary that could help in the future (eg. how to use a specific tool after failing multiple times). This (8.X) is the only section where you (the AI model) are allowed to modify/create lines in this file (AGENTS.md).
   8.3 apply any newly created or edited rules on your following replies
 
 
 
+## graphify
 
-- SELF-TOUGHT
-  9.0
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
