@@ -1,4 +1,4 @@
-- PIPELINE SYSTEM
+- 7.0 PIPELINE SYSTEM
   7.1 Trigger: User asks to create a github issue(s) for some task(s) → start pipeline workflow. Eg. user asks "create a gh issue for adding a new button".
   7.2 Always create the GitHub issue(s) first via `gh issue create --title "[Pipeline][FEATURE]/[BUG] + short description) --label pipeline --body "Reported by user/AI"`. For now, keep the body as a placeholder, will be later populated with the contents of `00-spec.md`. We create the issue(s) first to get the Number `<#>` right away.
   7.3 Create and switch to the branch `git checkout -b pipeline/<#>-<issue_short_title>`, before modifying any files.

@@ -1,4 +1,4 @@
-- TOOL/SUBAGENT SELECTION
+- 2.0 TOOL/SUBAGENT SELECTION
   2.1 You may use pwsh commands to complement the tools. Eg. You may also use `Get-ChildItem` for file pattern matching or listing files, `Get-Content` for reading and verifying syntax of structural elements (eg, HTML tags) or `Select-String`.
   2.2 You may use `Read` for file content.
   2.3 You may use `Glob` tool, but keep in mind there's a limit of 100 results (truncated, unordered).
