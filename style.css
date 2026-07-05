@@ -660,22 +660,6 @@ footer {
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
 }
 
-@keyframes inputShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-8px);
-  }
-  50% {
-    transform: translateX(8px);
-  }
-  75% {
-    transform: translateX(-4px);
-  }
-}
-
 /* Meow Translator */
 .meow-translator {
   background-color: rgba(212, 175, 55, 0.1);
