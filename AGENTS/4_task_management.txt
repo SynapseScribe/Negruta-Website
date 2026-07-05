@@ -1,0 +1,3 @@
+- TASK MANAGEMENT
+  4.1 Use `todowrite` for any task involving multiple steps.
+  4.2 Maintain the todo list by updating the status of tasks (`pending`, `in_progress`, `completed`).

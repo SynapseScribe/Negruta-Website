@@ -1,0 +1,7 @@
+
+- EDITING
+  3.1 To confirm unix style (LF) line ending in pwsh: (Get-Content -Raw "filename") -match "(?<!`r)`n"
+  3.2 Before editing, make sure the line endings are unix style (LF). If not, convert line endings to Unix style:use dos2unix (already installed - as windows version) OR (Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename.
+  3.3 When using edit tool, always use small, unique precise substrings for `oldString` to avoid whitespace/line ending mismatches. If too large or has tab/space issues, break into smaller matches.
+  3.4 Present a summary of planned changes at the start of a task, then proceed; ask again only if the scope changes unexpectedly.
+  3.5 For indentation, always use spaces, instead of tabs.

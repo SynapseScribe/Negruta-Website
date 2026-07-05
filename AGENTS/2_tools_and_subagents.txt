@@ -1,0 +1,10 @@
+- TOOL/SUBAGENT SELECTION
+  2.1 You may use pwsh commands to complement the tools. Eg. You may also use `Get-ChildItem` for file pattern matching or listing files, `Get-Content` for reading and verifying syntax of structural elements (eg, HTML tags) or `Select-String`.
+  2.2 You may use `Read` for file content.
+  2.3 You may use `Glob` tool, but keep in mind there's a limit of 100 results (truncated, unordered).
+  2.4 Use `webfetch` and `websearch` tools when required to access the Internet for online resources, documentation, search results.
+  2.5 Use `question` tool for asking follow-up questions, when required.
+  2.6 Use `edit` tool or pwsh command `set-content` or `write` tool, (eg.: `Set-Content -Path "file.txt" -Value "content here" -NoNewline`)
+  2.7 Avoid redundant tool calls within a single response.
+  2.8 Use `Explore` subagent to explore codebase (quickly find files by patterns, search code for keywords, or answer questions about the codebase)
+  2.9 Use `General` subagent for researching complex questions and executing multi-step tasks. Has full tool access (except todo), so it can make file changes when needed. Use this to run multiple units of work in parallel.

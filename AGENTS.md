@@ -1,11 +1,11 @@
-- USER RULES
-  1.0 All rules in this file are absolute. Treat them seriously and keep them in mind.
-  1.1 The environment is Windows and the shell is PowerShell (v7)
-  1.2 Do not use specific unix/linux commands (env is windows), such as: grep, ripgrep. But can use other tools that are platform-independent and already installed: gh, git, playwright-cli, other pwsh tools. gh is already authenticated.
-  1.3 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
+- 1.0 USER RULES
+  1.1 All rules in this file are absolute. Treat them seriously and keep them in mind.
+  1.2 The environment is Windows and the shell is PowerShell (v7)
+  1.3 Do not use specific unix/linux commands (env is windows), such as: grep, ripgrep. But can use other tools that are platform-independent and already installed: gh, git, playwright-cli, other pwsh tools. gh is already authenticated.
+  1.4 Do not introduce typos, mistakes, avoid thinking loops, and focus on the task.
   1.5 The reply must always start with "Bn coae coae. Let's roll.", only once per reply (it's just my preffered appellative)
 
-- TOOL/SUBAGENT SELECTION
+- 2.0 TOOL/SUBAGENT SELECTION
   2.1 You may use pwsh commands to complement the tools. Eg. You may also use `Get-ChildItem` for file pattern matching or listing files, `Get-Content` for reading and verifying syntax of structural elements (eg, HTML tags) or `Select-String`.
   2.2 You may use `Read` for file content.
   2.3 You may use `Glob` tool, but keep in mind there's a limit of 100 results (truncated, unordered).
@@ -17,28 +17,28 @@
   2.9 Use `General` subagent for researching complex questions and executing multi-step tasks. Has full tool access (except todo), so it can make file changes when needed. Use this to run multiple units of work in parallel.
 
 
-- EDITING
+- 3.0 EDITING
   3.1 To confirm unix style (LF) line ending in pwsh: (Get-Content -Raw "filename") -match "(?<!`r)`n"
   3.2 Before editing, make sure the line endings are unix style (LF). If not, convert line endings to Unix style:use dos2unix (already installed - as windows version) OR (Get-Content -Raw filename) -replace "\r\n", "`n" | Set-Content -NoNewline filename.
   3.3 When using edit tool, always use small, unique precise substrings for `oldString` to avoid whitespace/line ending mismatches. If too large or has tab/space issues, break into smaller matches.
   3.4 Present a summary of planned changes at the start of a task, then proceed; ask again only if the scope changes unexpectedly.
   3.5 For indentation, always use spaces, instead of tabs.
 
-- TASK MANAGEMENT
+- 4.0 TASK MANAGEMENT
   4.1 Use `todowrite` for any task involving multiple steps.
   4.2 Maintain the todo list by updating the status of tasks (`pending`, `in_progress`, `completed`).
 
-- VERIFICATION
+- 5.0 VERIFICATION
   5.1 Always run linting (`npm run lint`) or testing commands after making code changes to ensure correctness.
   5.2 Use playwright (already installed) to test UI/UX from user's perspective directly on the live published page, but only when asked to do so. For example: `playwright-cli open --headed --persistent --browser firefox https://synapsescribe.github.io/Negruta-Website/#meow-translator` (using playwright-cli) or `node js/playwright-test-game.js` (using npm playwright module)
 
-- GIT
+- 6.0 GIT
   6.1 Run `git status --verbose`, when making meaningful code changes.
   6.2 Use `git reset --hard HEAD && git clean -fd` to restore changes when requested.
   6.3 Never attempt to push to master unless I specifically say `lookin crispy` (exact phrase) which will authorize you to: stage changes, commit with description of changes, and push to master (eg. `git add . ; git commit -am "fix for bug" ; git push"`. When working on a branch, see 7.11.
   6.4 Never pull changes, unless you ask first and get confirmation.
 
-- PIPELINE SYSTEM
+- 7.0 PIPELINE SYSTEM
   7.1 Trigger: User asks to create a github issue(s) for some task(s) → start pipeline workflow. Eg. user asks "create a gh issue for adding a new button".
   7.2 Always create the GitHub issue(s) first via `gh issue create --title "[Pipeline][FEATURE]/[BUG] + short description) --label pipeline --body "Reported by user/AI"`. For now, keep the body as a placeholder, will be later populated with the contents of `00-spec.md`. We create the issue(s) first to get the Number `<#>` right away.
   7.3 Create and switch to the branch `git checkout -b pipeline/<#>-<issue_short_title>`, before modifying any files.
@@ -60,14 +60,8 @@
   7.19 Check `.pipeline/issues-dependencies.txt` when working on issues, and update it on issue open/closure as long as it impacts the other issues dependent on it.
   7.20 Check `.pipeline/issues.txt` when working on issues to quickly check if duplicate, and update it on issue open or closure (Completed ok (Closed) / Closed as duplicate / Closed as not planned). This will contain one issue per line: <#> (issue number) - Title - Status (same as output of `gh issue list --state all --json number,title,state --jq '.[] | "\(.number) - \(.title) - \(.state)"'`)
 
-- SELF-IMPROVEMENT RULES
-  8.1 review existing rules in this file, keep them in memory during discussion.
-  8.2 create/update knowledge in this section, whenever you learned something out of the ordinary that could help in the future (eg. how to use a specific tool after failing multiple times). This (8.X) is the only section where you (the AI model) are allowed to modify/create lines in this file (AGENTS.md).
-  8.3 apply any newly created or edited rules on your following replies
 
-
-
-## graphify
+- 8.0 graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
 
@@ -79,3 +73,9 @@ Rules:
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+
+
+- SELF-IMPROVEMENT RULES
+  9.1 review existing rules in this file, keep them in memory during discussion.
+  9.2 create/update knowledge in this section, whenever you learned something out of the ordinary that could help in the future (eg. how to use a specific tool after failing multiple times). This (9.X) is the only section where you (the AI model) are allowed to modify/create lines in this file (AGENTS.md).
+  9.3 apply any newly created or edited rules on your following replies

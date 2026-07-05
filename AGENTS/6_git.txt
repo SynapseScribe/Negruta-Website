@@ -1,0 +1,5 @@
+- GIT
+  6.1 Run `git status --verbose`, when making meaningful code changes.
+  6.2 Use `git reset --hard HEAD && git clean -fd` to restore changes when requested.
+  6.3 Never attempt to push to master unless I specifically say `lookin crispy` (exact phrase) which will authorize you to: stage changes, commit with description of changes, and push to master (eg. `git add . ; git commit -am "fix for bug" ; git push"`. When working on a branch, see 7.11.
+  6.4 Never pull changes, unless you ask first and get confirmation.
