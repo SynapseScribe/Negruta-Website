@@ -28,6 +28,7 @@ export default [
         console: "readonly",
         performance: "readonly",
         localStorage: "readonly",
+        screen: "readonly",
         Audio: "readonly",
         Map: "readonly",
         Math: "readonly",

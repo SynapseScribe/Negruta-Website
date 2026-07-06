@@ -1601,6 +1601,28 @@ window.addEventListener("resize", () => {
   }
 });
 
+function isPortrait() {
+  return screen.height > screen.width;
+}
+
+function enableLandscapeRotation() {
+  if (!isPortrait()) return;
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape-primary').catch(() => {
+      canvasWrapper.classList.add('landscape-rotate');
+    });
+  } else {
+    canvasWrapper.classList.add('landscape-rotate');
+  }
+}
+
+function disableLandscapeRotation() {
+  if (screen.orientation && screen.orientation.unlock) {
+    screen.orientation.unlock();
+  }
+  canvasWrapper.classList.remove('landscape-rotate');
+}
+
 // Fullscreen toggle for game canvas
 if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
   function toggleFullscreen() {
@@ -1620,6 +1642,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
   document.addEventListener("fullscreenchange", () => {
     if (document.fullscreenElement === canvasWrapper) {
       fullscreenBtn.textContent = "⛶";
+      enableLandscapeRotation();
       if (gameRunning) {
         cancelAnimationFrame(animationFrameId);
         scaleComputed = false;
@@ -1646,6 +1669,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
       }
     } else {
       fullscreenBtn.textContent = "⤢";
+      disableLandscapeRotation();
       if (gameRunning) {
         cancelAnimationFrame(animationFrameId);
         scaleComputed = false;
@@ -1674,6 +1698,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
     document.addEventListener("webkitfullscreenchange", () => {
       if (document.webkitFullscreenElement === canvasWrapper) {
         fullscreenBtn.textContent = "⛶";
+        enableLandscapeRotation();
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
@@ -1700,6 +1725,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
         }
       } else {
         fullscreenBtn.textContent = "⤢";
+        disableLandscapeRotation();
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
