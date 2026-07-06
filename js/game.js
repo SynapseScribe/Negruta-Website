@@ -1627,6 +1627,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
         bgGrassStripCanvas = null;
         treeStripCanvas = null;
         bgTreeStripCanvas = null;
+        drawPreGameUI();
       }
     } else {
       fullscreenBtn.textContent = "⤢";
@@ -1649,6 +1650,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
         obstacles = [];
         collectibles = [];
         grassStripCanvas = null;
+        drawPreGameUI();
       }
     }
   });
@@ -1679,6 +1681,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
           bgGrassStripCanvas = null;
           treeStripCanvas = null;
           bgTreeStripCanvas = null;
+          drawPreGameUI();
         }
       } else {
         fullscreenBtn.textContent = "⤢";
@@ -1701,6 +1704,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
           obstacles = [];
           collectibles = [];
           grassStripCanvas = null;
+          drawPreGameUI();
         }
       }
     });
