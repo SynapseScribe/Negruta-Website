@@ -10,8 +10,8 @@ const fullscreenBtn = document.getElementById("fullscreenBtn");
 
 /* CANVAS */
 const ctx = canvas.getContext("2d"); // 2D drawing context
-const BASE_WIDTH = 800;
-const BASE_HEIGHT = 550;
+const baseWidth = 800;
+const baseHeight = 550;
 
 let frameCount = 0;
 
@@ -23,18 +23,18 @@ let currentName = "";
 const gravity = 1;
 const jumpStrength = -20;
 const maxJumpsBeforeReset = 2;
-const INITIAL_SPEED = 10;
-const MAX_SPEED = 50;
-const SPEED_INCREMENT = 0.1;
+const initialSpeed = 10;
+const maxSpeed = 50;
+const speedIncrement = 0.1;
 
-let currentSpeed = INITIAL_SPEED;
+let currentSpeed = initialSpeed;
 let velocityY = 0;
 let jumpCount = 0;
 
 /* CAT */
-let CAT_SIZE = 80;
-let CAT_X = 150;
-let CAT_Y = 0;
+let catSize = 80;
+let catX = 150;
+let catY = 0;
 
 /* GAME */
 let playerName = "";
@@ -76,12 +76,12 @@ const renderCache = {
 /* PARALLAX BACKGROUND */
 // ----------------------------- //
 
-const GROUND_HEIGHT_RATIO = 0.25;
-const HORIZON_WAVE_AMPLITUDE = 12;
+const groundHeightRatio = 0.25;
+const horizonWaveAplitude = 12;
 
 // Draw undulating ground with green transition zone (distant foliage)
 function drawUndulatingGround() {
-  const baseY = canvas.height * (1 - GROUND_HEIGHT_RATIO);
+  const baseY = canvas.height * (1 - groundHeightRatio);
   const stripHeight = 1;
   const segments = 8;
   const segWidth = canvas.width / segments;
@@ -89,7 +89,7 @@ function drawUndulatingGround() {
   function getHorizonY(x) {
     return (
       baseY +
-      Math.sin((x / canvas.width) * Math.PI * segments) * HORIZON_WAVE_AMPLITUDE
+      Math.sin((x / canvas.width) * Math.PI * segments) * horizonWaveAplitude
     );
   }
 
@@ -122,9 +122,9 @@ function drawUndulatingGround() {
   ctx.closePath();
   const greenGrad = ctx.createLinearGradient(
     0,
-    baseY - HORIZON_WAVE_AMPLITUDE,
+    baseY - horizonWaveAplitude,
     0,
-    baseY + stripHeight + HORIZON_WAVE_AMPLITUDE
+    baseY + stripHeight + horizonWaveAplitude
   );
   greenGrad.addColorStop(0, "#1a4d1a");
   greenGrad.addColorStop(0.3, "#2e6b2e");
@@ -164,42 +164,42 @@ function drawUndulatingGround() {
 }
 
 // 1st layer - foreground grass
-const GRASS_EMOJIS = ["🌿", "🎍", "🪴", "🌾", "🌱"];
-const GRASS_BASE_SIZES = [30, 40];
+const grassEmojis = ["🌿", "🎍", "🪴", "🌾", "🌱"];
+const grassBaseSizes = [30, 40];
 let grassSizes;
-const GRASS_MIN_SPACING = 40;
-const GRASS_MAX_SPACING = 70;
-const FG_GRASS_SPEED_RATIO = 1.4;
+const grassMinSpacing = 40;
+const grassMaxSpacing = 70;
+const grassSpeedRatio = 1.4;
 let grassStripCanvas = null;
 let grassOffset = 0;
 let grassStripWidth = 0;
 
 // 2nd layer - background grass
-const BG_GRASS_EMOJIS = ["🌼", "🌻", "🌷", "🌹", "🪻", "☘️", "🍀"];
+const bgGrassEmojis = ["🌼", "🌻", "🌷", "🌹", "🪻", "☘️", "🍀"];
 //   "🍂",  "🍁",  "🥀",
-const BG_GRASS_BASE_SIZES = [20, 30];
+const bgGrassBaseSizes = [20, 30];
 let bgGrassSizes;
-const BG_GRASS_MIN_SPACING = 40;
-const BG_GRASS_MAX_SPACING = 80;
-const BG_GRASS_SPEED_RATIO = 0.6;
+const bgGrassMinSpacing = 40;
+const bgGrassMaxSpacing = 80;
+const bgGrassSpeedRatio = 0.6;
 let bgGrassStripCanvas = null;
 let bgGrassOffset = 0;
 let bgGrassStripWidth = 0;
 
 // 3rd layer - trees
-const TREE_EMOJIS = ["🌴"];
-const TREE_BASE_SIZES = [70, 80, 90];
+const treeEmojis = ["🌴"];
+const treeBaseSizes = [70, 80, 90];
 let treeSizes;
-const TREE_SPEED_RATIO = 0.3;
+const treeSpeedRatio = 0.3;
 let treeStripCanvas = null;
 let treeOffset = 0;
 let treeStripWidth = 0;
 
 // 4th layer - background trees
-const BG_TREE_EMOJIS = ["🌳", "🌲"];
-const BG_TREE_BASE_SIZES = [50, 60, 70];
+const bgTreeEmojis = ["🌳", "🌲"];
+const bgTreeBaseSizes = [50, 60, 70];
 let bgTreeSizes;
-const BG_TREE_SPEED_RATIO = 0.1;
+const bgTreeSpeedRatio = 0.1;
 let bgTreeStripCanvas = null;
 let bgTreeOffset = 0;
 let bgTreeStripWidth = 0;
@@ -207,7 +207,7 @@ let bgTreeStripWidth = 0;
 // First strip (grass)
 function randomGrassGap() {
   return Math.floor(
-    grassMinSpacing + Math.random() * (grassMaxSpacing - grassMinSpacing)
+    grassMinSpacingScaled + Math.random() * (grassMaxSpacingScaled - grassMinSpacingScaled)
   );
 }
 
@@ -225,7 +225,7 @@ function initGrassStrips() {
   const margin = Math.max(...grassSizes);
   let x = margin;
   while (x < stripW - margin) {
-    const emoji = GRASS_EMOJIS[Math.floor(Math.random() * GRASS_EMOJIS.length)];
+    const emoji = grassEmojis[Math.floor(Math.random() * grassEmojis.length)];
     const size = grassSizes[Math.floor(Math.random() * grassSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
@@ -251,15 +251,15 @@ function initBgGrassStrips() {
   let x = margin;
   while (x < stripW - margin) {
     const emoji =
-      BG_GRASS_EMOJIS[Math.floor(Math.random() * BG_GRASS_EMOJIS.length)];
+      bgGrassEmojis[Math.floor(Math.random() * bgGrassEmojis.length)];
     const size = bgGrassSizes[Math.floor(Math.random() * bgGrassSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
       sctx.drawImage(img, x - img.width / 2, canvas.height - img.height * 1.3);
     }
     x += Math.floor(
-      BG_GRASS_MIN_SPACING +
-        Math.random() * (BG_GRASS_MAX_SPACING - BG_GRASS_MIN_SPACING)
+      bgGrassMinSpacing +
+        Math.random() * (bgGrassMaxSpacing - bgGrassMinSpacing)
     );
   }
 }
@@ -279,7 +279,7 @@ function initTreeStrips(heightFactor) {
   const margin = Math.max(...treeSizes);
   let x = margin;
   while (x < stripW - margin) {
-    const emoji = TREE_EMOJIS[Math.floor(Math.random() * TREE_EMOJIS.length)];
+    const emoji = treeEmojis[Math.floor(Math.random() * treeEmojis.length)];
     const size = treeSizes[Math.floor(Math.random() * treeSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
@@ -309,7 +309,7 @@ function initBgTreeStrips(heightFactor) {
   let x = margin;
   while (x < stripW - margin) {
     const emoji =
-      BG_TREE_EMOJIS[Math.floor(Math.random() * BG_TREE_EMOJIS.length)];
+      bgTreeEmojis[Math.floor(Math.random() * bgTreeEmojis.length)];
     const size = bgTreeSizes[Math.floor(Math.random() * bgTreeSizes.length)];
     const img = renderCache.get(emoji, Math.round(size));
     if (img) {
@@ -324,9 +324,9 @@ function initBgTreeStrips(heightFactor) {
 }
 
 async function initGrassCache(progressCallback) {
-  const total = GRASS_EMOJIS.length * grassSizes.length;
+  const total = grassEmojis.length * grassSizes.length;
   let count = 0;
-  for (const emoji of GRASS_EMOJIS) {
+  for (const emoji of grassEmojis) {
     for (const size of grassSizes) {
       renderCache.ensure(emoji, size);
       count++;
@@ -338,9 +338,9 @@ async function initGrassCache(progressCallback) {
   }
 }
 async function initBgGrassCache(progressCallback) {
-  const total = BG_GRASS_EMOJIS.length * bgGrassSizes.length;
+  const total = bgGrassEmojis.length * bgGrassSizes.length;
   let count = 0;
-  for (const emoji of BG_GRASS_EMOJIS) {
+  for (const emoji of bgGrassEmojis) {
     for (const size of bgGrassSizes) {
       renderCache.ensure(emoji, size);
       count++;
@@ -352,9 +352,9 @@ async function initBgGrassCache(progressCallback) {
   }
 }
 async function initTreeCache(progressCallback) {
-  const total = TREE_EMOJIS.length * treeSizes.length;
+  const total = treeEmojis.length * treeSizes.length;
   let count = 0;
-  for (const emoji of TREE_EMOJIS) {
+  for (const emoji of treeEmojis) {
     for (const size of treeSizes) {
       renderCache.ensure(emoji, size);
       count++;
@@ -367,9 +367,9 @@ async function initTreeCache(progressCallback) {
 }
 
 async function initBgTreeCache(progressCallback) {
-  const total = BG_TREE_EMOJIS.length * bgTreeSizes.length;
+  const total = bgTreeEmojis.length * bgTreeSizes.length;
   let count = 0;
-  for (const emoji of BG_TREE_EMOJIS) {
+  for (const emoji of bgTreeEmojis) {
     for (const size of bgTreeSizes) {
       renderCache.ensure(emoji, size);
       count++;
@@ -382,7 +382,7 @@ async function initBgTreeCache(progressCallback) {
 }
 
 let moonX = 0;
-const MOON_SPEED_RATIO = 0.03;
+const moonSpeedRatio = 0.03;
 // calls: renderCache.get()
 function initMoon() {
   moonX = canvas.width * 0.75;
@@ -395,8 +395,8 @@ function initMoon() {
 /* OBSTACLES */
 let obstacles = [];
 let nextObstacleFrame = 100;
-const OBSTACLE_SIZES = [250, 300];
-const OBSTACLE_TYPES_FULL_SET = [
+const obstacleSizes = [250, 300];
+const obstacleTypesFullSet = [
   "🌲",
   "🏠",
   "🏀",
@@ -637,22 +637,22 @@ function shuffleArray(array) {
   return arr;
 }
 // for fast performance during startGame() loadingscreen - cache just a subset of 50 shuffled obstacles (initEmojiCache->drawLoadingScreen)
-const OBSTACLE_TYPES = shuffleArray(OBSTACLE_TYPES_FULL_SET).slice(0, 50);
+const obstacleTypes = shuffleArray(obstacleTypesFullSet).slice(0, 50);
 
-const OBSTACLE_HITBOX_INSET = 20; // ignore glancing side contacts
+const obstacleHitboxInset = 20; // ignore glancing side contacts
 
-const COLLISION_HORIZONTAL_PADDING = 30; // increase to be more permissive
-const COLLISION_VERTICAL_PADDING = 30; // increase to be more permissive
+const collisionHorizontalPadding = 30; // increase to be more permissive
+const collisionVerticalPadding = 30; // increase to be more permissive
 
-const AUTOJUMP_VERTICAL_TOLERANCE = 40; // how far into the obstacle vertically to still auto-jump
-const AUTOJUMP_HORIZONTAL_MARGIN = 30; // how close horizontally before auto-jump
+const autojumpVerticalTolerance = 40; // how far into the obstacle vertically to still auto-jump
+const autojumpHorizontalMargin = 30; // how close horizontally before auto-jump
 
 async function initObstacleCache(progressCallback) {
   if (renderCache.map.size > 0) return;
-  const total = OBSTACLE_TYPES.length * obstacleSizes.length;
+  const total = obstacleTypes.length * obstacleSizesScaled.length;
   let count = 0;
-  for (const emoji of OBSTACLE_TYPES) {
-    for (const size of obstacleSizes) {
+  for (const emoji of obstacleTypes) {
+    for (const size of obstacleSizesScaled) {
       renderCache.ensure(emoji, size);
       count++;
       if (count % 10 === 0) {
@@ -663,15 +663,15 @@ async function initObstacleCache(progressCallback) {
   }
 }
 function spawnObstacle() {
-  const OBSTACLE_VERTICAL_OFFSET = Math.floor(60 * scale);
+  const obstacleVerticalOffset = Math.floor(60 * scale);
 
-  const size = obstacleSizes[Math.floor(Math.random() * obstacleSizes.length)];
+  const size = obstacleSizesScaled[Math.floor(Math.random() * obstacleSizesScaled.length)];
   const type =
-    OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+    obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
   const img = renderCache.get(type, size); // cheap if cached
   obstacles.push({
     x: canvas.width,
-    y: canvas.height - size + OBSTACLE_VERTICAL_OFFSET,
+    y: canvas.height - size + obstacleVerticalOffset,
     width: size,
     height: size,
     type,
@@ -686,8 +686,8 @@ function spawnObstacle() {
 /* COLLECTIBLES */
 let collectibles = [];
 
-const COLLECTIBLE_SIZES = [40, 50, 60];
-const COLLECTIBLE_TYPES = [
+const collectibleSizes = [40, 50, 60];
+const collectibleTypes = [
   "🐟",
   "🐠",
   "💎",
@@ -710,7 +710,7 @@ const COLLECTIBLE_TYPES = [
   "🪿",
   "🦃"
 ];
-const COLLECTIBLE_SCORES = {
+const collectibleScores = {
   "🐟": 5,
   "🐠": 6,
   "🦐": 7,
@@ -733,13 +733,13 @@ const COLLECTIBLE_SCORES = {
   "🪿": 10,
   "🦃": 12
 };
-const DEFAULT_COLLECTIBLE_SCORE = 5;
+const defaultCollectibleScore = 5;
 
 async function initCollectibleCache(progressCallback) {
-  const total = COLLECTIBLE_TYPES.length * collectibleSizes.length;
+  const total = collectibleTypes.length * collectibleSizesScaled.length;
   let count = 0;
-  for (const emoji of COLLECTIBLE_TYPES) {
-    for (const size of collectibleSizes) {
+  for (const emoji of collectibleTypes) {
+    for (const size of collectibleSizesScaled) {
       renderCache.ensure(emoji, size);
       count++;
       if (count % 10 === 0) {
@@ -752,9 +752,9 @@ async function initCollectibleCache(progressCallback) {
 
 function spawnCollectible() {
   const size =
-    collectibleSizes[Math.floor(Math.random() * collectibleSizes.length)];
+    collectibleSizesScaled[Math.floor(Math.random() * collectibleSizesScaled.length)];
   const type =
-    COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
+    collectibleTypes[Math.floor(Math.random() * collectibleTypes.length)];
   const y =
     canvas.height -
     Math.floor(350 * scale) +
@@ -872,50 +872,51 @@ startBtn.addEventListener(
 let scaleComputed = false;
 let cachesBuilt = false;
 let scale,
-  catSize,
-  catX,
-  gravityVal,
-  jumpStrengthVal,
-  initialSpeed,
-  maxSpeed,
-  speedIncrement,
-  collisionHPadding,
-  obstacleHitboxInset,
-  collisionVPadding,
-  obstacleSizes,
-  autojumpVTolerance,
-  autojumpHMargin,
-  grassMinSpacing,
-  grassMaxSpacing,
-  collectibleSizes;
+  catSizeScaled,
+  catXScaled,
+  gravityScaled,
+  jumpStrengthScaled,
+  initialSpeedScaled,
+  maxSpeedScaled,
+  speedIncrementScaled,
+  collisionHorizontalPaddingScaled,
+  obstacleHitboxInsetScaled,
+  collisionVerticalPaddingScaled,
+  obstacleSizesScaled,
+  autojumpVerticalToleranceScaled,
+  autojumpHorizontalMarginScaled,
+  grassMinSpacingScaled,
+  grassMaxSpacingScaled,
+  collectibleSizesScaled;
 function computeScale() {
-  const renderedW = canvas.clientWidth || BASE_WIDTH;
-  const renderedH = canvas.clientHeight || BASE_HEIGHT;
-  scale = Math.min(renderedW / BASE_WIDTH, renderedH / BASE_HEIGHT);
+  const renderedW = canvas.clientWidth || baseWidth;
+  const renderedH = canvas.clientHeight || baseHeight;
+  scale = Math.min(renderedW / baseWidth, renderedH / baseHeight);
 
-  canvas.width = Math.round(BASE_WIDTH * scale);
-  canvas.height = Math.round(BASE_HEIGHT * scale);
+  canvas.width = Math.round(baseWidth * scale);
+  canvas.height = Math.round(baseHeight * scale);
 
-  catSize = Math.round(CAT_SIZE * scale);
-  catX = Math.round(CAT_X * scale);
-  gravityVal = Math.round(gravity * scale * 10) / 10;
-  jumpStrengthVal = Math.round(jumpStrength * scale * 10) / 10;
-  initialSpeed = Math.round(INITIAL_SPEED * scale * 10) / 10;
-  maxSpeed = Math.round(MAX_SPEED * scale * 10) / 10;
-  speedIncrement = Math.round(SPEED_INCREMENT * scale * 100) / 100;
-  collisionHPadding = Math.round(COLLISION_HORIZONTAL_PADDING * scale);
-  obstacleHitboxInset = Math.round(OBSTACLE_HITBOX_INSET * scale);
-  collisionVPadding = Math.round(COLLISION_VERTICAL_PADDING * scale);
-  obstacleSizes = OBSTACLE_SIZES.map((s) => Math.round(s * scale));
-  autojumpVTolerance = Math.round(AUTOJUMP_VERTICAL_TOLERANCE * scale);
-  autojumpHMargin = Math.round(AUTOJUMP_HORIZONTAL_MARGIN * scale);
-  grassMinSpacing = Math.round(GRASS_MIN_SPACING * scale);
-  grassMaxSpacing = Math.round(GRASS_MAX_SPACING * scale);
-  collectibleSizes = COLLECTIBLE_SIZES.map((s) => Math.round(s * scale));
-  grassSizes = GRASS_BASE_SIZES.map((s) => Math.round(s * scale));
-  bgGrassSizes = BG_GRASS_BASE_SIZES.map((s) => Math.round(s * scale));
-  treeSizes = TREE_BASE_SIZES.map((s) => Math.round(s * scale));
-  bgTreeSizes = BG_TREE_BASE_SIZES.map((s) => Math.round(s * scale));
+  catSizeScaled = Math.round(catSize * scale);
+  catXScaled = Math.round(catX * scale);
+  catYScaled = Math.round(catY * scale);
+  gravityScaled = Math.round(gravity * scale * 10) / 10;
+  jumpStrengthScaled = Math.round(jumpStrength * scale * 10) / 10;
+  initialSpeedScaled = Math.round(initialSpeed * scale * 10) / 10;
+  maxSpeedScaled = Math.round(maxSpeed * scale * 10) / 10;
+  speedIncrementScaled = Math.round(speedIncrement * scale * 100) / 100;
+  collisionHorizontalPaddingScaled = Math.round(collisionHorizontalPadding * scale);
+  obstacleHitboxInsetScaled = Math.round(obstacleHitboxInset * scale);
+  collisionVerticalPaddingScaled = Math.round(collisionVerticalPadding * scale);
+  obstacleSizesScaled = obstacleSizes.map((s) => Math.round(s * scale));
+  autojumpVerticalToleranceScaled = Math.round(autojumpVerticalTolerance * scale);
+  autojumpHorizontalMarginScaled = Math.round(autojumpHorizontalMargin * scale);
+  grassMinSpacingScaled = Math.round(grassMinSpacing * scale);
+  grassMaxSpacingScaled = Math.round(grassMaxSpacing * scale);
+  collectibleSizesScaled = collectibleSizes.map((s) => Math.round(s * scale));
+  grassSizes = grassBaseSizes.map((s) => Math.round(s * scale));
+  bgGrassSizes = bgGrassBaseSizes.map((s) => Math.round(s * scale));
+  treeSizes = treeBaseSizes.map((s) => Math.round(s * scale));
+  bgTreeSizes = bgTreeBaseSizes.map((s) => Math.round(s * scale));
 
   // Compute canvas-drawn pre-game UI geometry
   nameFieldY = Math.round(150 * scale);
@@ -977,7 +978,7 @@ let celestialObjects = [];
 function initCelestial() {
   const CELESTIAL_TYPES = ["⭐", "🌟", "✨", "💫", "🪐", "🛩️", "✈️", "🚀"];
   const count = Math.floor(Math.random() * 20) + 11;
-  const skyHeight = canvas.height * (1 - GROUND_HEIGHT_RATIO);
+  const skyHeight = canvas.height * (1 - groundHeightRatio);
   for (let i = 0; i < count; i++) {
     celestialObjects.push({
       x: Math.random() * canvas.width,
@@ -990,14 +991,14 @@ function initCelestial() {
 // Calls: initGrassStrips(), initBgGrassStrips(), initTreeStrips(), initBgTreeStrips(), initMoon(), initCelestial()
 function resetGame() {
   score = 0;
-  CAT_Y = canvas.height - catSize / 2; // center of cat is at half the size of cat, initially
+  catYScaled = canvas.height - catSizeScaled / 2; // center of cat is at half the size of cat, initially
   velocityY = 0;
   jumpCount = 0;
   obstacles = [];
   collectibles = [];
   frameCount = 0;
   nextObstacleFrame = 100;
-  currentSpeed = initialSpeed;
+  currentSpeed = initialSpeedScaled;
 
   grassOffset = 0;
   initGrassStrips();
@@ -1044,13 +1045,13 @@ async function startGame() {
   }
 
   if (!cachesBuilt) {
-    const totalObstacles = OBSTACLE_TYPES.length * obstacleSizes.length;
+    const totalObstacles = obstacleTypes.length * obstacleSizesScaled.length;
     const totalCollectibles =
-      COLLECTIBLE_TYPES.length * collectibleSizes.length;
-    const totalGrass = GRASS_EMOJIS.length * grassSizes.length;
-    const totalBgGrass = BG_GRASS_EMOJIS.length * bgGrassSizes.length;
-    const totalTrees = TREE_EMOJIS.length * treeSizes.length;
-    const totalBgTrees = BG_TREE_EMOJIS.length * bgTreeSizes.length;
+      collectibleTypes.length * collectibleSizesScaled.length;
+    const totalGrass = grassEmojis.length * grassSizes.length;
+    const totalBgGrass = bgGrassEmojis.length * bgGrassSizes.length;
+    const totalTrees = treeEmojis.length * treeSizes.length;
+    const totalBgTrees = bgTreeEmojis.length * bgTreeSizes.length;
     const grandTotal =
       totalObstacles +
       totalCollectibles +
@@ -1111,7 +1112,7 @@ async function startGame() {
 // allow click
 canvas.addEventListener("mousedown", () => {
   if (gameRunning && jumpCount < maxJumpsBeforeReset) {
-    velocityY = jumpStrengthVal;
+    velocityY = jumpStrengthScaled;
     jumpCount++;
   }
 });
@@ -1123,7 +1124,7 @@ canvas.addEventListener(
     e.preventDefault();
 
     if (gameRunning && jumpCount < maxJumpsBeforeReset) {
-      velocityY = jumpStrengthVal;
+      velocityY = jumpStrengthScaled;
       jumpCount++;
     }
   },
@@ -1134,7 +1135,7 @@ canvas.addEventListener(
 canvas.addEventListener("dblclick", () => {
   if (!gameRunning) return; // if there's room for another jump, do it
   if (jumpCount < maxJumpsBeforeReset) {
-    velocityY = jumpStrengthVal;
+    velocityY = jumpStrengthScaled;
     jumpCount++;
   }
 });
@@ -1158,7 +1159,7 @@ window.addEventListener("keydown", (e) => {
   if (gameRunning) {
     e.preventDefault(); // stop page from scrolling
     if (jumpCount >= maxJumpsBeforeReset) return;
-    velocityY = jumpStrengthVal;
+    velocityY = jumpStrengthScaled;
     jumpCount++;
   }
 });
@@ -1274,9 +1275,9 @@ function draw() {
 
   // Draw Cat (Black Cat Emoji) - Flipped Horizontally
   ctx.save();
-  ctx.translate(CAT_X, CAT_Y);
+  ctx.translate(catXScaled, catYScaled);
   ctx.scale(-1, 1);
-  ctx.font = `${CAT_SIZE}px Arial`;
+  ctx.font = `${catSizeScaled}px Arial`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText("🐈‍⬛", 0, 0);
@@ -1324,22 +1325,22 @@ function update(timestamp) {
   lastTime = timestamp || 0;
 
   currentSpeed = Math.min(
-    maxSpeed,
-    initialSpeed + Math.floor(score / 5) * speedIncrement
+    maxSpeedScaled,
+    initialSpeedScaled + Math.floor(score / 5) * speedIncrementScaled
   );
 
   // Gravity
-  velocityY += gravityVal * dt;
-  CAT_Y += velocityY * dt;
+  velocityY += gravityScaled * dt;
+  catYScaled += velocityY * dt;
 
-  const catLeft = catX - catSize / 2;
-  const catRight = catX + catSize / 2;
-  const catTop = CAT_Y - catSize / 2;
-  const catBottom = CAT_Y + catSize / 2;
+  const catLeft = catXScaled - catSizeScaled / 2;
+  const catRight = catXScaled + catSizeScaled / 2;
+  const catTop = catYScaled - catSizeScaled / 2;
+  const catBottom = catYScaled + catSizeScaled / 2;
 
   // Floor collision
   if (catBottom > canvas.height) {
-    CAT_Y = canvas.height - catSize / 2;
+    catYScaled = canvas.height - catSizeScaled / 2;
     velocityY = 0;
     jumpCount = 0;
   }
@@ -1357,26 +1358,26 @@ function update(timestamp) {
     // Auto-jump when cat is about to land on top of obstacle
     if (
       // cat bottom is at or below the top, or slightly into it (tolerance)
-      catBottom >= obsTop - autojumpVTolerance &&
-      catBottom <= obsTop + autojumpVTolerance &&
+      catBottom >= obsTop - autojumpVerticalToleranceScaled &&
+      catBottom <= obsTop + autojumpVerticalToleranceScaled &&
       // only auto-jump when falling or near landing
       velocityY >= 0 &&
       // horizontal overlap: cat is overlapping or very close to obstacle horizontally
-      catLeft < obsRight + autojumpHMargin &&
-      catRight > obsLeft - autojumpHMargin
+      catLeft < obsRight + autojumpHorizontalMarginScaled &&
+      catRight > obsLeft - autojumpHorizontalMarginScaled
     ) {
-      velocityY = jumpStrengthVal;
+      velocityY = jumpStrengthScaled;
       jumpCount = 1;
       meow();
     }
 
     // Collision with sides or bottom of obstacle triggers game over
     else if (
-      catBottom > obsTop + collisionVPadding &&
-      catTop < obsBottom - collisionVPadding &&
+      catBottom > obsTop + collisionVerticalPaddingScaled &&
+      catTop < obsBottom - collisionVerticalPaddingScaled &&
       // require more horizontal overlap (ignore glancing side contacts)
-      catLeft < obsRight - collisionHPadding &&
-      catRight >= obsLeft + obstacleHitboxInset + collisionHPadding
+      catLeft < obsRight - collisionHorizontalPaddingScaled &&
+      catRight >= obsLeft + obstacleHitboxInsetScaled + collisionHorizontalPaddingScaled
     ) {
       meow();
       gameOver();
@@ -1408,7 +1409,7 @@ function update(timestamp) {
       if (i < lastColl) collectibles[i] = collectibles[lastColl];
       collectibles.pop();
       i--;
-      score += COLLECTIBLE_SCORES[collType] ?? DEFAULT_COLLECTIBLE_SCORE;
+      score += collectibleScores[collType] ?? defaultCollectibleScore;
       continue;
     }
 
@@ -1421,31 +1422,31 @@ function update(timestamp) {
   }
 
   // Grass scrolling - update offset for pre-rendered strips
-  grassOffset += currentSpeed * FG_GRASS_SPEED_RATIO * dt;
+  grassOffset += currentSpeed * grassSpeedRatio * dt;
   if (grassOffset >= grassStripWidth) {
     grassOffset -= grassStripWidth;
   }
 
   // Background grass scrolling (slower parallax)
-  bgGrassOffset += currentSpeed * BG_GRASS_SPEED_RATIO * dt;
+  bgGrassOffset += currentSpeed * bgGrassSpeedRatio * dt;
   if (bgGrassOffset >= bgGrassStripWidth) {
     bgGrassOffset -= bgGrassStripWidth;
   }
 
   // Tree scrolling (even slower parallax)
-  treeOffset += currentSpeed * TREE_SPEED_RATIO * dt;
+  treeOffset += currentSpeed * treeSpeedRatio * dt;
   if (treeOffset >= treeStripWidth) {
     treeOffset -= treeStripWidth;
   }
 
   // Background Tree scrolling (far even slower parallax)
-  bgTreeOffset += currentSpeed * BG_TREE_SPEED_RATIO * dt;
+  bgTreeOffset += currentSpeed * bgTreeSpeedRatio * dt;
   if (bgTreeOffset >= bgTreeStripWidth) {
     bgTreeOffset -= bgTreeStripWidth;
   }
 
   // Moon scrolling (slowest parallax)
-  moonX -= currentSpeed * MOON_SPEED_RATIO * dt;
+  moonX -= currentSpeed * moonSpeedRatio * dt;
   if (moonX < -80 * scale) {
     moonX = canvas.width + 80 * scale;
   }
@@ -1586,13 +1587,13 @@ window.addEventListener("resize", () => {
 });
 
 // Fullscreen toggle for game canvas
-if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
+if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
   function toggleFullscreen() {
-    if (document.fullscreenElement === canvas) {
+    if (document.fullscreenElement === canvasWrapper) {
       document.exitFullscreen();
     } else {
-      if (canvas.requestFullscreen) canvas.requestFullscreen();
-      else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+      if (canvasWrapper.requestFullscreen) canvasWrapper.requestFullscreen();
+      else if (canvasWrapper.webkitRequestFullscreen) canvasWrapper.webkitRequestFullscreen();
     }
   }
 
@@ -1602,8 +1603,8 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
   });
 
   document.addEventListener("fullscreenchange", () => {
-    if (document.fullscreenElement === canvas) {
-      fullscreenBtn.textContent = "⎌";
+    if (document.fullscreenElement === canvasWrapper) {
+      fullscreenBtn.textContent = "⛶";
       if (gameRunning) {
         cancelAnimationFrame(animationFrameId);
         scaleComputed = false;
@@ -1628,7 +1629,7 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
         bgTreeStripCanvas = null;
       }
     } else {
-      fullscreenBtn.textContent = "⛶";
+      fullscreenBtn.textContent = "⤢";
       if (gameRunning) {
         cancelAnimationFrame(animationFrameId);
         scaleComputed = false;
@@ -1652,9 +1653,9 @@ if (canvas.requestFullscreen || canvas.webkitRequestFullscreen) {
     }
   });
 
-  if (canvas.webkitRequestFullscreen) {
+  if (canvasWrapper.webkitRequestFullscreen) {
     document.addEventListener("webkitfullscreenchange", () => {
-      if (document.webkitFullscreenElement === canvas) {
+      if (document.webkitFullscreenElement === canvasWrapper) {
         fullscreenBtn.textContent = "⎌";
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);

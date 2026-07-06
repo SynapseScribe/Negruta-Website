@@ -441,6 +441,20 @@ footer {
 #fullscreenBtn:hover {
   background-color: #e6c44d;
 }
+
+.canvas-wrapper:fullscreen #gameCanvas,
+.canvas-wrapper:-webkit-full-screen #gameCanvas {
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+}
+
+.canvas-wrapper:fullscreen #fullscreenBtn,
+.canvas-wrapper:-webkit-full-screen #fullscreenBtn {
+  display: block;
+}
 .pre-game-input,
 .pre-game-btn {
   position: absolute;
