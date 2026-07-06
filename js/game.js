@@ -1656,7 +1656,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
   if (canvasWrapper.webkitRequestFullscreen) {
     document.addEventListener("webkitfullscreenchange", () => {
       if (document.webkitFullscreenElement === canvasWrapper) {
-        fullscreenBtn.textContent = "⎌";
+        fullscreenBtn.textContent = "⛶";
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
@@ -1681,7 +1681,7 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
           bgTreeStripCanvas = null;
         }
       } else {
-        fullscreenBtn.textContent = "⛶";
+        fullscreenBtn.textContent = "⤢";
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
