@@ -854,16 +854,18 @@ nameInput.addEventListener("touchstart", () => nameInput.focus(), {
   passive: true
 });
 
-// Start button click handler
+// Start/Restart button click handler
 startBtn.addEventListener("click", () => {
-  startGame();
+  if (gameRunning) restartGame();
+  else startGame();
 });
 
 startBtn.addEventListener(
   "touchend",
   (e) => {
     e.preventDefault();
-    startGame();
+    if (gameRunning) restartGame();
+    else startGame();
   },
   { passive: false }
 );
@@ -1019,6 +1021,15 @@ function resetGame() {
   initCelestial();
 }
 
+function restartGame() {
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  animationFrameId = null;
+  resetGame();
+  gameRunning = true;
+  lastTime = performance.now();
+  update(performance.now());
+}
+
 // calls: computeScale(), drawLoadingScreen(), initEmojiCache(), initCollectibleCache(), resetGame(), update()
 async function startGame() {
   currentName = nameInput.value.trim();
@@ -1037,6 +1048,9 @@ async function startGame() {
     }
   }
   playerName = currentName;
+
+  startBtn.disabled = true;
+  nameInput.disabled = true;
 
   if (!scaleComputed) computeScale();
   if (!cachesBuilt || !scaleComputed) {
@@ -1100,6 +1114,8 @@ async function startGame() {
     await initBgTreeCache(progressBgTrees);
   }
   cachesBuilt = true;
+  startBtn.disabled = false;
+  startBtn.textContent = "Restart";
 
   gameRunning = true;
   canvasWrapper.classList.add("game-active");
@@ -1520,12 +1536,11 @@ function gameOver() {
 }
 playAgainBtn.addEventListener("click", () => {
   gameOverDialog.close();
-  startBtn.disabled = false;
-  nameInput.disabled = false;
   startGame();
 });
 gameOverCloseBtn.addEventListener("click", () => {
   gameOverDialog.close();
+  startBtn.textContent = "Start Game";
   startBtn.disabled = false;
   nameInput.disabled = false;
   if (animationFrameId) cancelAnimationFrame(animationFrameId);
