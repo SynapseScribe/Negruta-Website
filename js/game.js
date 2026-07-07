@@ -16,7 +16,7 @@ const baseHeight = 550;
 let frameCount = 0;
 
 /* CANVAS-DRAWN PRE-GAME UI */
-let nameFieldY, startBtnY, startBtnH;
+let startBtnY, startBtnH;
 let currentName = "";
 
 /* MOVEMENT */
@@ -876,6 +876,7 @@ let cachesBuilt = false;
 let scale,
   catSizeScaled,
   catXScaled,
+  catYScaled,
   gravityScaled,
   jumpStrengthScaled,
   initialSpeedScaled,
@@ -921,8 +922,6 @@ function computeScale() {
   bgTreeSizes = bgTreeBaseSizes.map((s) => Math.round(s * scale));
 
   // Compute canvas-drawn pre-game UI geometry
-  nameFieldY = Math.round(150 * scale);
-
   startBtnH = Math.round(45 * scale);
   startBtnY = Math.round(210 * scale);
 
