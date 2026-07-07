@@ -441,6 +441,13 @@ footer {
 #fullscreenBtn:hover {
   background-color: #e6c44d;
 }
+.hud-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
 
 .canvas-wrapper:fullscreen #gameCanvas,
 .canvas-wrapper:-webkit-full-screen #gameCanvas {
@@ -449,6 +456,13 @@ footer {
   height: 100%;
   border: none;
   border-radius: 0;
+}
+
+.canvas-wrapper:fullscreen .hud-canvas,
+.canvas-wrapper:-webkit-full-screen .hud-canvas {
+  max-width: none;
+  width: 100%;
+  height: 100%;
 }
 
 .canvas-wrapper:fullscreen #fullscreenBtn,

@@ -7,6 +7,7 @@ const gameOverCloseBtn = document.getElementById("gameOverCloseBtn");
 const canvas = document.getElementById("gameCanvas");
 const canvasWrapper = canvas.parentElement;
 const fullscreenBtn = document.getElementById("fullscreenBtn");
+let hudCanvas, hudCtx;
 
 /* CANVAS */
 const ctx = canvas.getContext("2d"); // 2D drawing context
@@ -746,8 +747,8 @@ function updateSpeed() {
       maxSpeedScaled,
       initialSpeedScaled + speedLevel * speedIncrementScaled
     );
-    lastDrawnSpeed = "";
   }
+  drawHUD();
 }
 
 async function initCollectibleCache(progressCallback) {
@@ -941,6 +942,29 @@ function computeScale() {
   startBtnY = Math.round(210 * scale);
 
   scaleComputed = true;
+  resizeHUDCanvas();
+}
+
+// ----------------------------- //
+/* HUD OVERLAY CANVAS */
+// ----------------------------- //
+function initHUDCanvas() {
+  if (!hudCanvas) {
+    hudCanvas = document.createElement("canvas");
+    hudCanvas.id = "hudCanvas";
+    hudCanvas.className = "hud-canvas";
+    canvasWrapper.appendChild(hudCanvas);
+    hudCtx = hudCanvas.getContext("2d");
+  }
+  resizeHUDCanvas();
+}
+
+function resizeHUDCanvas() {
+  if (!hudCanvas) return;
+  hudCanvas.width = canvas.width;
+  hudCanvas.height = canvas.height;
+  lastDrawnScore = -1;
+  lastDrawnSpeed = "";
 }
 
 /* DRAW PRE-GAME UI */
@@ -1134,9 +1158,12 @@ async function startGame() {
   startBtn.disabled = false;
   startBtn.textContent = "Restart";
 
+  initHUDCanvas();
+
   gameRunning = true;
   canvasWrapper.classList.add("game-active");
   resetGame();
+  drawHUD();
   lastTime = performance.now();
   update(performance.now());
 }
@@ -1335,22 +1362,23 @@ function draw() {
     ctx.drawImage(grassStripCanvas, -grassOffset, 0);
     ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
   }
+}
 
-  // Draw Score + Speed counter (top-left, only when changed)
-  if (score !== lastDrawnScore) {
-    ctx.fillStyle = "#d4af37";
-    ctx.font = "bold 18px Arial";
-    ctx.textAlign = "left";
-    ctx.fillText(`Score: ${score}`, 15, 25);
-    lastDrawnScore = score;
-  }
+// Draw HUD on overlay canvas (only when values change)
+function drawHUD() {
+  if (!hudCtx) return;
 
+  const scoreText = `Score: ${score}`;
   const speedText = `Speed: ${currentSpeed.toFixed(1)}`;
-  if (speedText !== lastDrawnSpeed) {
-    ctx.fillStyle = "#d4af37";
-    ctx.font = "bold 18px Arial";
-    ctx.textAlign = "left";
-    ctx.fillText(speedText, 15, 48);
+
+  if (scoreText !== lastDrawnScore || speedText !== lastDrawnSpeed) {
+    hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height);
+    hudCtx.fillStyle = "#d4af37";
+    hudCtx.font = "bold 18px Arial";
+    hudCtx.textAlign = "left";
+    hudCtx.fillText(scoreText, 15, 25);
+    hudCtx.fillText(speedText, 15, 48);
+    lastDrawnScore = scoreText;
     lastDrawnSpeed = speedText;
   }
 }
@@ -1527,6 +1555,13 @@ function saveScore(name, finalScore) {
   if (scores.length > 50) scores = scores.slice(0, 50);
   localStorage.setItem("catGameScores", JSON.stringify(scores));
   displayScores();
+
+  if (hudCtx) {
+    hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height);
+  }
+  lastDrawnScore = -1;
+  lastDrawnSpeed = "";
+
   drawPreGameUI();
 
   // Start animation loop for pre-game UI
