@@ -423,6 +423,13 @@ footer {
   position: relative;
   display: inline-block;
 }
+
+.canvas-wrapper:fullscreen,
+.canvas-wrapper:-webkit-full-screen {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
 #fullscreenBtn {
   position: absolute;
   top: 0.5rem;

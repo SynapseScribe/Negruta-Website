@@ -41,6 +41,7 @@ let catY = 0;
 let playerName = "";
 let gameRunning = false;
 let animationFrameId = null;
+let isFullscreen = false;
 let score = 0;
 let speedLevel = -1;
 let lastDrawnScore = -1;
@@ -908,12 +909,24 @@ let scale,
   grassMaxSpacingScaled,
   collectibleSizesScaled;
 function computeScale() {
-  const renderedW = canvas.clientWidth || baseWidth;
-  const renderedH = canvas.clientHeight || baseHeight;
-  scale = Math.min(renderedW / baseWidth, renderedH / baseHeight);
-
-  canvas.width = Math.round(baseWidth * scale);
-  canvas.height = Math.round(baseHeight * scale);
+  let renderedW, renderedH;
+  if (isFullscreen) {
+    renderedW = canvasWrapper.clientWidth || window.innerWidth;
+    renderedH = canvasWrapper.clientHeight || window.innerHeight;
+    scale = Math.max(renderedW / baseWidth, renderedH / baseHeight);
+    canvas.width = Math.round(baseWidth * scale);
+    canvas.height = Math.round(baseHeight * scale);
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+  } else {
+    renderedW = canvas.clientWidth || baseWidth;
+    renderedH = canvas.clientHeight || baseHeight;
+    scale = Math.min(renderedW / baseWidth, renderedH / baseHeight);
+    canvas.width = Math.round(baseWidth * scale);
+    canvas.height = Math.round(baseHeight * scale);
+    canvas.style.width = "";
+    canvas.style.height = "";
+  }
 
   catSizeScaled = Math.round(catSize * scale);
   catXScaled = Math.round(catX * scale);
@@ -963,6 +976,13 @@ function resizeHUDCanvas() {
   if (!hudCanvas) return;
   hudCanvas.width = canvas.width;
   hudCanvas.height = canvas.height;
+  if (isFullscreen) {
+    hudCanvas.style.width = "100%";
+    hudCanvas.style.height = "100%";
+  } else {
+    hudCanvas.style.width = "";
+    hudCanvas.style.height = "";
+  }
   lastDrawnScore = -1;
   lastDrawnSpeed = "";
 }
@@ -1658,6 +1678,18 @@ window.addEventListener("resize", () => {
     collectibles = [];
     grassStripCanvas = null;
     drawPreGameUI();
+  } else if (isFullscreen && gameRunning) {
+    cancelAnimationFrame(animationFrameId);
+    scaleComputed = false;
+    cachesBuilt = false;
+    renderCache.clear();
+    obstacles = [];
+    collectibles = [];
+    grassStripCanvas = null;
+    bgGrassStripCanvas = null;
+    treeStripCanvas = null;
+    bgTreeStripCanvas = null;
+    startGame();
   }
 });
 
@@ -1701,64 +1733,10 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
 
   document.addEventListener("fullscreenchange", () => {
     if (document.fullscreenElement === canvasWrapper) {
+      isFullscreen = true;
       fullscreenBtn.textContent = "⛶";
       enableLandscapeRotation();
-      if (gameRunning) {
-        cancelAnimationFrame(animationFrameId);
-        scaleComputed = false;
-        cachesBuilt = false;
-        renderCache.clear();
-        obstacles = [];
-        collectibles = [];
-        grassStripCanvas = null;
-        bgGrassStripCanvas = null;
-        treeStripCanvas = null;
-        bgTreeStripCanvas = null;
-        startGame();
-      } else {
-        computeScale();
-        cachesBuilt = false;
-        renderCache.clear();
-        obstacles = [];
-        collectibles = [];
-        grassStripCanvas = null;
-        bgGrassStripCanvas = null;
-        treeStripCanvas = null;
-        bgTreeStripCanvas = null;
-        drawPreGameUI();
-      }
-    } else {
-      fullscreenBtn.textContent = "⤢";
-      disableLandscapeRotation();
-      if (gameRunning) {
-        cancelAnimationFrame(animationFrameId);
-        scaleComputed = false;
-        cachesBuilt = false;
-        renderCache.clear();
-        obstacles = [];
-        collectibles = [];
-        grassStripCanvas = null;
-        bgGrassStripCanvas = null;
-        treeStripCanvas = null;
-        bgTreeStripCanvas = null;
-        startGame();
-      } else {
-        scaleComputed = false;
-        cachesBuilt = false;
-        renderCache.clear();
-        obstacles = [];
-        collectibles = [];
-        grassStripCanvas = null;
-        drawPreGameUI();
-      }
-    }
-  });
-
-  if (canvasWrapper.webkitRequestFullscreen) {
-    document.addEventListener("webkitfullscreenchange", () => {
-      if (document.webkitFullscreenElement === canvasWrapper) {
-        fullscreenBtn.textContent = "⛶";
-        enableLandscapeRotation();
+      requestAnimationFrame(() => {
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
@@ -1783,9 +1761,12 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
           bgTreeStripCanvas = null;
           drawPreGameUI();
         }
-      } else {
-        fullscreenBtn.textContent = "⤢";
-        disableLandscapeRotation();
+      });
+    } else {
+      isFullscreen = false;
+      fullscreenBtn.textContent = "⤢";
+      disableLandscapeRotation();
+      requestAnimationFrame(() => {
         if (gameRunning) {
           cancelAnimationFrame(animationFrameId);
           scaleComputed = false;
@@ -1807,6 +1788,69 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
           grassStripCanvas = null;
           drawPreGameUI();
         }
+      });
+    }
+  });
+
+  if (canvasWrapper.webkitRequestFullscreen) {
+    document.addEventListener("webkitfullscreenchange", () => {
+      if (document.webkitFullscreenElement === canvasWrapper) {
+        isFullscreen = true;
+        fullscreenBtn.textContent = "⛶";
+        enableLandscapeRotation();
+        requestAnimationFrame(() => {
+          if (gameRunning) {
+            cancelAnimationFrame(animationFrameId);
+            scaleComputed = false;
+            cachesBuilt = false;
+            renderCache.clear();
+            obstacles = [];
+            collectibles = [];
+            grassStripCanvas = null;
+            bgGrassStripCanvas = null;
+            treeStripCanvas = null;
+            bgTreeStripCanvas = null;
+            startGame();
+          } else {
+            computeScale();
+            cachesBuilt = false;
+            renderCache.clear();
+            obstacles = [];
+            collectibles = [];
+            grassStripCanvas = null;
+            bgGrassStripCanvas = null;
+            treeStripCanvas = null;
+            bgTreeStripCanvas = null;
+            drawPreGameUI();
+          }
+        });
+      } else {
+        isFullscreen = false;
+        fullscreenBtn.textContent = "⤢";
+        disableLandscapeRotation();
+        requestAnimationFrame(() => {
+          if (gameRunning) {
+            cancelAnimationFrame(animationFrameId);
+            scaleComputed = false;
+            cachesBuilt = false;
+            renderCache.clear();
+            obstacles = [];
+            collectibles = [];
+            grassStripCanvas = null;
+            bgGrassStripCanvas = null;
+            treeStripCanvas = null;
+            bgTreeStripCanvas = null;
+            startGame();
+          } else {
+            scaleComputed = false;
+            cachesBuilt = false;
+            renderCache.clear();
+            obstacles = [];
+            collectibles = [];
+            grassStripCanvas = null;
+            drawPreGameUI();
+          }
+        });
       }
     });
   }
