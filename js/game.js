@@ -41,6 +41,9 @@ let playerName = "";
 let gameRunning = false;
 let animationFrameId = null;
 let score = 0;
+let speedLevel = -1;
+let lastDrawnScore = -1;
+let lastDrawnSpeed = "";
 
 // ----------------------------- //
 /* CACHING */
@@ -735,6 +738,18 @@ const collectibleScores = {
 };
 const defaultCollectibleScore = 5;
 
+function updateSpeed() {
+  const newLevel = Math.floor(score / 5);
+  if (newLevel !== speedLevel) {
+    speedLevel = newLevel;
+    currentSpeed = Math.min(
+      maxSpeedScaled,
+      initialSpeedScaled + speedLevel * speedIncrementScaled
+    );
+    lastDrawnSpeed = "";
+  }
+}
+
 async function initCollectibleCache(progressCallback) {
   const total = collectibleTypes.length * collectibleSizesScaled.length;
   let count = 0;
@@ -992,6 +1007,9 @@ function initCelestial() {
 // Calls: initGrassStrips(), initBgGrassStrips(), initTreeStrips(), initBgTreeStrips(), initMoon(), initCelestial()
 function resetGame() {
   score = 0;
+  speedLevel = -1;
+  lastDrawnScore = -1;
+  lastDrawnSpeed = "";
   catYScaled = canvas.height - catSizeScaled / 2; // center of cat is at half the size of cat, initially
   velocityY = 0;
   jumpCount = 0;
@@ -1318,12 +1336,23 @@ function draw() {
     ctx.drawImage(grassStripCanvas, grassStripWidth - grassOffset, 0);
   }
 
-  // Draw Score + Speed counter (top-left)
-  ctx.fillStyle = "#d4af37";
-  ctx.font = "bold 18px Arial";
-  ctx.textAlign = "left";
-  ctx.fillText(`Score: ${score}`, 15, 25);
-  ctx.fillText(`Speed: ${currentSpeed.toFixed(1)}`, 15, 48);
+  // Draw Score + Speed counter (top-left, only when changed)
+  if (score !== lastDrawnScore) {
+    ctx.fillStyle = "#d4af37";
+    ctx.font = "bold 18px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText(`Score: ${score}`, 15, 25);
+    lastDrawnScore = score;
+  }
+
+  const speedText = `Speed: ${currentSpeed.toFixed(1)}`;
+  if (speedText !== lastDrawnSpeed) {
+    ctx.fillStyle = "#d4af37";
+    ctx.font = "bold 18px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText(speedText, 15, 48);
+    lastDrawnSpeed = speedText;
+  }
 }
 
 /* UPDATE FRAME MOVEMENT */
@@ -1338,11 +1367,6 @@ function update(timestamp) {
 
   const dt = timestamp ? (timestamp - lastTime) / 16.67 : 1; // normalize to ~60fps
   lastTime = timestamp || 0;
-
-  currentSpeed = Math.min(
-    maxSpeedScaled,
-    initialSpeedScaled + Math.floor(score / 5) * speedIncrementScaled
-  );
 
   // Gravity
   velocityY += gravityScaled * dt;
@@ -1404,6 +1428,7 @@ function update(timestamp) {
       obstacles.pop();
       i--;
       score++;
+      updateSpeed();
     }
   }
 
@@ -1425,6 +1450,7 @@ function update(timestamp) {
       collectibles.pop();
       i--;
       score += collectibleScores[collType] ?? defaultCollectibleScore;
+      updateSpeed();
       continue;
     }
 
