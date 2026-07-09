@@ -1737,30 +1737,32 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
       fullscreenBtn.textContent = "⛶";
       enableLandscapeRotation();
       requestAnimationFrame(() => {
-        if (gameRunning) {
-          cancelAnimationFrame(animationFrameId);
-          scaleComputed = false;
-          cachesBuilt = false;
-          renderCache.clear();
-          obstacles = [];
-          collectibles = [];
-          grassStripCanvas = null;
-          bgGrassStripCanvas = null;
-          treeStripCanvas = null;
-          bgTreeStripCanvas = null;
-          startGame();
-        } else {
-          computeScale();
-          cachesBuilt = false;
-          renderCache.clear();
-          obstacles = [];
-          collectibles = [];
-          grassStripCanvas = null;
-          bgGrassStripCanvas = null;
-          treeStripCanvas = null;
-          bgTreeStripCanvas = null;
-          drawPreGameUI();
-        }
+        requestAnimationFrame(() => {
+          if (gameRunning) {
+            cancelAnimationFrame(animationFrameId);
+            scaleComputed = false;
+            cachesBuilt = false;
+            renderCache.clear();
+            obstacles = [];
+            collectibles = [];
+            grassStripCanvas = null;
+            bgGrassStripCanvas = null;
+            treeStripCanvas = null;
+            bgTreeStripCanvas = null;
+            startGame();
+          } else {
+            computeScale();
+            cachesBuilt = false;
+            renderCache.clear();
+            obstacles = [];
+            collectibles = [];
+            grassStripCanvas = null;
+            bgGrassStripCanvas = null;
+            treeStripCanvas = null;
+            bgTreeStripCanvas = null;
+            drawPreGameUI();
+          }
+        });
       });
     } else {
       isFullscreen = false;
@@ -1799,30 +1801,32 @@ if (canvasWrapper.requestFullscreen || canvasWrapper.webkitRequestFullscreen) {
         fullscreenBtn.textContent = "⛶";
         enableLandscapeRotation();
         requestAnimationFrame(() => {
-          if (gameRunning) {
-            cancelAnimationFrame(animationFrameId);
-            scaleComputed = false;
-            cachesBuilt = false;
-            renderCache.clear();
-            obstacles = [];
-            collectibles = [];
-            grassStripCanvas = null;
-            bgGrassStripCanvas = null;
-            treeStripCanvas = null;
-            bgTreeStripCanvas = null;
-            startGame();
-          } else {
-            computeScale();
-            cachesBuilt = false;
-            renderCache.clear();
-            obstacles = [];
-            collectibles = [];
-            grassStripCanvas = null;
-            bgGrassStripCanvas = null;
-            treeStripCanvas = null;
-            bgTreeStripCanvas = null;
-            drawPreGameUI();
-          }
+          requestAnimationFrame(() => {
+            if (gameRunning) {
+              cancelAnimationFrame(animationFrameId);
+              scaleComputed = false;
+              cachesBuilt = false;
+              renderCache.clear();
+              obstacles = [];
+              collectibles = [];
+              grassStripCanvas = null;
+              bgGrassStripCanvas = null;
+              treeStripCanvas = null;
+              bgTreeStripCanvas = null;
+              startGame();
+            } else {
+              computeScale();
+              cachesBuilt = false;
+              renderCache.clear();
+              obstacles = [];
+              collectibles = [];
+              grassStripCanvas = null;
+              bgGrassStripCanvas = null;
+              treeStripCanvas = null;
+              bgTreeStripCanvas = null;
+              drawPreGameUI();
+            }
+          });
         });
       } else {
         isFullscreen = false;
