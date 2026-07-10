@@ -1,3 +1,5 @@
+import globals from "globals";
+
 export default [
   {
     files: ["js/playwright-test-game.js"],
@@ -5,10 +7,23 @@ export default [
       ecmaVersion: 2022,
       sourceType: "commonjs",
       globals: {
-        process: "readonly",
-        console: "readonly",
-        document: "readonly",
-        window: "readonly"
+        ...globals.node,
+        ...globals.browser
+      }
+    },
+    rules: {
+      "no-unused-vars": "warn",
+      "no-undef": "error"
+    }
+  },
+  {
+    files: ["js/test-cancel-raf-runner.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: {
+        ...globals.node,
+        ...globals.browser
       }
     },
     rules: {
@@ -18,33 +33,11 @@ export default [
   },
   {
     files: ["**/*.js"],
-    ignores: ["js/playwright-test-game.js"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
       globals: {
-        window: "readonly",
-        document: "readonly",
-        console: "readonly",
-        performance: "readonly",
-        localStorage: "readonly",
-        screen: "readonly",
-        Audio: "readonly",
-        Map: "readonly",
-        Math: "readonly",
-        Date: "readonly",
-        JSON: "readonly",
-        requestAnimationFrame: "readonly",
-        cancelAnimationFrame: "readonly",
-        HTMLElement: "readonly",
-        Node: "readonly",
-        Text: "readonly",
-        Event: "readonly",
-        Error: "readonly",
-        alert: "readonly",
-        fetch: "readonly",
-        setTimeout: "readonly",
-        clearTimeout: "readonly"
+        ...globals.browser
       }
     },
     rules: {

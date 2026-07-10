@@ -8,6 +8,8 @@ import { firefox } from "playwright";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+let gameRunning, gameOver, animationFrameId, process
+
 const PORT = 8898;
 const MIME_TYPES = {
   ".html": "text/html",
