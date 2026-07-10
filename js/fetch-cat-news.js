@@ -16,12 +16,19 @@ const catPatterns = [
   /\bcats?\s+health\b/i, /\bcats?\s+behavior\b/i
 ];
 
+function extractText(val) {
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val)) return val[0] || '';
+  if (val && typeof val._ === 'string') return val._;
+  return '';
+}
+
 function stripHtml(html) {
   return html.replace(/<[^>]*>/g, ' ').replace(/&#\d+;/g, ' ');
 }
 
 function isCatRelated(item) {
-  const text = `${item.title} ${stripHtml(item.description || '')}`;
+  const text = `${item.title} ${stripHtml(extractText(item.description))}`;
   return catPatterns.some((p) => p.test(text));
 }
 
@@ -45,7 +52,7 @@ async function fetchFeed(rssUrl) {
     return itemArr.map((item) => ({
       title: item.title || '',
       link: item.link || '',
-      description: typeof item.description === 'string' ? item.description : (Array.isArray(item.description) ? item.description[0] : ''),
+      description: extractText(item.description),
       pubDate: new Date(typeof item.pubDate === 'string' ? item.pubDate : '').getTime()
     })).filter((item) => !Number.isNaN(item.pubDate));
   } catch {
