@@ -1,5 +1,6 @@
 [
   {
+<<<<<<< HEAD
     "title": "Why the SmartCat Ultimate Scratching Post is a Must-Have for Every Cat Owner",
     "link": "https://www.thecatniptimes.com/ratings-and-reviews/smartcat-ultimate-scratching-post-review/"
   },
@@ -38,5 +39,21 @@
   {
     "title": "DIY Cat Hammock",
     "link": "https://www.thecatniptimes.com/diy/diy-cat-hammock/"
+=======
+    "title": "Good News in History, July 10",
+    "link": "https://www.goodnewsnetwork.org/events060710/"
+  },
+  {
+    "title": "Ugandan Coffee Growers Shrug Off Drought Thanks to Regenerative Agriculture",
+    "link": "https://www.goodnewsnetwork.org/ugandan-coffee-growers-shrug-off-drought-thanks-to-regenerative-agriculture/"
+  },
+  {
+    "title": "Your Weekly Horoscope – ‘Free Will Astrology’ by Rob Brezsny",
+    "link": "https://www.goodnewsnetwork.org/horoscope-from-rob-brezsnys-free-will-astrology-7-04-2026/"
+  },
+  {
+    "title": "Scientists Have Found Climate-Resistant Coral Reefs Around the World Totaling the Size of Wisconsin",
+    "link": "https://www.goodnewsnetwork.org/scientists-identify-climate-resistant-coral-reefs-around-the-world-totaling-the-size-of-wisconsin/"
+>>>>>>> 1ca9bb11dbdd13ce890d0ca0a0e756eda5698bd4
   }
 ]
