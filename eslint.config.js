@@ -32,6 +32,20 @@ export default [
     }
   },
   {
+    files: ["js/fetch-cat-news.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: {
+        ...globals.node
+      }
+    },
+    rules: {
+      "no-unused-vars": "warn",
+      "no-undef": "error"
+    }
+  },
+  {
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: 2022,

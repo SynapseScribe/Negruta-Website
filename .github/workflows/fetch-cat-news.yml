@@ -1,0 +1,36 @@
+name: Fetch Cat News
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install XML parser
+        run: npm install --no-save xml2js
+
+      - name: Fetch and parse RSS feeds
+        run: node js/fetch-cat-news.js
+
+      - name: Commit changes if updated
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/cat-news.json
+          git diff --staged --quiet || (git commit -m "chore: update cat news feed [skip ci]" && git push)
