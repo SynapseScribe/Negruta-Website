@@ -7,14 +7,22 @@ const rssFeeds = [
   'https://www.goodnewsnetwork.org/feed/'
 ];
 
-const catKeywords = [
-  'cat', 'cats', 'feline', 'kitten', 'kittens',
-  'stray cat', 'lost cat', 'rescue cat', 'pet cat'
+const catPatterns = [
+  /\bcat\b/i, /\bcats\b/i, /\bfeline\b/i, /\bfelines\b/i,
+  /\bkitten\b/i, /\bkittens\b/i,
+  /\bstray\s+cats?\b/i, /\blost\s+cats?\b/i,
+  /\brescue\s+cats?\b/i, /\bpet\s+cats?\b/i,
+  /\bcats?\s+care\b/i, /\bcats?\s+food\b/i,
+  /\bcats?\s+health\b/i, /\bcats?\s+behavior\b/i
 ];
 
+function stripHtml(html) {
+  return html.replace(/<[^>]*>/g, ' ').replace(/&#\d+;/g, ' ');
+}
+
 function isCatRelated(item) {
-  const text = `${item.title} ${item.description || ''}`.toLowerCase();
-  return catKeywords.some((kw) => text.includes(kw));
+  const text = `${item.title} ${stripHtml(item.description || '')}`;
+  return catPatterns.some((p) => p.test(text));
 }
 
 async function fetchFeed(rssUrl) {
