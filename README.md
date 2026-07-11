@@ -23,3 +23,5 @@ Published on: https://synapsescribe.github.io/Negruta-Website/
 ##### AI Tools used in Opencode: bash (pwsh), edit, write, read, grep, glob, todowrite, webfetch, websearch, question
 ##### Tools: npm, npx, node.js, uv
 ##### Testing Platform: playwright
+##### TTS: Handy, Model: Parakeet v3
+##### Platform: Windows 11 25H2, Terminal
