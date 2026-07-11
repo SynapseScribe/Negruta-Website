@@ -5,8 +5,8 @@
 ### Meet the Legend
 #### Negruta is not just a cat; she's an icon. Known for her captivating presence and internet-dominating charm, Negruta has captured hearts worldwide.
 
-Published on: https://synapsescribe.github.io/Negruta-Website/
-Test locally in browser (http://localhost:3000/) with: git clone https://github.com/SynapseScribe/Negruta-Website.git && cd Negruta-Website && npx serve .
+###### Published on: https://synapsescribe.github.io/Negruta-Website/
+###### Test locally in browser (http://localhost:3000/) with: git clone https://github.com/SynapseScribe/Negruta-Website.git && cd Negruta-Website && npx serve .
 
 ## Tech Stack used to generate the website:
 
