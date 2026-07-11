@@ -21,7 +21,8 @@
   - Cloud: gpt-5-mini with reasoning (duck.ai), Gemini 3.5-flash (Gemini), claude-haiku-4.5 (copilot)
 ##### Skills: Graphify
 ##### AI Tools used in Opencode: bash (pwsh), edit, write, read, grep, glob, todowrite, webfetch, websearch, question
-##### Tools: npm, npx, node.js, uv
+##### Tools: npm, npx, node.js, uv, git, gh, pwsh cmdlets
 ##### Testing Platform: playwright
 ##### TTS: Handy, Model: Parakeet v3
 ##### Platform: Windows 11 25H2, Terminal
+##### Languages & Formats: html, js, css, md, json
