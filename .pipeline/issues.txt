@@ -27,3 +27,6 @@
 11 - [Pipeline] Bug: Dead code in obstacle spacing logic (minGap always 680) - CLOSED
 10 - [Pipeline] Bug: jumpCount not reset in resetGame() - CLOSED
 1 - [Pipeline] #1 - Add a toggle for dark theme - CLOSED
+30 - [Pipeline][FEATURE] Global cross-device leaderboard via GitHub Actions workflow dispatch - OPEN
+
+(End of file - total 30 lines)
